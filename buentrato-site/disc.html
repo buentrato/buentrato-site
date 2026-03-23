@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuenTrato.AI — Feedback DISC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F7F8F9;
+            color: #2D2D2D;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0380A6, #026B8A);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .header p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+        .header .back-link {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .header .back-link:hover { opacity: 1; }
+
+        /* Container */
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Progress */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 16px;
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .step-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .step-pill.active { background: #E6F6F9; border: 1.5px solid #0380A6; }
+        .step-pill.done { background: #ECFDF5; }
+        .step-pill.pending { background: #F9FAFB; }
+        .step-num {
+            width: 20px; height: 20px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; color: white;
+        }
+        .step-num.active { background: #0380A6; }
+        .step-num.done { background: #10B981; }
+        .step-num.pending { background: #D1D5DB; }
+        .step-label.active { color: #0380A6; font-weight: 700; }
+        .step-label.done { color: #059669; font-weight: 500; }
+        .step-label.pending { color: #9CA3AF; font-weight: 500; }
+
+        /* Content */
+        .content { padding: 20px; }
+        .content h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .content .subtitle { color: #6B7280; font-size: 14px; margin-bottom: 16px; }
+
+        /* Access Screen */
+        .access-screen {
+            max-width: 400px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .access-screen .logo-icon {
+            width: 120px; height: 72px;
+            margin: 0 auto 20px;
+        }
+        .access-screen .logo-icon img {
+            width: 100%; height: 100%; object-fit: contain;
+        }
+        .access-screen h2 { font-size: 22px; margin-bottom: 8px; }
+        .access-screen p { color: #6B7280; font-size: 14px; margin-bottom: 24px; }
+        .access-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 600;
+            outline: none;
+            text-transform: uppercase;
+        }
+        .access-input:focus { border-color: #0380A6; }
+        .access-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #0380A6, #026B8A);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: opacity 0.2s;
+        }
+        .access-btn:hover { opacity: 0.9; }
+        .access-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .access-error {
+            color: #DC2626;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+        .demo-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #0380A6;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Person Cards - Grid */
+        .person-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .person-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 12px;
+            border-radius: 14px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .person-card:hover { border-color: #9DD8E8; }
+        .person-card.selected { border-width: 3px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .person-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 16px;
+        }
+        .person-name { font-weight: 600; font-size: 14px; }
+        .person-role { font-size: 11px; color: #6B7280; }
+        .disc-badges { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+        .disc-badge {
+            padding: 2px 7px; border-radius: 10px;
+            font-size: 10px; font-weight: 600;
+        }
+
+        /* Person Cards - List */
+        .person-list { display: flex; flex-direction: column; gap: 8px; }
+        .person-card-compact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .person-card-compact:hover { border-color: #9DD8E8; }
+        .person-card-compact.selected { border-width: 2px; }
+        .person-card-compact .person-avatar { width: 40px; height: 40px; font-size: 14px; flex-shrink: 0; }
+        .person-info { flex: 1; min-width: 0; }
+        .person-info .person-name { font-size: 14px; }
+        .person-info .person-role { font-size: 12px; }
+        .style-badge {
+            padding: 2px 10px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; color: white;
+        }
+
+        /* Topic Cards */
+        .topic-list { display: flex; flex-direction: column; gap: 8px; }
+        .topic-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topic-card:hover { border-color: #9DD8E8; }
+        .topic-card.selected { border-color: #0380A6; background: #E6F6F9; }
+        .topic-icon { font-size: 24px; }
+        .topic-title { font-weight: 600; font-size: 14px; }
+        .topic-card.selected .topic-title { color: #0380A6; }
+        .topic-desc { font-size: 12px; color: #6B7280; }
+
+        /* Feedback Display */
+        .feedback-header {
+            background: linear-gradient(135deg, #0380A6, #026B8A);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .feedback-persons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .feedback-person-bubble {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 16px; margin: 0 auto 6px;
+        }
+        .feedback-person-name { font-size: 14px; font-weight: 600; }
+        .feedback-person-style {
+            font-size: 11px; padding: 2px 8px; border-radius: 10px;
+            display: inline-block; margin-top: 4px;
+        }
+        .feedback-arrow { font-size: 24px; }
+        .feedback-topic { margin-top: 16px; font-size: 13px; opacity: 0.9; }
+
+        /* DISC Charts */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .chart-box {
+            background: #FAFAFA; border-radius: 12px; padding: 16px;
+            text-align: center;
+        }
+        .chart-label { font-size: 13px; color: #6B7280; margin-bottom: 8px; }
+
+        /* Feedback Sections */
+        .feedback-section {
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .feedback-section.strengths { background: #ECFDF5; border-left: 4px solid #10B981; }
+        .feedback-section.challenges { background: #FFF7ED; border-left: 4px solid #F59E0B; }
+        .feedback-section.tips { background: #E6F6F9; border-left: 4px solid #0380A6; }
+        .feedback-section-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+        .feedback-section.strengths .feedback-section-title { color: #065F46; }
+        .feedback-section.challenges .feedback-section-title { color: #92400E; }
+        .feedback-section.tips .feedback-section-title { color: #026B8A; }
+        .feedback-section p { font-size: 14px; line-height: 1.6; }
+        .feedback-section.strengths p { color: #047857; }
+        .feedback-section.challenges p { color: #B45309; }
+
+        .tip-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+        .tip-num {
+            background: #0380A6; color: white; border-radius: 50%;
+            width: 22px; height: 22px; min-width: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+        }
+        .tip-text { color: #2D2D2D; font-size: 14px; line-height: 1.6; }
+
+        /* AI Feedback Section */
+        .ai-section {
+            background: linear-gradient(135deg, #F0FDFA, #ECFDF5);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #14B8A6;
+        }
+        .ai-section .feedback-section-title { color: #0F766E; }
+        .ai-section p { color: #115E59; font-size: 14px; line-height: 1.7; }
+        .ai-loading {
+            text-align: center; padding: 20px;
+        }
+        .ai-loading .spinner {
+            width: 24px; height: 24px; border: 3px solid #E5E7EB;
+            border-top-color: #14B8A6; border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 10px;
+        }
+
+        /* Buttons */
+        .btn-back {
+            margin-top: 12px; padding: 10px;
+            background: none; border: none; color: #0380A6;
+            cursor: pointer; font-size: 14px; font-weight: 600;
+        }
+        .btn-reset {
+            width: 100%; padding: 14px 20px; border-radius: 12px;
+            border: 2px solid #E5E7EB; background: white;
+            cursor: pointer; font-weight: 600; font-size: 14px;
+            color: #374151; margin-top: 8px;
+        }
+        .btn-reset:hover { border-color: #0380A6; }
+
+        /* Loading */
+        .loading-screen {
+            text-align: center; padding: 60px 20px;
+        }
+        .loading-spinner {
+            width: 48px; height: 48px; border: 4px solid #E5E7EB;
+            border-top-color: #0380A6; border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #6B7280; font-size: 16px; }
+        .loading-subtext { color: #9CA3AF; font-size: 14px; margin-top: 4px; }
+
+        /* Fade In */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center; padding: 20px;
+            color: #777579; font-size: 12px;
+            border-top: 1px solid #EEEDEF;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="container">
+    <!-- JS renders everything here -->
+</div>
+
+<script>
+// ==========================================
+// CONFIGURACIÓN - EDITAR AQUÍ
+// ==========================================
+
+// Datos de ejemplo para demo
+const DEMO_TEAMS = {
+    "DEMO2026": {
+        name: "Equipo Demo",
+        company: "BuenTrato.AI",
+        members: [
+            { id: 9001, name: "Ana García", role: "Directora de Proyectos", disc: { D: 85, I: 45, S: 30, C: 60 }, primaryStyle: "D" },
+            { id: 9002, name: "Carlos Méndez", role: "Diseñador UX", disc: { D: 30, I: 80, S: 55, C: 40 }, primaryStyle: "I" },
+            { id: 9003, name: "María López", role: "Desarrolladora Senior", disc: { D: 40, I: 35, S: 75, C: 85 }, primaryStyle: "C" },
+            { id: 9004, name: "Roberto Sánchez", role: "Gerente de Ventas", disc: { D: 70, I: 90, S: 25, C: 35 }, primaryStyle: "I" },
+            { id: 9005, name: "Laura Jiménez", role: "Coordinadora de RRHH", disc: { D: 25, I: 60, S: 90, C: 50 }, primaryStyle: "S" }
+        ]
+    }
+};
+
+// Datos reales de Airtable (generados el 22/Mar/2026)
+const AIRTABLE_TEAMS = {
+    "AMWA-GEN": { name: "Amway", company: "Amway", members: [
+        { id: 7, name: "Martha Rodríguez", role: "Assoc Commercial Finance Analyst II", disc: { D: 53, I: 8, S: 21, C: 38 }, discAdaptado: { D: 47, I: 38, S: 17, C: 17 }, primaryStyle: "D" },
+        { id: 30, name: "Viviana Gonzalez Ramirez", role: "Project Manager Commercial Finance LATAM", disc: { D: 50, I: 4, S: 29, C: 38 }, discAdaptado: { D: 50, I: 25, S: 29, C: 17 }, primaryStyle: "D" },
+        { id: 31, name: "Luis Alonso Suárez Castro", role: "Analista Financiero", disc: { D: 64, I: 17, S: 33, C: 12 }, discAdaptado: { D: 36, I: 25, S: 21, C: 33 }, primaryStyle: "D" },
+        { id: 34, name: "Griselda Aguilar", role: "ANALISTA FINANCIERO", disc: { D: 38, I: 21, S: 17, C: 42 }, discAdaptado: { D: 62, I: 21, S: 21, C: 25 }, primaryStyle: "C" },
+        { id: 36, name: "Fernando Cantu", role: "Analista Financiero", disc: { D: 42, I: 29, S: 25, C: 25 }, discAdaptado: { D: 58, I: 38, S: 17, C: 17 }, primaryStyle: "D" },
+        { id: 40, name: "Paola Castillo", role: "Commercial Finance Analyst", disc: { D: 35, I: 33, S: 21, C: 21 }, discAdaptado: { D: 65, I: 12, S: 21, C: 21 }, primaryStyle: "D" },
+        { id: 50, name: "Jose Cantu", role: "Selling Business Partner", disc: { D: 58, I: 25, S: 25, C: 21 }, discAdaptado: { D: 42, I: 21, S: 21, C: 38 }, primaryStyle: "D" }
+    ]},
+    "AMWAARGE-GEN": { name: "Amway Argentina Inc.", company: "Amway Argentina Inc.", members: [
+        { id: 29, name: "Jesica Franco", role: "Assoc Commercial Finance Analyst II", disc: { D: 64, I: 25, S: 21, C: 17 }, discAdaptado: { D: 36, I: 29, S: 17, C: 33 }, primaryStyle: "D" },
+        { id: 32, name: "Cristina Escalante", role: "Commercial Finance Analyst", disc: { D: 50, I: 33, S: 25, C: 17 }, discAdaptado: { D: 50, I: 21, S: 33, C: 21 }, primaryStyle: "D" }
+    ]},
+    "AMWACOLO-GEN": { name: "Amway Colombia", company: "Amway Colombia", members: [
+        { id: 21, name: "Nataly Rincon", role: "Oficial de cumplimiento", disc: { D: 29, I: 29, S: 8, C: 54 }, discAdaptado: { D: 71, I: 17, S: 29, C: 33 }, primaryStyle: "C" },
+        { id: 56, name: "Alejandra Acosta", role: "Analista de Operaciones Financieras II.", disc: { D: 53, I: 21, S: 21, C: 21 }, discAdaptado: { D: 47, I: 25, S: 12, C: 29 }, primaryStyle: "D" }
+    ]},
+    "AMWADEME-GEN": { name: "Amway de Mexico", company: "Amway de Mexico", members: [
+        { id: 22, name: "Mauricio Rodriguez", role: "Assoc. Analyst II - Local Requirements", disc: { D: 50, I: 25, S: 12, C: 25 }, discAdaptado: { D: 50, I: 25, S: 17, C: 21 }, primaryStyle: "D" },
+        { id: 46, name: "Francisco Lara", role: "Commercial Finance Analyst", disc: { D: 47, I: 8, S: 29, C: 33 }, discAdaptado: { D: 53, I: 21, S: 25, C: 21 }, primaryStyle: "D" }
+    ]},
+    "AMWADEMÉ-GEN": { name: "Amway de México", company: "Amway de México, S. de R.L. de C.V.", members: [
+        { id: 3, name: "Juan Cándido Almazán Rangel", role: "Portfolio Management Sr. Analyst", disc: { D: 50, I: 21, S: 25, C: 25 }, discAdaptado: { D: 50, I: 21, S: 29, C: 21 }, primaryStyle: "D" }
+    ]},
+    "AMWADOBR-GEN": { name: "Amway do Brasil LTDA", company: "Amway do Brasil LTDA", members: [
+        { id: 4, name: "Paula Maldonado Nishiwaki", role: "Assoc Commercial Finance Analyst", disc: { D: 20, I: 38, S: 29, C: 21 }, discAdaptado: { D: 80, I: 4, S: 29, C: 17 }, primaryStyle: "I" },
+        { id: 25, name: "Jaqueline Monteiro", role: "Assoc Commercial Finance Analyst II", disc: { D: 32, I: 38, S: 17, C: 21 }, discAdaptado: { D: 68, I: 8, S: 21, C: 17 }, primaryStyle: "I" }
+    ]},
+    "AMWAELSA-GEN": { name: "Amway El Salvador", company: "Amway El Salvador, S.A de C.V", members: [
+        { id: 23, name: "Rebeca de Alvarenga", role: "Assoc Commercial Finance Controllership Analyst II", disc: { D: 41, I: 29, S: 12, C: 29 }, discAdaptado: { D: 59, I: 17, S: 25, C: 17 }, primaryStyle: "D" }
+    ]},
+    "AMWAGUAT-GEN": { name: "Amway Guatemala", company: "Amway Guatemala", members: [
+        { id: 49, name: "Eymi Barrios", role: "Commercial Finance", disc: { D: 67, I: 21, S: 12, C: 33 }, discAdaptado: { D: 33, I: 46, S: 21, C: 17 }, primaryStyle: "D" }
+    ]},
+    "ESRICOLO-GEN": { name: "Esri Colombia", company: "Esri Colombia", members: [
+        { id: 1, name: "Caterine Garnica", role: "Coordinadora Comunidad", disc: { D: 25, I: 25, S: 29, C: 33 }, discAdaptado: { D: 75, I: 29, S: 21, C: 12 }, primaryStyle: "C" },
+        { id: 2, name: "Luisa Fernanda Martín Bohórquez", role: "Gerente de Proyectos", disc: { D: 57, I: 33, S: 17, C: 17 }, discAdaptado: { D: 43, I: 12, S: 29, C: 33 }, primaryStyle: "D" },
+        { id: 19, name: "Jerson Pedraza", role: "Coordinador de Comunidad", disc: { D: 36, I: 21, S: 29, C: 33 }, discAdaptado: { D: 64, I: 33, S: 17, C: 21 }, primaryStyle: "D" },
+        { id: 24, name: "Teresa Alvarez Ramirez", role: "Líder Adminsitrativo", disc: { D: 60, I: 12, S: 12, C: 50 }, discAdaptado: { D: 40, I: 46, S: 25, C: 12 }, primaryStyle: "D" },
+        { id: 26, name: "Angela María Nieto Vera", role: "Líder Gestión de Licenciamiento", disc: { D: 33, I: 17, S: 12, C: 50 }, discAdaptado: { D: 67, I: 29, S: 25, C: 4 }, primaryStyle: "C" },
+        { id: 37, name: "Sabrina Gonzalez", role: "Gerente de Programa Educacion", disc: { D: 33, I: 33, S: 12, C: 33 }, discAdaptado: { D: 67, I: 29, S: 21, C: 8 }, primaryStyle: "D" },
+        { id: 47, name: "Cristina Pinto", role: "Líder de Relaciones Públicas", disc: { D: 69, I: 21, S: 12, C: 21 }, discAdaptado: { D: 31, I: 33, S: 38, C: 8 }, primaryStyle: "D" },
+        { id: 52, name: "Vanessa Guzman", role: "Gerente de sostenibilidad", disc: { D: 58, I: 33, S: 25, C: 12 }, discAdaptado: { D: 42, I: 8, S: 25, C: 46 }, primaryStyle: "D" }
+    ]},
+    "ESRICOLO-GH": { name: "Esri Colombia - GH", company: "Esri Colombia", members: [
+        { id: 16, name: "Leidy Castañeda", role: "Coordinador administrativo", disc: { D: 38, I: 25, S: 21, C: 33 }, discAdaptado: { D: 62, I: 25, S: 25, C: 17 }, primaryStyle: "D" },
+        { id: 45, name: "Katherine Pacheco", role: "Coordinador de selección", disc: { D: 44, I: 17, S: 17, C: 38 }, discAdaptado: { D: 56, I: 8, S: 29, C: 25 }, primaryStyle: "D" },
+        { id: 58, name: "Maria Angelica Moreno Otero", role: "Líder de Gestion Humana", disc: { D: 50, I: 21, S: 29, C: 29 }, discAdaptado: { D: 50, I: 21, S: 12, C: 46 }, primaryStyle: "D" }
+    ]},
+    "GERMGAVI-GEN": { name: "German Gaviria SAS distrimotos", company: "German Gaviria SAS distrimotos", members: [
+        { id: 13, name: "Yuly Viviana Osorio Ramirez", role: "Lider centro de distribución", disc: { D: 83, I: 8, S: 12, C: 38 }, discAdaptado: { D: 17, I: 50, S: 29, C: 12 }, primaryStyle: "D" },
+        { id: 18, name: "Carlos Alberto Medina Santa", role: "Asistente de recepción", disc: { D: 33, I: 38, S: 12, C: 29 }, discAdaptado: { D: 67, I: 0, S: 21, C: 38 }, primaryStyle: "I" },
+        { id: 51, name: "marcela garcia duque", role: "LIDER JUNIOR CEDI", disc: { D: 79, I: 12, S: 17, C: 25 }, discAdaptado: { D: 21, I: 33, S: 42, C: 12 }, primaryStyle: "D" }
+    ]},
+    "LACA-SÍST": { name: "LaCardio - Sístole", company: "LaCardio", members: [
+        { id: 5, name: "ANA MARIA CANCIMANSE TORO", role: "Coordinadora de Ciclo Interno y Cuenta Paciente", disc: { D: 36, I: 17, S: 21, C: 42 }, discAdaptado: { D: 64, I: 21, S: 21, C: 21 }, primaryStyle: "C" },
+        { id: 9, name: "OLGA LUCIA HERRERA GAITAN", role: "Líder Clínico EMR_HIS", disc: { D: 33, I: 33, S: 17, C: 29 }, discAdaptado: { D: 67, I: 21, S: 12, C: 25 }, primaryStyle: "D" },
+        { id: 10, name: "Juan Carlos Piñeros Cañas", role: "Gestor Interoperabilidad", disc: { D: 44, I: 17, S: 25, C: 42 }, discAdaptado: { D: 56, I: 29, S: 25, C: 25 }, primaryStyle: "D" },
+        { id: 12, name: "Alejandro Ardila Ospina", role: "Coordinador de Procesos", disc: { D: 62, I: 25, S: 17, C: 25 }, discAdaptado: { D: 38, I: 38, S: 25, C: 17 }, primaryStyle: "D" },
+        { id: 14, name: "Noa Isabella Correa Portilla", role: "Profesional de procesos de farmacia", disc: { D: 73, I: 12, S: 8, C: 46 }, discAdaptado: { D: 27, I: 38, S: 33, C: 17 }, primaryStyle: "D" },
+        { id: 15, name: "Nataly Correa Heredia", role: "Jefe de gestión del cambio", disc: { D: 50, I: 33, S: 17, C: 25 }, discAdaptado: { D: 50, I: 21, S: 25, C: 29 }, primaryStyle: "D" },
+        { id: 17, name: "Julieth Riaño Bejarano", role: "Coordinadora procesos comerciales", disc: { D: 36, I: 29, S: 8, C: 42 }, discAdaptado: { D: 64, I: 4, S: 29, C: 29 }, primaryStyle: "C" },
+        { id: 20, name: "Nini Gabriela Becerra Sánchez", role: "Analista Senior ciclo interno y cuenta paciente", disc: { D: 50, I: 17, S: 38, C: 17 }, discAdaptado: { D: 50, I: 25, S: 21, C: 25 }, primaryStyle: "D" },
+        { id: 28, name: "Karen Julieth Echeverry Medina", role: "Gestor de aplicaciones", disc: { D: 50, I: 29, S: 29, C: 12 }, discAdaptado: { D: 50, I: 12, S: 33, C: 25 }, primaryStyle: "D" },
+        { id: 35, name: "Luz Dary Salazar Beltran", role: "Enfermera", disc: { D: 44, I: 29, S: 33, C: 21 }, discAdaptado: { D: 56, I: 8, S: 38, C: 33 }, primaryStyle: "D" },
+        { id: 39, name: "Valentina Amaya Medina", role: "Enfermera especialista de procesos asistenciales", disc: { D: 86, I: 25, S: 17, C: 33 }, discAdaptado: { D: 14, I: 38, S: 21, C: 38 }, primaryStyle: "D" },
+        { id: 41, name: "Miguel Pinzon", role: "Gestor de interoperabilidad", disc: { D: 40, I: 33, S: 25, C: 25 }, discAdaptado: { D: 60, I: 29, S: 38, C: 8 }, primaryStyle: "D" },
+        { id: 42, name: "Leidy Astrid Castellanos Benavides", role: "Profesional Gestión del Cambio", disc: { D: 39, I: 38, S: 8, C: 25 }, discAdaptado: { D: 61, I: 8, S: 29, C: 17 }, primaryStyle: "D" },
+        { id: 48, name: "Diana Carolina Prieto Echeverry", role: "Coordinador PMO", disc: { D: 56, I: 17, S: 29, C: 12 }, discAdaptado: { D: 44, I: 25, S: 17, C: 25 }, primaryStyle: "D" },
+        { id: 57, name: "Consuelo Ardila Castro", role: "Directora de Programa Sistole", disc: { D: 75, I: 17, S: 12, C: 33 }, discAdaptado: { D: 25, I: 33, S: 29, C: 25 }, primaryStyle: "D" }
+    ]},
+    "PROM-COMU": { name: "Promigas - Comunicaciones", company: "Promigas", members: [
+        { id: 6, name: "Lizeth Ortega", role: "Auxiliar de Comunicaciones", disc: { D: 58, I: 21, S: 17, C: 33 }, discAdaptado: { D: 42, I: 38, S: 17, C: 25 }, primaryStyle: "D" },
+        { id: 8, name: "Héctor de la Hoz Barrera", role: "Diseñador gráfico", disc: { D: 17, I: 29, S: 54, C: 8 }, discAdaptado: { D: 83, I: 8, S: 29, C: 21 }, primaryStyle: "S" },
+        { id: 11, name: "Ángela Guerra Trespalacios", role: "Profesional de Comunicaciones", disc: { D: 55, I: 29, S: 25, C: 21 }, discAdaptado: { D: 45, I: 8, S: 42, C: 29 }, primaryStyle: "D" },
+        { id: 27, name: "Adriana Marthe", role: "profesional comunicaciones", disc: { D: 47, I: 21, S: 25, C: 21 }, discAdaptado: { D: 53, I: 21, S: 17, C: 25 }, primaryStyle: "D" },
+        { id: 33, name: "Santiago De Jesus Marceles", role: "Estudiante en práctica", disc: { D: 43, I: 17, S: 29, C: 29 }, discAdaptado: { D: 57, I: 38, S: 17, C: 12 }, primaryStyle: "D" },
+        { id: 38, name: "Paola Salazar", role: "Gerente Comunicaciones", disc: { D: 31, I: 50, S: 25, C: 8 }, discAdaptado: { D: 69, I: 25, S: 12, C: 25 }, primaryStyle: "I" },
+        { id: 44, name: "Valentina Roa Oyuela", role: "Contratista comunicaciones", disc: { D: 55, I: 33, S: 12, C: 29 }, discAdaptado: { D: 45, I: 29, S: 25, C: 25 }, primaryStyle: "D" },
+        { id: 54, name: "CARLOS EDUARDO BARRIOS LÓPEZ", role: "PROFESIONAL DE COMUNICACIONES", disc: { D: 22, I: 42, S: 33, C: 17 }, discAdaptado: { D: 78, I: 21, S: 12, C: 38 }, primaryStyle: "I" },
+        { id: 55, name: "María Camila Tovar Soler", role: "Profesional Senior de Comunicaciones", disc: { D: 33, I: 29, S: 21, C: 29 }, discAdaptado: { D: 67, I: 17, S: 21, C: 21 }, primaryStyle: "D" }
+    ]},
+    "TUALSAS-COMU": { name: "Tualotuyo SAS - Comunicaciones", company: "Tualotuyo SAS", members: [
+        { id: 43, name: "Jorge Arango", role: "Contratista comunicaciones", disc: { D: 55, I: 33, S: 12, C: 29 }, discAdaptado: { D: 45, I: 29, S: 25, C: 25 }, primaryStyle: "D" }
+    ]}
+};
+
+// Combinar Demo + Airtable en un solo objeto
+Object.assign(DEMO_TEAMS, AIRTABLE_TEAMS);
+
+const TOPICS = [
+    { id: "comunicacion", label: "Comunicación", icon: "💬", desc: "Cómo comunicarte de forma efectiva" },
+    { id: "negociacion", label: "Negociación", icon: "🤝", desc: "Cómo llegar a acuerdos" },
+    { id: "motivacion", label: "Motivación", icon: "🔥", desc: "Cómo motivar e inspirar" },
+    { id: "conflictos", label: "Resolución de Conflictos", icon: "⚖️", desc: "Cómo manejar desacuerdos" },
+    { id: "liderazgo", label: "Liderazgo", icon: "🎯", desc: "Cómo liderar y guiar" },
+    { id: "delegacion", label: "Delegación", icon: "📋", desc: "Cómo asignar y confiar tareas" },
+    { id: "feedback", label: "Feedback", icon: "🪞", desc: "Cómo dar y recibir retroalimentación" },
+    { id: "trabajo_equipo", label: "Trabajo en Equipo", icon: "👥", desc: "Cómo colaborar mejor" }
+];
+
+const DISC_STYLES = {
+    D: { name: "Dominancia", color: "#DC2626", bgLight: "#FEF2F2" },
+    I: { name: "Influencia", color: "#F59E0B", bgLight: "#FFFBEB" },
+    S: { name: "Estabilidad", color: "#10B981", bgLight: "#ECFDF5" },
+    C: { name: "Cumplimiento", color: "#0380A6", bgLight: "#E6F6F9" }
+};
+
+// ==========================================
+// APP STATE
+// ==========================================
+let state = {
+    screen: "access", // access, step1, step2, step3, step4
+    teamCode: "",
+    team: null,
+    person: null,
+    companion: null,
+    topic: null,
+    aiFeedback: null,
+    aiLoading: false
+};
+
+// ==========================================
+// DISC FEEDBACK DATABASE
+// ==========================================
+const FEEDBACK_DB = {};
+
+function makeFeedback(combo, strengths, challenges, tips) {
+    FEEDBACK_DB[combo] = { strengths, challenges, tips };
+}
+
+makeFeedback("DD",
+    "Ambos son directos y van al grano, lo que hace las conversaciones eficientes.",
+    "Pueden chocar cuando ambos quieren imponer su punto de vista. Las conversaciones pueden volverse competitivas.",
+    ["Respeta su necesidad de ir directo al punto. No des rodeos.",
+     "Establezcan turnos claros para hablar. Ambos tienden a dominar la conversación.",
+     "Si hay desacuerdo, enfóquense en datos y resultados, no en quién tiene razón.",
+     "Reconoce sus logros brevemente antes de entrar en el tema — esto baja las defensas."]);
+
+makeFeedback("DI",
+    "Tú aportas enfoque y dirección; tu compañero/a aporta entusiasmo y conexión social.",
+    "Puedes percibir a tu compañero/a como disperso/a o demasiado hablador/a, mientras que él/ella puede sentirte frío/a o impaciente.",
+    ["Permite unos minutos de conversación social al inicio — tu compañero/a lo necesita para conectar.",
+     "Luego, sé claro/a sobre lo que necesitas. Responderá bien a la claridad con calidez.",
+     "Evita cortar sus ideas abruptamente; mejor redirígelas hacia el objetivo.",
+     "Celebra los logros juntos — a tu compañero/a le motiva el reconocimiento."]);
+
+makeFeedback("DS",
+    "Tu claridad y determinación complementan la paciencia y receptividad de tu compañero/a.",
+    "Tu estilo directo puede intimidar a tu compañero/a, que prefiere ambientes armoniosos.",
+    ["Baja un poco la intensidad. Usa un tono más calmado.",
+     "Dale tiempo para procesar antes de pedir respuestas inmediatas.",
+     "Pregunta su opinión activamente — no la va a ofrecer si no se la pides.",
+     "Evita cambios repentinos de planes sin explicación; la estabilidad es clave."]);
+
+makeFeedback("DC",
+    "Juntos pueden tomar decisiones rápidas (tú) respaldadas por análisis profundo (tu compañero/a).",
+    "Tú quieres actuar ya; tu compañero/a quiere analizar más. Esto puede generar frustración mutua.",
+    ["Dale la información y datos que necesita con anticipación.",
+     "No presiones por decisiones inmediatas — necesita tiempo para analizar.",
+     "Presenta tus ideas con evidencia y lógica, no solo con convicción.",
+     "Respeta su necesidad de precisión; a cambio, obtendrás recomendaciones muy sólidas."]);
+
+makeFeedback("ID",
+    "Tu entusiasmo puede suavizar la intensidad de tu compañero/a y generar un buen equilibrio.",
+    "Tu compañero/a puede percibir tu estilo como poco enfocado o demasiado emocional.",
+    ["Ve al grano rápido. Puedes ser amable, pero sé conciso/a.",
+     "Prepara tus puntos antes de la conversación — le impresionarás más.",
+     "Enfócate en resultados y números cuando presentes ideas.",
+     "No te tomes su franqueza como algo personal — es su estilo natural."]);
+
+makeFeedback("II",
+    "La energía y creatividad fluyen naturalmente entre ambos. Son un dúo dinámico.",
+    "Pueden perder el foco, extender las conversaciones, y prometer más de lo que pueden cumplir.",
+    ["Disfruten la conexión, pero pongan límite de tiempo a las conversaciones.",
+     "Designen a alguien para tomar notas y hacer seguimiento de compromisos.",
+     "Después de brainstorming, filtren ideas juntos con criterios claros.",
+     "Celebren los éxitos, pero también hablen de lo que no salió bien."]);
+
+makeFeedback("IS",
+    "Tu energía inspira a tu compañero/a, mientras que su calma te ayuda a aterrizar ideas.",
+    "Puedes abrumar a tu compañero/a con demasiada información o entusiasmo.",
+    ["Dale espacio para expresarse — tiende a ceder la palabra.",
+     "Escucha activamente; tiene insights valiosos que no siempre comparte.",
+     "Baja la velocidad — la calma genera confianza con este perfil.",
+     "Muestra aprecio genuino por su apoyo constante."]);
+
+makeFeedback("IC",
+    "Tu creatividad y visión se complementan con el análisis y precisión de tu compañero/a.",
+    "Tu compañero/a puede sentir que eres impreciso/a; tú puedes sentir que es demasiado crítico/a.",
+    ["Respalda tus ideas con datos concretos.",
+     "No te ofendas si hace preguntas detalladas — está tratando de entender, no de criticar.",
+     "Envía información por escrito antes de reuniones para que pueda prepararse.",
+     "Reconoce y valora su atención al detalle."]);
+
+makeFeedback("SD",
+    "Tu lealtad y apoyo pueden ser el ancla que tu compañero/a necesita para ejecutar mejor.",
+    "Puedes sentirte presionado/a o pasado/a por encima por su estilo dominante.",
+    ["No dudes en expresar tu opinión, aunque sea diferente.",
+     "Prepárate para conversaciones rápidas y directas — así es su estilo.",
+     "Si necesitas más tiempo para pensar, dilo claramente: 'Necesito procesar esto'.",
+     "Valora su capacidad de decisión y hazle saber que cuentas con él/ella."]);
+
+makeFeedback("SI",
+    "Tu estabilidad y la energía de tu compañero/a crean un equilibrio muy productivo.",
+    "Puedes sentirte abrumado/a por su intensidad social y ritmo acelerado.",
+    ["Permítele su momento social, y luego guía la conversación al tema.",
+     "Comparte tus ideas con confianza — valora la autenticidad.",
+     "Establece límites claros cuando necesites tiempo o espacio.",
+     "Tu calma es un superpoder — úsala para centrar conversaciones que se dispersan."]);
+
+makeFeedback("SS",
+    "Ambos crean un ambiente de confianza y armonía. La comunicación es fluida y respetuosa.",
+    "Pueden evitar temas difíciles por no querer incomodar al otro.",
+    ["Practiquen abordar temas incómodos en un espacio seguro.",
+     "Acuerden que el desacuerdo no es conflicto — es crecimiento.",
+     "Pidan feedback mutuo regularmente para evitar acumular molestias.",
+     "Celebren su capacidad de crear ambientes seguros para el equipo."]);
+
+makeFeedback("SC",
+    "Ambos son reflexivos y cuidadosos, lo que produce comunicación de alta calidad.",
+    "Pueden tardar mucho en tomar decisiones o en abordar temas sensibles.",
+    ["Dale estructura y datos cuando comuniques algo importante.",
+     "Respeta su necesidad de precisión y no te frustres si hace muchas preguntas.",
+     "Establezcan plazos juntos para evitar análisis parálisis.",
+     "Usa comunicación escrita para temas complejos — ambos procesan mejor así."]);
+
+makeFeedback("CD",
+    "Tu análisis profundo y la capacidad de ejecución de tu compañero/a son muy complementarios.",
+    "Tu compañero/a puede presionarte para decidir antes de que estés listo/a.",
+    ["Presenta resúmenes ejecutivos, no informes completos.",
+     "Ofrece opciones claras con pros y contras — facilita su toma de decisiones.",
+     "Si necesitas más tiempo de análisis, negocia un plazo concreto.",
+     "Confía en que tu trabajo detallado es valorado, aunque no siempre lo expresen."]);
+
+makeFeedback("CI",
+    "Tu rigor analítico aterriza la creatividad de tu compañero/a y viceversa.",
+    "Tu compañero/a puede parecerte superficial; tú puedes parecerle demasiado detallista.",
+    ["Sé más expresivo/a — la calidez abre puertas con este perfil.",
+     "No descartes sus ideas por falta de datos — ayúdale a estructurarlas.",
+     "Acepta que no todo necesita ser perfecto antes de compartirlo.",
+     "Encuentra momentos informales para conversar — fortalece la relación."]);
+
+makeFeedback("CS",
+    "Ambos son reflexivos y considerados, creando comunicación respetuosa y profunda.",
+    "Pueden evitar la confrontación y dejar temas sin resolver.",
+    ["Crea un espacio seguro para compartir preocupaciones.",
+     "Sé paciente con su ritmo — procesa emocionalmente antes de responder.",
+     "Ofrece feedback con datos pero también con empatía.",
+     "Establezcan check-ins regulares para mantener la comunicación fluida."]);
+
+makeFeedback("CC",
+    "Ambos valoran la precisión y profundidad, lo que genera comunicación muy rica.",
+    "Pueden perderse en detalles y nunca llegar a conclusiones prácticas.",
+    ["Establezcan una agenda clara antes de cada conversación.",
+     "Definan cuándo es 'suficiente' análisis y hay que actuar.",
+     "Aprecien la rigurosidad del otro — es raro encontrar a alguien que comparta ese valor.",
+     "Busquen el equilibrio entre perfección y progreso."]);
+
+
+// Topic-specific extra tips
+const TOPIC_TIPS = {
+    negociacion: {
+        D: "Recuerda que quiere ganar. Busca soluciones donde ambos sientan que ganaron algo concreto.",
+        I: "Negocia mejor en ambientes relajados. Crea rapport antes de entrar en números.",
+        S: "Dale tiempo para considerar la propuesta. No presiones por una respuesta inmediata.",
+        C: "Presenta datos sólidos. Las emociones no le convencen, la evidencia sí."
+    },
+    motivacion: {
+        D: "Se motiva con retos y autonomía. Dale objetivos ambiciosos y libertad para lograrlos.",
+        I: "Se motiva con reconocimiento público y trabajo en equipo. Hazle saber su impacto.",
+        S: "Se motiva con estabilidad y aprecio genuino. Un 'gracias' sincero vale más que un premio.",
+        C: "Se motiva con dominio y excelencia. Dale proyectos donde pueda profundizar y mejorar."
+    },
+    conflictos: {
+        D: "Aborda el conflicto de frente pero con hechos. Evita ataques personales; enfócate en el problema.",
+        I: "Evita conflictos que dañen relaciones. Asegúrale que resolver esto fortalecerá su relación.",
+        S: "Internaliza los conflictos. Crea un espacio seguro y dale tiempo para expresarse.",
+        C: "Quiere entender la lógica del conflicto. Presenta los hechos objetivamente."
+    },
+    liderazgo: {
+        D: "Respeta líderes que demuestran competencia y decisión. No dudes; muestra seguridad.",
+        I: "Sigue a líderes que inspiran y conectan. Comparte la visión con pasión.",
+        S: "Necesita un líder consistente y accesible. Sé predecible en tu estilo.",
+        C: "Respeta líderes que toman decisiones informadas. Muestra que has hecho tu tarea."
+    },
+    delegacion: {
+        D: "Dale el qué, no el cómo. Confía en que encontrará la manera más eficiente.",
+        I: "Involúcralo en la planificación. Si siente que es su idea, se comprometerá más.",
+        S: "Dale instrucciones claras y plazos razonables. Necesita sentir que puede cumplir.",
+        C: "Proporciona toda la información necesaria de entrada. Las sorpresas le generan estrés."
+    },
+    feedback: {
+        D: "Sé directo/a. Aprecia el feedback franco que le ayude a mejorar resultados.",
+        I: "Empieza con lo positivo. El reconocimiento abre la puerta a la mejora.",
+        S: "Da feedback en privado y con empatía. La crítica pública le paraliza.",
+        C: "Da feedback con ejemplos específicos y datos. Lo general le frustra."
+    },
+    trabajo_equipo: {
+        D: "Aporta más cuando tiene un rol claro y autonomía. Dale liderazgo en algo específico.",
+        I: "Es el motor social del equipo. Aprovecha su energía para cohesión grupal.",
+        S: "Es el pegamento del equipo. Valora su rol de mediador y apoyo constante.",
+        C: "Es quien asegura calidad. Confía en su revisión y respeta sus estándares."
+    }
+};
+
+
+// ==========================================
+// RENDERING
+// ==========================================
+function render() {
+    const app = document.getElementById("app");
+    switch(state.screen) {
+        case "access": app.innerHTML = renderAccess(); break;
+        case "step1": app.innerHTML = renderStep1(); break;
+        case "step2": app.innerHTML = renderStep2(); break;
+        case "step3": app.innerHTML = renderStep3(); break;
+        case "step4": app.innerHTML = renderStep4(); break;
+        case "loading": app.innerHTML = renderLoading(); break;
+    }
+}
+
+function renderHeader() {
+    return `
+        <div class="header">
+            <a href="/index.html" class="back-link">← Portal</a>
+            <h1>BuenTrato.AI</h1>
+            <p>Feedback de Relacionamiento DISC</p>
+        </div>`;
+}
+
+function renderProgress(current) {
+    const labels = ["Tú", "Compañero/a", "Tema", "Feedback"];
+    return `
+        <div class="progress-bar">
+            ${labels.map((l, i) => {
+                const n = i + 1;
+                const cls = n === current ? "active" : n < current ? "done" : "pending";
+                return `<div class="step-pill ${cls}">
+                    <span class="step-num ${cls}">${n < current ? "✓" : n}</span>
+                    <span class="step-label ${cls}">${l}</span>
+                </div>`;
+            }).join("")}
+        </div>`;
+}
+
+function renderAccess() {
+    return `
+        ${renderHeader()}
+        <div class="access-screen fade-in">
+            <div class="logo-icon"><img src="logo.png" alt="BuenTrato.AI"></div>
+            <h2>Ingresa el código de tu equipo</h2>
+            <p>Tu facilitador/a te habrá compartido un código único para acceder al feedback de tu equipo.</p>
+            <input type="text" class="access-input" id="teamCode" placeholder="EJ: EQUIPO-ABC"
+                   onkeyup="if(event.key==='Enter') handleAccessSubmit()" maxlength="20">
+            <button class="access-btn" onclick="handleAccessSubmit()">Ingresar</button>
+            <div class="access-error" id="accessError">Código no encontrado. Verifica con tu facilitador/a.</div>
+            <div class="demo-link" onclick="handleDemoAccess()">Probar con datos de ejemplo (DEMO2026)</div>
+        </div>
+        <div class="footer">&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
+}
+
+function getInitials(name) {
+    return name.split(" ").map(n => n[0]).join("").slice(0, 2);
+}
+
+function renderStep1() {
+    const team = state.team;
+    return `
+        ${renderHeader()}
+        ${renderProgress(1)}
+        <div class="content fade-in">
+            <h2>¿Quién eres tú?</h2>
+            <p class="subtitle">Equipo: ${team.name} — ${team.company}</p>
+            <div class="person-grid">
+                ${team.members.map(p => {
+                    const s = DISC_STYLES[p.primaryStyle];
+                    return `<div class="person-card" onclick="selectPerson(${p.id})">
+                        <div class="person-avatar" style="background: linear-gradient(135deg, ${s.color}, ${s.color}BB)">
+                            ${getInitials(p.name)}
+                        </div>
+                        <div>
+                            <div class="person-name">${p.name}</div>
+                            <div class="person-role">${p.role}</div>
+                        </div>
+                        <div class="disc-badges">
+                            ${["D","I","S","C"].map(d => `<span class="disc-badge" style="background: ${d === p.primaryStyle ? DISC_STYLES[d].color : '#F3F4F6'}; color: ${d === p.primaryStyle ? 'white' : '#9CA3AF'}">${d}:${p.disc[d]}</span>`).join("")}
+                        </div>
+                    </div>`;
+                }).join("")}
+            </div>
+        </div>
+        <div class="footer">&copy; 2026 BuenTrato.AI</div>`;
+}
+
+function renderStep2() {
+    const companions = state.team.members.filter(p => p.id !== state.person.id);
+    return `
+        ${renderHeader()}
+        ${renderProgress(2)}
+        <div class="content fade-in">
+            <h2>¿Con quién quieres mejorar tu relación?</h2>
+            <p class="subtitle">Selecciona un compañero/a de equipo</p>
+            <div class="person-list">
+                ${companions.map(p => {
+                    const s = DISC_STYLES[p.primaryStyle];
+                    return `<div class="person-card-compact" onclick="selectCompanion(${p.id})">
+                        <div class="person-avatar" style="background: linear-gradient(135deg, ${s.color}, ${s.color}BB)">
+                            ${getInitials(p.name)}
+                        </div>
+                        <div class="person-info">
+                            <div class="person-name">${p.name}</div>
+                            <div class="person-role">${p.role}</div>
+                        </div>
+                        <span class="style-badge" style="background: ${s.color}">${p.primaryStyle}</span>
+                    </div>`;
+                }).join("")}
+            </div>
+            <button class="btn-back" onclick="goBack('step1')">← Cambiar persona</button>
+        </div>
+        <div class="footer">&copy; 2026 BuenTrato.AI</div>`;
+}
+
+function renderStep3() {
+    return `
+        ${renderHeader()}
+        ${renderProgress(3)}
+        <div class="content fade-in">
+            <h2>¿Sobre qué tema?</h2>
+            <p class="subtitle">Elige el área donde quieres mejorar con ${state.companion.name}</p>
+            <div class="topic-list">
+                ${TOPICS.map(t => `
+                    <div class="topic-card" onclick="selectTopic('${t.id}')">
+                        <span class="topic-icon">${t.icon}</span>
+                        <div>
+                            <div class="topic-title">${t.label}</div>
+                            <div class="topic-desc">${t.desc}</div>
+                        </div>
+                    </div>`).join("")}
+            </div>
+            <button class="btn-back" onclick="goBack('step2')">← Cambiar compañero/a</button>
+        </div>
+        <div class="footer">&copy; 2026 BuenTrato.AI</div>`;
+}
+
+function drawDISCChart(disc, canvasId) {
+    setTimeout(() => {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const size = 140;
+        const cx = size/2, cy = size/2, r = size * 0.35;
+        const styles = ["D","I","S","C"];
+        const colors = { D: "#DC2626", I: "#F59E0B", S: "#10B981", C: "#0380A6" };
+
+        canvas.width = size; canvas.height = size;
+        ctx.clearRect(0,0,size,size);
+
+        // Grid
+        [0.25, 0.5, 0.75, 1].forEach(level => {
+            ctx.beginPath();
+            styles.forEach((_, i) => {
+                const angle = (Math.PI * 2 * i)/4 - Math.PI/2;
+                const x = cx + Math.cos(angle) * r * level;
+                const y = cy + Math.sin(angle) * r * level;
+                i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.closePath();
+            ctx.strokeStyle = "#E5E7EB"; ctx.lineWidth = 1; ctx.stroke();
+        });
+
+        // Data
+        ctx.beginPath();
+        const points = [];
+        styles.forEach((s, i) => {
+            const angle = (Math.PI * 2 * i)/4 - Math.PI/2;
+            const val = disc[s]/100;
+            const x = cx + Math.cos(angle) * r * val;
+            const y = cy + Math.sin(angle) * r * val;
+            points.push({x, y, s});
+            i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = "rgba(99,102,241,0.15)"; ctx.fill();
+        ctx.strokeStyle = "#0380A6"; ctx.lineWidth = 2; ctx.stroke();;
+
+        // Points & labels
+        points.forEach(p => {
+            ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+            ctx.fillStyle = colors[p.s]; ctx.fill();
+        });
+        styles.forEach((s, i) => {
+            const angle = (Math.PI * 2 * i)/4 - Math.PI/2;
+            const lx = cx + Math.cos(angle) * (r + 16);
+            const ly = cy + Math.sin(angle) * (r + 16);
+            ctx.fillStyle = colors[s]; ctx.font = "bold 12px sans-serif";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(s, lx, ly);
+        });
+    }, 50);
+}
+
+function getFeedback() {
+    const combo = state.person.primaryStyle + state.companion.primaryStyle;
+    const base = FEEDBACK_DB[combo];
+    if (!base) return { strengths: "Combinación no encontrada.", challenges: "", tips: [] };
+
+    let tips = [...base.tips];
+    const topicId = state.topic;
+    if (topicId !== "comunicacion" && TOPIC_TIPS[topicId]) {
+        const extra = TOPIC_TIPS[topicId][state.companion.primaryStyle];
+        if (extra) {
+            tips = [tips[0], tips[1], `${state.companion.name}: ${extra}`, ...tips.slice(2)];
+        }
+    }
+    return { strengths: base.strengths, challenges: base.challenges, tips };
+}
+
+function renderStep4() {
+    const p = state.person, c = state.companion;
+    const ps = DISC_STYLES[p.primaryStyle], cs = DISC_STYLES[c.primaryStyle];
+    const topic = TOPICS.find(t => t.id === state.topic);
+    const fb = getFeedback();
+
+    const aiSection = state.aiLoading
+        ? `<div class="ai-section"><div class="ai-loading"><div class="spinner"></div><p style="color:#0F766E; font-size:13px;">Generando feedback personalizado con IA...</p></div></div>`
+        : state.aiFeedback
+            ? `<div class="ai-section"><div class="feedback-section-title">🤖 Análisis personalizado con IA</div><p>${state.aiFeedback}</p></div>`
+            : "";
+
+    return `
+        ${renderHeader()}
+        ${renderProgress(4)}
+        <div class="content fade-in">
+            <div class="feedback-header">
+                <div class="feedback-persons">
+                    <div style="text-align:center">
+                        <div class="feedback-person-bubble">${getInitials(p.name)}</div>
+                        <div class="feedback-person-name">${p.name}</div>
+                        <span class="feedback-person-style" style="background:${ps.color}">${ps.name} (${p.primaryStyle})</span>
+                    </div>
+                    <div class="feedback-arrow">↔️</div>
+                    <div style="text-align:center">
+                        <div class="feedback-person-bubble">${getInitials(c.name)}</div>
+                        <div class="feedback-person-name">${c.name}</div>
+                        <span class="feedback-person-style" style="background:${cs.color}">${cs.name} (${c.primaryStyle})</span>
+                    </div>
+                </div>
+                <div class="feedback-topic">${topic.icon} Tema: <strong>${topic.label}</strong></div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <div class="chart-label">${p.name}</div>
+                    <canvas id="chart1"></canvas>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-label">${c.name}</div>
+                    <canvas id="chart2"></canvas>
+                </div>
+            </div>
+
+            <div class="feedback-section strengths">
+                <div class="feedback-section-title">✅ Fortalezas de esta combinación</div>
+                <p>${fb.strengths}</p>
+            </div>
+
+            <div class="feedback-section challenges">
+                <div class="feedback-section-title">⚠️ Desafíos a tener en cuenta</div>
+                <p>${fb.challenges}</p>
+            </div>
+
+            <div class="feedback-section tips">
+                <div class="feedback-section-title">💡 Consejos prácticos</div>
+                ${fb.tips.map((tip, i) => `
+                    <div class="tip-item">
+                        <span class="tip-num">${i+1}</span>
+                        <span class="tip-text">${tip}</span>
+                    </div>`).join("")}
+            </div>
+
+            ${aiSection}
+
+            <button class="btn-reset" onclick="resetAll()">← Nueva consulta</button>
+        </div>
+        <div class="footer">&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
+}
+
+function renderLoading() {
+    return `
+        ${renderHeader()}
+        ${renderProgress(4)}
+        <div class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Analizando perfiles DISC...</p>
+            <p class="loading-subtext">Generando feedback para ${state.person.name} y ${state.companion.name}</p>
+        </div>`;
+}
+
+
+// ==========================================
+// EVENT HANDLERS
+// ==========================================
+function handleAccessSubmit() {
+    const code = document.getElementById("teamCode").value.trim().toUpperCase();
+    const errorEl = document.getElementById("accessError");
+
+    // Try serverless function first
+    fetch(`/.netlify/functions/get-team?code=${code}`)
+        .then(res => {
+            if (!res.ok) throw new Error("Not found");
+            return res.json();
+        })
+        .then(team => {
+            state.teamCode = code;
+            state.team = team;
+            state.screen = "step1";
+            render();
+        })
+        .catch(err => {
+            // Fallback to embedded DEMO_TEAMS + AIRTABLE_TEAMS
+            const team = DEMO_TEAMS[code];
+            if (team) {
+                state.teamCode = code;
+                state.team = team;
+                state.screen = "step1";
+                render();
+                return;
+            }
+
+            // Código no encontrado — mostrar códigos disponibles en consola para debugging
+            console.log("Códigos disponibles:", Object.keys(DEMO_TEAMS));
+            errorEl.innerHTML = "Código no encontrado. Verifica con tu facilitador/a.";
+            errorEl.style.display = "block";
+        });
+}
+
+function handleDemoAccess() {
+    document.getElementById("teamCode").value = "DEMO2026";
+    handleAccessSubmit();
+}
+
+function selectPerson(id) {
+    state.person = state.team.members.find(m => m.id === id);
+    state.screen = "step2";
+    render();
+}
+
+function selectCompanion(id) {
+    state.companion = state.team.members.find(m => m.id === id);
+    state.screen = "step3";
+    render();
+}
+
+function selectTopic(topicId) {
+    state.topic = topicId;
+    state.screen = "loading";
+    state.aiFeedback = null;
+    render();
+
+    // Simulate loading, then show feedback
+    setTimeout(() => {
+        state.screen = "step4";
+        render();
+        drawDISCChart(state.person.disc, "chart1");
+        drawDISCChart(state.companion.disc, "chart2");
+
+        // Try to get AI feedback
+        fetchAIFeedback();
+    }, 1500);
+}
+
+function goBack(screen) {
+    state.screen = screen;
+    render();
+}
+
+function resetAll() {
+    state.person = null;
+    state.companion = null;
+    state.topic = null;
+    state.aiFeedback = null;
+    state.screen = "step1";
+    render();
+}
+
+// ==========================================
+// AI FEEDBACK (Claude API via Netlify Function)
+// ==========================================
+async function fetchAIFeedback() {
+    state.aiLoading = true;
+    // Re-render just the AI section
+    const aiContainer = document.querySelector(".ai-section, .feedback-section.tips");
+    // We'll just re-render the whole page for simplicity
+    render();
+    drawDISCChart(state.person.disc, "chart1");
+    drawDISCChart(state.companion.disc, "chart2");
+
+    try {
+        const topic = TOPICS.find(t => t.id === state.topic);
+        const response = await fetch("/.netlify/functions/generate-feedback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                person: {
+                    name: state.person.name,
+                    role: state.person.role,
+                    disc: state.person.disc,
+                    discAdaptado: state.person.discAdaptado || null,
+                    primaryStyle: state.person.primaryStyle
+                },
+                companion: {
+                    name: state.companion.name,
+                    role: state.companion.role,
+                    disc: state.companion.disc,
+                    discAdaptado: state.companion.discAdaptado || null,
+                    primaryStyle: state.companion.primaryStyle
+                },
+                topic: topic.label,
+                topicId: state.topic
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            state.aiFeedback = data.feedback;
+        }
+    } catch (err) {
+        console.log("AI feedback no disponible:", err.message);
+        // Silently fail - the predefined feedback is still shown
+    }
+
+    state.aiLoading = false;
+    render();
+    drawDISCChart(state.person.disc, "chart1");
+    drawDISCChart(state.companion.disc, "chart2");
+}
+
+
+// ==========================================
+// INIT
+// ==========================================
+render();
+</script>
+
+</body>
+</html>
