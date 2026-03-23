@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe DISC — BuenTrato.AI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #0380A6;
+            --primary-dark: #026B8A;
+            --primary-deeper: #01516A;
+            --primary-light: #E6F4F9;
+            --primary-lighter: #F2FAFE;
+            --accent: #04B5D6;
+            --accent-light: #E0F5FA;
+            --gray: #777579;
+            --gray-light: #F5F5F5;
+            --white: #FFFFFF;
+            --text: #2D2D2D;
+            --text-light: #666666;
+            --color-D: #01516A;
+            --color-I: #0380A6;
+            --color-S: #04B5D6;
+            --color-C: #6DCFE0;
+            --color-D-light: #E2EEF3;
+            --color-I-light: #E6F4F9;
+            --color-S-light: #E0F5FA;
+            --color-C-light: #EBF8FB;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-light);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .logo-img { height: 36px; }
+        .logo-img.white { filter: brightness(0) invert(1); }
+        .logo-img.small { height: 28px; }
+
+        /* === ENTRY SCREEN === */
+        .entry-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            padding: 20px;
+        }
+
+        .entry-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .entry-card img { height: 60px; margin-bottom: 24px; }
+
+        .entry-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .entry-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-family: 'Inter', monospace;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .code-input:focus { border-color: var(--primary); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+        .entry-error {
+            color: #C0392B;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* === LOADING === */
+        .loading-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: var(--white); font-size: 16px; font-weight: 500; }
+        .loading-sub { color: rgba(255,255,255,0.7); font-size: 13px; }
+
+        /* === REPORT === */
+        .report {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            border-radius: 20px;
+            padding: 40px 36px;
+            color: var(--white);
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .report-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; left: 30%;
+            width: 160px; height: 160px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .report-header .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .report-header .date-badge {
+            font-size: 12px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .report-header .person-name {
+            font-size: 28px; font-weight: 700;
+            margin-bottom: 6px;
+            position: relative; z-index: 1;
+        }
+
+        .report-header .person-role {
+            font-size: 15px; opacity: 0.85;
+            position: relative; z-index: 1;
+        }
+
+        .style-badge {
+            display: inline-block;
+            margin-top: 16px;
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            position: relative; z-index: 1;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .brand-line {
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent), var(--color-C));
+            border-radius: 2px;
+            margin: 0 0 24px;
+        }
+
+        /* Navigation */
+        .report-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 0 0 16px;
+            margin-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-pill {
+            flex-shrink: 0;
+            padding: 10px 18px;
+            background: var(--white);
+            border: 2px solid #E0E0E0;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-lighter);
+        }
+
+        .nav-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+        }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(3,128,166,0.06);
+            border: 1px solid rgba(3,128,166,0.06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: var(--primary-light);
+        }
+
+        .card-body p {
+            margin-bottom: 14px;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        .card-body p:last-child { margin-bottom: 0; }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .chart-container { text-align: center; }
+
+        .chart-container h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 220px; height: 220px;
+            margin: 0 auto 20px;
+        }
+
+        .chart-center-label {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .legend-value { font-weight: 700; margin-left: 2px; }
+
+        /* Comparison bars — dual rows */
+        .comp-dimension { margin-bottom: 16px; }
+        .comp-dimension:last-child { margin-bottom: 0; }
+
+        .comp-dim-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .comp-dim-letter {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .comp-dim-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .comp-bar-pair {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 38px;
+        }
+
+        .comp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-bar-type {
+            width: 56px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-light);
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .comp-bar-track {
+            flex: 1;
+            height: 20px;
+            background: #F0F2F4;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comp-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            min-width: 36px;
+            transition: width 1s ease;
+        }
+
+        .comp-bar-fill.natural { opacity: 0.55; }
+        .comp-bar-fill.adapted { opacity: 1; }
+
+        /* Skills */
+        .skill-card {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .skill-card:last-child { margin-bottom: 0; }
+
+        .skill-card .skill-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .skill-card p { font-size: 14px; color: var(--text); margin: 0; }
+
+        /* Communication */
+        .comm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comm-col { border-radius: 12px; padding: 24px; }
+
+        .comm-col.how-i {
+            background: var(--primary-light);
+            border: 1px solid #B3DDE9;
+        }
+
+        .comm-col.how-you {
+            background: var(--accent-light);
+            border: 1px solid #A8DEE8;
+        }
+
+        .comm-col h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-dark);
+        }
+
+        .comm-col p { font-size: 14px; line-height: 1.6; }
+
+        .pressure-card {
+            border-left: 4px solid var(--primary-dark);
+            background: linear-gradient(135deg, var(--color-D-light), var(--white));
+        }
+
+        .adapt-card {
+            border-left: 4px solid var(--accent);
+            background: linear-gradient(135deg, var(--color-S-light), var(--white));
+        }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .footer-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-light), var(--primary), var(--primary-light), transparent);
+            margin: 0 40px 16px;
+            border-radius: 1px;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .entry-card { padding: 32px 24px; }
+            .charts-grid, .comm-grid { grid-template-columns: 1fr; }
+            .report-header { padding: 28px 24px; }
+            .report-header .person-name { font-size: 22px; }
+            .card { padding: 24px 20px; }
+            .nav-pill { padding: 8px 14px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ENTRY SCREEN -->
+<div class="entry-screen" id="entryScreen">
+    <div class="entry-card">
+        <img src="logo.png" alt="BuenTrato.AI">
+        <h1>Tu Informe DISC</h1>
+        <p>Ingresa tu código personal para ver tu informe interactivo de perfil DISC.</p>
+        <input type="text" class="code-input" id="codeInput"
+               placeholder="Ingresa tu código"
+               autocomplete="off" spellcheck="false">
+        <button class="btn-primary" id="btnAccess" onclick="loadReport()">
+            Ver mi informe
+        </button>
+        <div class="entry-error" id="entryError"></div>
+    </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+    <img src="logo.png" alt="BuenTrato.AI" class="logo-img white" style="height:48px;">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Buscando tu perfil...</div>
+    <div class="loading-sub" id="loadingSub">Esto toma unos segundos</div>
+</div>
+
+<!-- REPORT -->
+<div class="report" id="reportContainer">
+
+    <!-- Header -->
+    <div class="report-header">
+        <div class="logo-row">
+            <img src="logo.png" alt="BuenTrato.AI" class="logo-img white">
+            <span class="date-badge" id="reportDate"></span>
+        </div>
+        <div class="person-name" id="reportName"></div>
+        <div class="person-role" id="reportRole"></div>
+        <div class="style-badge" id="reportStyle"></div>
+    </div>
+
+    <!-- Brand line -->
+    <div class="brand-line"></div>
+
+    <!-- Navigation -->
+    <div class="report-nav" id="reportNav">
+        <div class="nav-pill active" data-section="perfil">Perfil DISC</div>
+        <div class="nav-pill" data-section="caracteristicas">Características</div>
+        <div class="nav-pill" data-section="estilo">Estilo personal</div>
+        <div class="nav-pill" data-section="habilidades">Habilidades</div>
+        <div class="nav-pill" data-section="comunicacion">Comunicación</div>
+        <div class="nav-pill" data-section="presion">Bajo presión</div>
+        <div class="nav-pill" data-section="adaptacion">Adaptación</div>
+    </div>
+
+    <!-- Section: Perfil DISC -->
+    <div class="section active" id="sec-perfil">
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">📊</div>
+                Tu perfil comportamental
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Perfil Natural</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chartNatural" width="220" height="220"></canvas>
+                        <div class="chart-center-label">PN</div>
+                    </div>
+                    <div class="chart-legend" id="legendNatural"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Perfil Adaptado</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chartAdaptado" width="220" height="220"></canvas>
+                        <div class="chart-center-label">PA</div>
+                    </div>
+                    <div class="chart-legend" id="legendAdaptado"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">🔄</div>
+                Natural vs. Adaptado
+            </div>
+            <div id="comparisonBars"></div>
+            <div style="display: flex; gap: 20px; margin-top: 12px; font-size: 11px; color: var(--text-light);">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 24px; height: 10px; border-radius: 5px; background: var(--primary); opacity: 0.55;"></div>
+                    Natural (personalidad base)
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 24px; height: 10px; border-radius: 5px; background: var(--primary);"></div>
+                    Adaptado (en el trabajo)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Características -->
+    <div class="section" id="sec-caracteristicas">
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">🧬</div>
+                Características comportamentales
+            </div>
+            <div class="card-body" id="contentCaracteristicas">
+                <p style="color: var(--text-light); font-style: italic;">Generando análisis personalizado...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Estilo -->
+    <div class="section" id="sec-estilo">
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">⭐</div>
+                Tu estilo personal
+            </div>
+            <div class="card-body" id="contentEstilo">
+                <p style="color: var(--text-light); font-style: italic;">Generando análisis personalizado...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Habilidades -->
+    <div class="section" id="sec-habilidades">
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">🤝</div>
+                Habilidades interpersonales
+            </div>
+            <div id="contentHabilidades">
+                <div class="skill-card"><p style="color: var(--text-light); font-style: italic;">Generando análisis personalizado...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Comunicación -->
+    <div class="section" id="sec-comunicacion">
+        <div class="card">
+            <div class="card-title">
+                <div class="icon">💬</div>
+                Comunicación
+            </div>
+            <div class="comm-grid">
+                <div class="comm-col how-i">
+                    <h4>Cómo me comunico</h4>
+                    <div id="contentCommYo">
+                        <p style="color: var(--text-light); font-style: italic;">Generando...</p>
+                    </div>
+                </div>
+                <div class="comm-col how-you">
+                    <h4>Cómo comunicarte conmigo</h4>
+                    <div id="contentCommOtros">
+                        <p style="color: var(--text-light); font-style: italic;">Generando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Bajo presión -->
+    <div class="section" id="sec-presion">
+        <div class="card pressure-card">
+            <div class="card-title">
+                <div class="icon">⚡</div>
+                Comportamiento bajo presión
+            </div>
+            <div class="card-body" id="contentPresion">
+                <p style="color: var(--text-light); font-style: italic;">Generando análisis personalizado...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Adaptación -->
+    <div class="section" id="sec-adaptacion">
+        <div class="card adapt-card">
+            <div class="card-title">
+                <div class="icon">🔄</div>
+                Adaptación a tu entorno
+            </div>
+            <div class="card-body" id="contentAdaptacion">
+                <p style="color: var(--text-light); font-style: italic;">Generando análisis personalizado...</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-title">
+                <div class="icon">📈</div>
+                Perfil Adaptado detallado
+            </div>
+            <div class="chart-container">
+                <div class="chart-wrapper" style="width: 200px; height: 200px; margin: 0 auto 16px;">
+                    <canvas id="chartAdaptado2" width="200" height="200"></canvas>
+                    <div class="chart-center-label">PA</div>
+                </div>
+                <div class="chart-legend" id="legendAdaptado2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="report-footer">
+        <div class="footer-line"></div>
+        <img src="logo.png" alt="BuenTrato.AI" class="logo-img small" style="opacity: 0.5; margin-bottom: 8px;"><br>
+        Informe generado con inteligencia artificial por BuenTrato.AI<br>
+        Este informe es confidencial y de uso personal.
+    </div>
+</div>
+
+<script>
+    // ============ GLOBALS ============
+    let profileData = null;
+    const COLORS = {
+        D: '#01516A', I: '#0380A6', S: '#04B5D6', C: '#6DCFE0'
+    };
+    const NAMES = {
+        D: 'Dominancia', I: 'Influencia', S: 'Serenidad', C: 'Cumplimiento'
+    };
+
+    // ============ ENTRY ============
+    document.getElementById('codeInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loadReport();
+    });
+
+    // Check URL params
+    (function checkUrlCode() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code') || params.get('c');
+        if (code) {
+            document.getElementById('codeInput').value = code;
+            loadReport();
+        }
+    })();
+
+    async function loadReport() {
+        const code = document.getElementById('codeInput').value.trim();
+        if (!code) { showError('Ingresa tu código personal'); return; }
+
+        const btn = document.getElementById('btnAccess');
+        btn.disabled = true;
+        hideError();
+
+        document.getElementById('entryScreen').style.display = 'none';
+        const loading = document.getElementById('loadingScreen');
+        loading.style.display = 'flex';
+
+        try {
+            updateLoading('Buscando tu perfil...', 'Conectando con la base de datos');
+            const resp = await fetch('/.netlify/functions/get-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.error || 'Error al buscar perfil');
+            }
+
+            profileData = await resp.json();
+
+            updateLoading('Construyendo tu informe...', 'Dibujando gráficos DISC');
+            renderHeader();
+            renderCharts();
+            renderComparisonBars();
+
+            loading.style.display = 'none';
+            document.getElementById('reportContainer').style.display = 'block';
+
+            generateAIContent();
+
+        } catch (err) {
+            loading.style.display = 'none';
+            document.getElementById('entryScreen').style.display = 'flex';
+            btn.disabled = false;
+            showError(err.message);
+        }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('entryError');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    function hideError() {
+        document.getElementById('entryError').style.display = 'none';
+    }
+
+    function updateLoading(text, sub) {
+        document.getElementById('loadingText').textContent = text;
+        document.getElementById('loadingSub').textContent = sub;
+    }
+
+    // ============ NAVIGATION ============
+    document.querySelectorAll('.nav-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('sec-' + pill.dataset.section).classList.add('active');
+        });
+    });
+
+    // ============ RENDER HEADER ============
+    function renderHeader() {
+        const d = profileData;
+        document.getElementById('reportName').textContent = d.name;
+
+        let roleText = d.role;
+        if (d.company) roleText += ' · ' + d.company;
+        if (d.area) roleText += ' · ' + d.area;
+        document.getElementById('reportRole').textContent = roleText;
+
+        if (d.date) {
+            const date = new Date(d.date);
+            document.getElementById('reportDate').textContent =
+                date.toLocaleDateString('es-CO', { year: 'numeric', month: 'long' });
+        }
+
+        document.getElementById('reportStyle').textContent = 'Generando tu estilo...';
+    }
+
+    // ============ CHARTS ============
+    function drawDonut(canvasId, data, animate = true) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        const size = canvas.width;
+        const center = size / 2;
+        const radius = size / 2 - 20;
+        const lineWidth = 30;
+
+        const values = [
+            { key: 'D', value: data.D, color: COLORS.D },
+            { key: 'I', value: data.I, color: COLORS.I },
+            { key: 'S', value: data.S, color: COLORS.S },
+            { key: 'C', value: data.C, color: COLORS.C }
+        ];
+
+        const total = values.reduce((s, v) => s + v.value, 0);
+        if (total === 0) return;
+
+        let progress = animate ? 0 : 1;
+
+        function draw() {
+            ctx.clearRect(0, 0, size, size);
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#EEF2F5';
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+
+            let startAngle = -Math.PI / 2;
+            values.forEach(v => {
+                const sliceAngle = (v.value / total) * Math.PI * 2 * progress;
+                if (sliceAngle > 0.01) {
+                    ctx.beginPath();
+                    ctx.arc(center, center, radius, startAngle, startAngle + sliceAngle);
+                    ctx.strokeStyle = v.color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.lineCap = 'butt';
+                    ctx.stroke();
+                }
+                startAngle += sliceAngle;
+            });
+
+            if (progress < 1) {
+                progress = Math.min(1, progress + 0.025);
+                requestAnimationFrame(draw);
+            }
+        }
+        draw();
+    }
+
+    function buildLegend(containerId, data) {
+        document.getElementById(containerId).innerHTML = ['D','I','S','C'].map(k =>
+            `<div class="legend-item">
+                <div class="legend-dot" style="background:${COLORS[k]}"></div>
+                ${k} <span class="legend-value">${data[k]}%</span>
+            </div>`
+        ).join('');
+    }
+
+    function renderCharts() {
+        const d = profileData;
+        drawDonut('chartNatural', d.discNatural);
+        buildLegend('legendNatural', d.discNatural);
+        setTimeout(() => {
+            drawDonut('chartAdaptado', d.discAdaptado);
+            buildLegend('legendAdaptado', d.discAdaptado);
+        }, 300);
+        setTimeout(() => {
+            drawDonut('chartAdaptado2', d.discAdaptado);
+            buildLegend('legendAdaptado2', d.discAdaptado);
+        }, 600);
+    }
+
+    // ============ COMPARISON BARS ============
+    function renderComparisonBars() {
+        const d = profileData;
+        const dims = ['D', 'I', 'S', 'C'];
+        document.getElementById('comparisonBars').innerHTML = dims.map(dim => `
+            <div class="comp-dimension">
+                <div class="comp-dim-header">
+                    <div class="comp-dim-letter" style="background:${COLORS[dim]}">${dim}</div>
+                    <div class="comp-dim-name">${NAMES[dim]}</div>
+                </div>
+                <div class="comp-bar-pair">
+                    <div class="comp-bar-row">
+                        <div class="comp-bar-type">Natural</div>
+                        <div class="comp-bar-track">
+                            <div class="comp-bar-fill natural" style="width:${d.discNatural[dim]}%;background:${COLORS[dim]}">${d.discNatural[dim]}%</div>
+                        </div>
+                    </div>
+                    <div class="comp-bar-row">
+                        <div class="comp-bar-type">Adaptado</div>
+                        <div class="comp-bar-track">
+                            <div class="comp-bar-fill adapted" style="width:${d.discAdaptado[dim]}%;background:${COLORS[dim]}">${d.discAdaptado[dim]}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============ AI CONTENT ============
+    async function generateAIContent() {
+        try {
+            const resp = await fetch('/.netlify/functions/generate-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profile: profileData })
+            });
+
+            if (!resp.ok) throw new Error('Error al generar contenido');
+
+            const { sections } = await resp.json();
+
+            if (sections.etiqueta_estilo) {
+                document.getElementById('reportStyle').textContent = sections.etiqueta_estilo;
+            }
+
+            if (sections.caracteristicas) fillContent('contentCaracteristicas', sections.caracteristicas);
+            if (sections.estilo_personal) fillContent('contentEstilo', sections.estilo_personal);
+
+            if (sections.habilidades_interpersonales) {
+                const skills = sections.habilidades_interpersonales.split('|||');
+                const container = document.getElementById('contentHabilidades');
+                container.innerHTML = skills.map(skill => {
+                    const trimmed = skill.trim();
+                    const firstDot = trimmed.indexOf('.');
+                    let title = '', body = trimmed;
+                    if (firstDot > 0 && firstDot < 60) {
+                        title = trimmed.substring(0, firstDot + 1);
+                        body = trimmed.substring(firstDot + 1).trim();
+                    }
+                    return `<div class="skill-card">
+                        ${title ? `<div class="skill-title">${title}</div>` : ''}
+                        <p>${body || trimmed}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            if (sections.comunicacion_como_me_comunico) fillContent('contentCommYo', sections.comunicacion_como_me_comunico);
+            if (sections.comunicacion_como_comunicarte_conmigo) fillContent('contentCommOtros', sections.comunicacion_como_comunicarte_conmigo);
+            if (sections.bajo_presion) fillContent('contentPresion', sections.bajo_presion);
+            if (sections.adaptacion) fillContent('contentAdaptacion', sections.adaptacion);
+
+        } catch (err) {
+            console.error('AI generation error:', err);
+            document.querySelectorAll('[id^="content"]').forEach(el => {
+                if (el.querySelector('p[style*="italic"]')) {
+                    el.innerHTML = '<p style="color: var(--text-light);">No se pudo generar el análisis. Intenta recargar la página.</p>';
+                }
+            });
+        }
+    }
+
+    function fillContent(elementId, text) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const paragraphs = text.split('\n').filter(p => p.trim());
+        el.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+    }
+</script>
+
+</body>
+</html>
