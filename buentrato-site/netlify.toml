@@ -1,8 +1,16 @@
 [build]
-  functions = "netlify/functions"
   publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/disc"
   to = "/disc.html"
+  status = 200
+
+[[redirects]]
+  from = "/informe"
+  to = "/informe.html"
   status = 200
