@@ -1,8 +1,9 @@
-[build]
-  functions = "netlify/functions"
-  publish = "."
-
-[[redirects]]
-  from = "/disc"
-  to = "/disc.html"
-  status = 200
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="refresh" content="0;url=https://buentrato.ai">
+</head>
+<body>
+<a href="https://buentrato.ai">Ir a BuenTrato.ai</a>
+</body>
+</html>
