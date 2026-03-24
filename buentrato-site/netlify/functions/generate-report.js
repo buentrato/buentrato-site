@@ -9,20 +9,62 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { profile } = JSON.parse(event.body);
+        const { profile, group } = JSON.parse(event.body);
         if (!profile || !profile.discNatural) {
             return { statusCode: 400, body: JSON.stringify({ error: "Datos incompletos" }) };
         }
 
         const p = profile;
-        const prompt = `Eres experto DISC de BuenTrato.AI. Genera un informe corto para ${p.name} (${p.role}, ${p.company}).
+        const base = `Eres un experto certificado en perfiles DISC de BuenTrato.AI. Escribe para ${p.name}, ${p.role} en ${p.company} (área ${p.area}).
 
 DISC Natural: D:${p.discNatural.D}% I:${p.discNatural.I}% S:${p.discNatural.S}% C:${p.discNatural.C}%
 DISC Adaptado: D:${p.discAdaptado.D}% I:${p.discAdaptado.I}% S:${p.discAdaptado.S}% C:${p.discAdaptado.C}%
+Estilo primario: ${p.primaryStyleName} | Secundario: ${p.secondaryStyleName}
 
-Responde SOLO con JSON válido, sin markdown. Cada valor debe ser UN párrafo corto (3-4 oraciones máximo). Usa "tú". Español.
+Reglas: Usa "tú". Español. Tono cálido y profesional. Sé específico con los datos DISC. Analiza diferencias Natural vs Adaptado cuando sean significativas. NO uses viñetas ni listas. Escribe en prosa fluida. Responde SOLO JSON válido sin markdown.`;
 
-{"etiqueta_estilo":"3-5 palabras definiendo su estilo","caracteristicas":"1 párrafo sobre su combinación DISC y fortalezas","estilo_personal":"1 párrafo sobre cómo lidera y se relaciona","habilidad_1_titulo":"título corto","habilidad_1":"2 oraciones","habilidad_2_titulo":"título corto","habilidad_2":"2 oraciones","habilidad_3_titulo":"título corto","habilidad_3":"2 oraciones","comunicacion_yo":"1 párrafo cómo se comunica","comunicacion_otros":"1 párrafo cómo comunicarse con esta persona","bajo_presion":"1 párrafo comportamiento bajo presión","adaptacion":"1 párrafo diferencia Natural vs Adaptado"}`;
+        let prompt, expectedKeys;
+
+        if (group === "estilo") {
+            prompt = base + `
+
+Genera:
+{
+  "etiqueta_estilo": "Etiqueta de 3-5 palabras que defina su estilo (ej: 'Ejecutiva pragmática y directiva')",
+  "caracteristicas": "2-3 párrafos describiendo sus características comportamentales. Incluye cómo se manifiesta su combinación DISC, fortalezas naturales, y cómo el perfil adaptado muestra ajustes al entorno laboral.",
+  "estilo_personal": "2 párrafos explicando su estilo personal. Cómo lidera, decide, se relaciona con otros y qué la distingue."
+}`;
+            expectedKeys = ["etiqueta_estilo", "caracteristicas", "estilo_personal"];
+
+        } else if (group === "interpersonal") {
+            prompt = base + `
+
+Genera:
+{
+  "habilidad_1_titulo": "Título corto de habilidad interpersonal 1",
+  "habilidad_1": "Párrafo de 3-4 oraciones describiendo esta habilidad",
+  "habilidad_2_titulo": "Título corto de habilidad interpersonal 2",
+  "habilidad_2": "Párrafo de 3-4 oraciones describiendo esta habilidad",
+  "habilidad_3_titulo": "Título corto de habilidad interpersonal 3",
+  "habilidad_3": "Párrafo de 3-4 oraciones describiendo esta habilidad",
+  "comunicacion_yo": "1-2 párrafos sobre cómo se comunica naturalmente. Su estilo, ritmo, qué prioriza.",
+  "comunicacion_otros": "1-2 párrafos con consejos para comunicarse efectivamente con esta persona. Qué hacer y qué evitar."
+}`;
+            expectedKeys = ["habilidad_1_titulo", "habilidad_1", "comunicacion_yo", "comunicacion_otros"];
+
+        } else if (group === "contexto") {
+            prompt = base + `
+
+Genera:
+{
+  "bajo_presion": "2 párrafos sobre cómo se comporta bajo presión. Qué tendencias afloran, riesgos, y cómo manejarlas.",
+  "adaptacion": "2 párrafos analizando la diferencia entre Natural y Adaptado. Qué ajustes hace para el entorno laboral, si son sostenibles, y qué significa para su bienestar."
+}`;
+            expectedKeys = ["bajo_presion", "adaptacion"];
+
+        } else {
+            return { statusCode: 400, body: JSON.stringify({ error: "Grupo no válido. Use: estilo, interpersonal, contexto" }) };
+        }
 
         const response = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
@@ -33,7 +75,7 @@ Responde SOLO con JSON válido, sin markdown. Cada valor debe ser UN párrafo co
             },
             body: JSON.stringify({
                 model: "claude-haiku-4-5-20251001",
-                max_tokens: 1200,
+                max_tokens: 1500,
                 messages: [{ role: "user", content: prompt }]
             })
         });
@@ -52,30 +94,14 @@ Responde SOLO con JSON válido, sin markdown. Cada valor debe ser UN párrafo co
             const cleaned = rawText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
             parsed = JSON.parse(cleaned);
         } catch (e) {
-            console.error("Parse error:", e.message, "Raw:", rawText.substring(0, 300));
+            console.error("Parse error:", e.message, "Raw:", rawText.substring(0, 500));
             return { statusCode: 500, body: JSON.stringify({ error: "Error procesando respuesta" }) };
         }
-
-        // Convertir al formato que espera el frontend
-        const sections = {
-            etiqueta_estilo: parsed.etiqueta_estilo || "",
-            caracteristicas: parsed.caracteristicas || "",
-            estilo_personal: parsed.estilo_personal || "",
-            habilidades_interpersonales: [
-                (parsed.habilidad_1_titulo || "Habilidad 1") + ". " + (parsed.habilidad_1 || ""),
-                (parsed.habilidad_2_titulo || "Habilidad 2") + ". " + (parsed.habilidad_2 || ""),
-                (parsed.habilidad_3_titulo || "Habilidad 3") + ". " + (parsed.habilidad_3 || "")
-            ].join("|||"),
-            comunicacion_como_me_comunico: parsed.comunicacion_yo || "",
-            comunicacion_como_comunicarte_conmigo: parsed.comunicacion_otros || "",
-            bajo_presion: parsed.bajo_presion || "",
-            adaptacion: parsed.adaptacion || ""
-        };
 
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sections })
+            body: JSON.stringify({ sections: parsed })
         };
 
     } catch (error) {
