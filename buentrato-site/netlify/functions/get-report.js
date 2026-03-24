@@ -1,7 +1,8 @@
 // ==========================================
 // Netlify Serverless Function: get-report
 // Busca evaluación DISC por código único y devuelve datos del perfil
-// Base: BuenTrato (app2psDmvIE74vhkQ)
+// Base BuenTrato (app2psDmvIE74vhkQ) → datos de evaluación y persona
+// Base PRUEBAS (appaTeQAba3xYfycx) → porcentajes DISC calculados
 // ==========================================
 
 exports.handler = async (event) => {
@@ -10,8 +11,9 @@ exports.handler = async (event) => {
     }
 
     const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-    // Base principal BuenTrato
-    const BASE_ID = "app2psDmvIE74vhkQ";
+    const BASE_BUENTRATO = "app2psDmvIE74vhkQ";
+    const BASE_PRUEBAS = "appaTeQAba3xYfycx";
+    const TABLE_RESPUESTAS = "tbl6O1XFe2U1ylxud";
 
     if (!AIRTABLE_API_KEY) {
         return {
@@ -19,6 +21,11 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: "Airtable no configurado" })
         };
     }
+
+    const airtableHeaders = {
+        "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json"
+    };
 
     try {
         const { code } = JSON.parse(event.body);
@@ -32,17 +39,12 @@ exports.handler = async (event) => {
 
         const codeClean = code.trim();
 
-        // 1. Buscar evaluación por evaluacion_uid
+        // 1. Buscar evaluación por evaluacion_uid en BuenTrato
         const evalTable = encodeURIComponent("EVALUACIONES");
         const formula = encodeURIComponent(`{evaluacion_uid} = '${codeClean}'`);
-        const evalUrl = `https://api.airtable.com/v0/${BASE_ID}/${evalTable}?filterByFormula=${formula}&maxRecords=1`;
+        const evalUrl = `https://api.airtable.com/v0/${BASE_BUENTRATO}/${evalTable}?filterByFormula=${formula}&maxRecords=1`;
 
-        const evalResp = await fetch(evalUrl, {
-            headers: {
-                "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const evalResp = await fetch(evalUrl, { headers: airtableHeaders });
 
         if (!evalResp.ok) {
             console.error("Airtable eval error:", await evalResp.text());
@@ -63,28 +65,15 @@ exports.handler = async (event) => {
 
         const evalRecord = evalData.records[0].fields;
 
-        // 2. Verificar que tiene resultados
-        if (!evalRecord.resultados_json) {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ error: "Esta evaluación aún no tiene resultados procesados." })
-            };
-        }
-
-        // 3. Obtener datos de la persona vinculada
+        // 2. Obtener datos de la persona vinculada
         let personName = "";
         let personEmail = "";
         if (evalRecord.persona && evalRecord.persona.length > 0) {
             const personId = evalRecord.persona[0];
             const personTable = encodeURIComponent("PERSONAS");
-            const personUrl = `https://api.airtable.com/v0/${BASE_ID}/${personTable}/${personId}`;
+            const personUrl = `https://api.airtable.com/v0/${BASE_BUENTRATO}/${personTable}/${personId}`;
 
-            const personResp = await fetch(personUrl, {
-                headers: {
-                    "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
-                    "Content-Type": "application/json"
-                }
-            });
+            const personResp = await fetch(personUrl, { headers: airtableHeaders });
 
             if (personResp.ok) {
                 const personData = await personResp.json();
@@ -94,47 +83,63 @@ exports.handler = async (event) => {
             }
         }
 
-        // 4. Parsear resultados DISC
-        const scores = JSON.parse(evalRecord.resultados_json);
+        // 3. Buscar porcentajes DISC en base PRUEBAS por email
+        let discNatural = { D: 0, I: 0, S: 0, C: 0 };
+        let discAdaptado = { D: 0, I: 0, S: 0, C: 0 };
+        let rawNatural = { D: 0, I: 0, S: 0, C: 0 };
+        let rawAdaptado = { D: 0, I: 0, S: 0, C: 0 };
 
-        // Calcular porcentajes (los puntajes suman 24 para Natural y 24 para Adaptado)
-        const totalNatural = (scores.D_Natural || 0) + (scores.I_Natural || 0) +
-                            (scores.S_Natural || 0) + (scores.C_Natural || 0);
-        const totalAdaptado = (scores.D_Adaptado || 0) + (scores.I_Adaptado || 0) +
-                             (scores.S_Adaptado || 0) + (scores.C_Adaptado || 0);
+        if (personEmail) {
+            const respFormula = encodeURIComponent(`{Email} = '${personEmail}'`);
+            const respUrl = `https://api.airtable.com/v0/${BASE_PRUEBAS}/${TABLE_RESPUESTAS}?filterByFormula=${respFormula}&maxRecords=1`;
 
-        const toPerc = (val, total) => total > 0 ? Math.round((val / total) * 100) : 0;
+            const respResp = await fetch(respUrl, { headers: airtableHeaders });
 
-        const discNatural = {
-            D: toPerc(scores.D_Natural, totalNatural),
-            I: toPerc(scores.I_Natural, totalNatural),
-            S: toPerc(scores.S_Natural, totalNatural),
-            C: toPerc(scores.C_Natural, totalNatural)
-        };
+            if (respResp.ok) {
+                const respData = await respResp.json();
 
-        const discAdaptado = {
-            D: toPerc(scores.D_Adaptado, totalAdaptado),
-            I: toPerc(scores.I_Adaptado, totalAdaptado),
-            S: toPerc(scores.S_Adaptado, totalAdaptado),
-            C: toPerc(scores.C_Adaptado, totalAdaptado)
-        };
+                if (respData.records && respData.records.length > 0) {
+                    const r = respData.records[0].fields;
 
-        // Raw scores también (para el prompt de Claude)
-        const rawNatural = {
-            D: scores.D_Natural || 0,
-            I: scores.I_Natural || 0,
-            S: scores.S_Natural || 0,
-            C: scores.C_Natural || 0
-        };
+                    // Porcentajes vienen como decimales (0.36 = 36%)
+                    // Nota: hay typos en Airtable: "porcentaje_C_Natutal", "Porcentaje_C_Adapatdo"
+                    discNatural = {
+                        D: Math.round((r.porcentaje_D_Natural || 0) * 100),
+                        I: Math.round((r.porcentaje_I_Natural || 0) * 100),
+                        S: Math.round((r.porcentaje_S_Natural || 0) * 100),
+                        C: Math.round((r.porcentaje_C_Natutal || 0) * 100)
+                    };
 
-        const rawAdaptado = {
-            D: scores.D_Adaptado || 0,
-            I: scores.I_Adaptado || 0,
-            S: scores.S_Adaptado || 0,
-            C: scores.C_Adaptado || 0
-        };
+                    discAdaptado = {
+                        D: Math.round((r.porcentaje_D_Adaptado || 0) * 100),
+                        I: Math.round((r.porcentaje_I_Adaptado || 0) * 100),
+                        S: Math.round((r.porcentaje_S_Adaptado || 0) * 100),
+                        C: Math.round((r.Porcentaje_C_Adapatdo || 0) * 100)
+                    };
 
-        // 5. Determinar estilo primario
+                    // Raw scores también
+                    rawNatural = {
+                        D: r.Puntaje_D_Natural || 0,
+                        I: r.Puntaje_I_Natural || 0,
+                        S: r.Puntaje_S_Natural || 0,
+                        C: r.Puntaje_C_Natural || 0
+                    };
+
+                    rawAdaptado = {
+                        D: r.Puntaje_D_Adaptado || 0,
+                        I: r.Puntaje_I_Adaptado || 0,
+                        S: r.Puntaje_S_Adaptado || 0,
+                        C: r.Puntaje_C_Adaptado || 0
+                    };
+                } else {
+                    console.error("No se encontró registro en PRUEBAS para email:", personEmail);
+                }
+            } else {
+                console.error("Error buscando en PRUEBAS:", await respResp.text());
+            }
+        }
+
+        // 4. Determinar estilo primario
         const styles = [
             { key: "D", score: discNatural.D, name: "Dominancia" },
             { key: "I", score: discNatural.I, name: "Influencia" },
@@ -145,7 +150,7 @@ exports.handler = async (event) => {
         const primaryStyle = styles[0];
         const secondaryStyle = styles[1];
 
-        // 6. Construir respuesta
+        // 5. Construir respuesta
         const profile = {
             name: personName || "Participante",
             email: personEmail,
