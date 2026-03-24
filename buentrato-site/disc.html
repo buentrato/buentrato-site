@@ -67,7 +67,7 @@
             transition: all 0.3s;
         }
         .step-pill.active { background: #E6F6F9; border: 1.5px solid #0380A6; }
-        .step-pill.done { background: #ECFDF5; }
+        .step-pill.done { background: #E6F4F9; }
         .step-pill.pending { background: #F9FAFB; }
         .step-num {
             width: 20px; height: 20px; border-radius: 50%;
@@ -75,7 +75,7 @@
             font-size: 11px; font-weight: 700; color: white;
         }
         .step-num.active { background: #0380A6; }
-        .step-num.done { background: #10B981; }
+        .step-num.done { background: #0380A6; }
         .step-num.pending { background: #D1D5DB; }
         .step-label.active { color: #0380A6; font-weight: 700; }
         .step-label.done { color: #059669; font-weight: 500; }
@@ -278,16 +278,16 @@
             padding: 16px;
             margin-bottom: 12px;
         }
-        .feedback-section.strengths { background: #ECFDF5; border-left: 4px solid #10B981; }
-        .feedback-section.challenges { background: #FFF7ED; border-left: 4px solid #F59E0B; }
+        .feedback-section.strengths { background: #E6F4F9; border-left: 4px solid #0380A6; }
+        .feedback-section.challenges { background: #E2EEF3; border-left: 4px solid #01516A; }
         .feedback-section.tips { background: #E6F6F9; border-left: 4px solid #0380A6; }
         .feedback-section-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-        .feedback-section.strengths .feedback-section-title { color: #065F46; }
-        .feedback-section.challenges .feedback-section-title { color: #92400E; }
+        .feedback-section.strengths .feedback-section-title { color: #026B8A; }
+        .feedback-section.challenges .feedback-section-title { color: #01516A; }
         .feedback-section.tips .feedback-section-title { color: #026B8A; }
         .feedback-section p { font-size: 14px; line-height: 1.6; }
-        .feedback-section.strengths p { color: #047857; }
-        .feedback-section.challenges p { color: #B45309; }
+        .feedback-section.strengths p { color: #0380A6; }
+        .feedback-section.challenges p { color: #026B8A; }
 
         .tip-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
         .tip-num {
@@ -300,13 +300,13 @@
 
         /* AI Feedback Section */
         .ai-section {
-            background: linear-gradient(135deg, #F0FDFA, #ECFDF5);
+            background: linear-gradient(135deg, #F2FAFE, #E6F4F9);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
-            border-left: 4px solid #14B8A6;
+            border-left: 4px solid #0380A6;
         }
-        .ai-section .feedback-section-title { color: #0F766E; }
+        .ai-section .feedback-section-title { color: #026B8A; }
         .ai-section p { color: #115E59; font-size: 14px; line-height: 1.7; }
         .ai-loading {
             text-align: center; padding: 20px;
@@ -481,21 +481,21 @@ const AIRTABLE_TEAMS = {
 Object.assign(DEMO_TEAMS, AIRTABLE_TEAMS);
 
 const TOPICS = [
-    { id: "comunicacion", label: "Comunicación", icon: "💬", desc: "Cómo comunicarte de forma efectiva" },
-    { id: "negociacion", label: "Negociación", icon: "🤝", desc: "Cómo llegar a acuerdos" },
-    { id: "motivacion", label: "Motivación", icon: "🔥", desc: "Cómo motivar e inspirar" },
-    { id: "conflictos", label: "Resolución de Conflictos", icon: "⚖️", desc: "Cómo manejar desacuerdos" },
-    { id: "liderazgo", label: "Liderazgo", icon: "🎯", desc: "Cómo liderar y guiar" },
-    { id: "delegacion", label: "Delegación", icon: "📋", desc: "Cómo asignar y confiar tareas" },
-    { id: "feedback", label: "Feedback", icon: "🪞", desc: "Cómo dar y recibir retroalimentación" },
-    { id: "trabajo_equipo", label: "Trabajo en Equipo", icon: "👥", desc: "Cómo colaborar mejor" }
+    { id: "comunicacion", label: "Comunicación", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo comunicarte de forma efectiva" },
+    { id: "negociacion", label: "Negociación", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo llegar a acuerdos" },
+    { id: "motivacion", label: "Motivación", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo motivar e inspirar" },
+    { id: "conflictos", label: "Resolución de Conflictos", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo manejar desacuerdos" },
+    { id: "liderazgo", label: "Liderazgo", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo liderar y guiar" },
+    { id: "delegacion", label: "Delegación", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo asignar y confiar tareas" },
+    { id: "feedback", label: "Feedback", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo dar y recibir retroalimentación" },
+    { id: "trabajo_equipo", label: "Trabajo en Equipo", icon: '<img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;">', desc: "Cómo colaborar mejor" }
 ];
 
 const DISC_STYLES = {
-    D: { name: "Dominancia", color: "#DC2626", bgLight: "#FEF2F2" },
-    I: { name: "Influencia", color: "#F59E0B", bgLight: "#FFFBEB" },
-    S: { name: "Estabilidad", color: "#10B981", bgLight: "#ECFDF5" },
-    C: { name: "Cumplimiento", color: "#0380A6", bgLight: "#E6F6F9" }
+    D: { name: "Dominancia", color: "#01516A", bgLight: "#E2EEF3" },
+    I: { name: "Influencia", color: "#0380A6", bgLight: "#E6F4F9" },
+    S: { name: "Estabilidad", color: "#04B5D6", bgLight: "#E0F5FA" },
+    C: { name: "Cumplimiento", color: "#6DCFE0", bgLight: "#EBF8FB" }
 };
 
 // ==========================================
@@ -729,7 +729,7 @@ function renderProgress(current) {
                 const n = i + 1;
                 const cls = n === current ? "active" : n < current ? "done" : "pending";
                 return `<div class="step-pill ${cls}">
-                    <span class="step-num ${cls}">${n < current ? "✓" : n}</span>
+                    <span class="step-num ${cls}">${n < current ? '<img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain;">' : n}</span>
                     <span class="step-label ${cls}">${l}</span>
                 </div>`;
             }).join("")}
@@ -843,7 +843,7 @@ function drawDISCChart(disc, canvasId) {
         const size = 140;
         const cx = size/2, cy = size/2, r = size * 0.35;
         const styles = ["D","I","S","C"];
-        const colors = { D: "#DC2626", I: "#F59E0B", S: "#10B981", C: "#0380A6" };
+        const colors = { D: "#01516A", I: "#0380A6", S: "#04B5D6", C: "#6DCFE0" };
 
         canvas.width = size; canvas.height = size;
         ctx.clearRect(0,0,size,size);
@@ -917,7 +917,7 @@ function renderStep4() {
     const aiSection = state.aiLoading
         ? `<div class="ai-section"><div class="ai-loading"><div class="spinner"></div><p style="color:#0F766E; font-size:13px;">Generando feedback personalizado con IA...</p></div></div>`
         : state.aiFeedback
-            ? `<div class="ai-section"><div class="feedback-section-title">🤖 Análisis personalizado con IA</div><p>${state.aiFeedback}</p></div>`
+            ? `<div class="ai-section"><div class="feedback-section-title"><img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;"> Análisis personalizado con IA</div><p>${state.aiFeedback}</p></div>`
             : "";
 
     return `
@@ -953,17 +953,17 @@ function renderStep4() {
             </div>
 
             <div class="feedback-section strengths">
-                <div class="feedback-section-title">✅ Fortalezas de esta combinación</div>
+                <div class="feedback-section-title"><img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;"> Fortalezas de esta combinación</div>
                 <p>${fb.strengths}</p>
             </div>
 
             <div class="feedback-section challenges">
-                <div class="feedback-section-title">⚠️ Desafíos a tener en cuenta</div>
+                <div class="feedback-section-title"><img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;"> Desafíos a tener en cuenta</div>
                 <p>${fb.challenges}</p>
             </div>
 
             <div class="feedback-section tips">
-                <div class="feedback-section-title">💡 Consejos prácticos</div>
+                <div class="feedback-section-title"><img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle;"> Consejos prácticos</div>
                 ${fb.tips.map((tip, i) => `
                     <div class="tip-item">
                         <span class="tip-num">${i+1}</span>
