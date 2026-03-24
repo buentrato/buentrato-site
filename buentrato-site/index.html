@@ -1,9 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta http-equiv="refresh" content="0;url=/disc.html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuenTrato.AI — Portal de Herramientas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F7F8F9;
+            color: #2D2D2D;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0380A6, #026B8A);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header-logo {
+            margin-bottom: 16px;
+        }
+        .header-logo img {
+            width: 180px;
+            height: 90px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .header h1 .brand-buen { color: white; }
+        .header h1 .brand-trato { color: rgba(255,255,255,0.75); }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Main */
+        .main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2D2D2D;
+            margin-bottom: 8px;
+        }
+        .section-subtitle {
+            font-size: 15px;
+            color: #777579;
+            margin-bottom: 28px;
+        }
+
+        /* Tool Cards */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border: 2px solid #E5E7EB;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            cursor: pointer;
+        }
+        .tool-card:hover {
+            border-color: #0380A6;
+            box-shadow: 0 8px 24px rgba(3, 128, 166, 0.12);
+            transform: translateY(-2px);
+        }
+        .tool-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .tool-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2D2D2D;
+        }
+        .tool-card-desc {
+            font-size: 14px;
+            color: #777579;
+            line-height: 1.6;
+        }
+        .tool-card-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+        }
+        .badge-active {
+            background: #E6F6F9;
+            color: #0380A6;
+        }
+        .badge-soon {
+            background: #F0EEEF;
+            color: #777579;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #777579;
+            font-size: 13px;
+            border-top: 1px solid #EEEDEF;
+        }
+
+        @media (max-width: 600px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 { font-size: 26px; }
+        }
+    </style>
 </head>
 <body>
-<a href="/disc.html">Ir a Feedback DISC</a>
+    <div class="header">
+        <div class="header-logo">
+            <!-- BuenTrato.AI smiley logo -->
+            <img src="logo.png" alt="BuenTrato.AI">
+        </div>
+        <h1><span class="brand-buen">Buen</span><span class="brand-trato">Trato.ai</span></h1>
+        <p>Herramientas para construir mejores relaciones en equipos de trabajo</p>
+    </div>
+
+    <div class="main">
+        <h2 class="section-title">Herramientas disponibles</h2>
+        <p class="section-subtitle">Selecciona la herramienta que necesitas</p>
+
+        <div class="tools-grid">
+            <!-- DISC Feedback App -->
+            <a href="/disc.html" class="tool-card">
+                <div class="tool-card-icon" style="background: #E6F6F9;">🎯</div>
+                <div>
+                    <div class="tool-card-title">Feedback de Relacionamiento DISC</div>
+                    <div class="tool-card-desc">
+                        Selecciona tu nombre y el de un compañero/a para recibir consejos personalizados
+                        sobre cómo mejorar tu relación laboral, basados en sus perfiles DISC.
+                    </div>
+                </div>
+                <span class="tool-card-badge badge-active">Activa</span>
+            </a>
+
+            <!-- Future tools -->
+            <a href="#" class="tool-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="tool-card-icon" style="background: #F0EEEF;">📊</div>
+                <div>
+                    <div class="tool-card-title">Informe DISC Individual</div>
+                    <div class="tool-card-desc">
+                        Informe detallado del perfil DISC de cada persona del equipo.
+                    </div>
+                </div>
+                <span class="tool-card-badge badge-soon">Próximamente</span>
+            </a>
+
+            <a href="#" class="tool-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="tool-card-icon" style="background: #F0EEEF;">🗺️</div>
+                <div>
+                    <div class="tool-card-title">Mapa de Equipo DISC</div>
+                    <div class="tool-card-desc">
+                        Visualización del equipo completo con dinámicas grupales y compatibilidad.
+                    </div>
+                </div>
+                <span class="tool-card-badge badge-soon">Próximamente</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos
+    </div>
 </body>
 </html>
