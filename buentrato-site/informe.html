@@ -952,57 +952,77 @@
         `).join('');
     }
 
-    // ============ AI CONTENT ============
+    // ============ AI CONTENT (3 llamadas paralelas) ============
     async function generateAIContent() {
-        try {
+        const groups = ['estilo', 'interpersonal', 'contexto'];
+
+        const fetchGroup = async (group) => {
             const resp = await fetch('/.netlify/functions/generate-report', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profile: profileData })
+                body: JSON.stringify({ profile: profileData, group })
             });
-
-            if (!resp.ok) throw new Error('Error al generar contenido');
-
+            if (!resp.ok) throw new Error(`Error grupo ${group}: ${resp.status}`);
             const { sections } = await resp.json();
+            return { group, sections };
+        };
 
-            if (sections.etiqueta_estilo) {
-                document.getElementById('reportStyle').textContent = sections.etiqueta_estilo;
+        // Lanzar las 3 llamadas en paralelo
+        const results = await Promise.allSettled(groups.map(g => fetchGroup(g)));
+
+        results.forEach(result => {
+            if (result.status !== 'fulfilled') {
+                console.error('Grupo falló:', result.reason);
+                return;
             }
 
-            if (sections.caracteristicas) fillContent('contentCaracteristicas', sections.caracteristicas);
-            if (sections.estilo_personal) fillContent('contentEstilo', sections.estilo_personal);
+            const { group, sections } = result.value;
 
-            if (sections.habilidades_interpersonales) {
-                const skills = sections.habilidades_interpersonales.split('|||');
-                const container = document.getElementById('contentHabilidades');
-                container.innerHTML = skills.map(skill => {
-                    const trimmed = skill.trim();
-                    const firstDot = trimmed.indexOf('.');
-                    let title = '', body = trimmed;
-                    if (firstDot > 0 && firstDot < 60) {
-                        title = trimmed.substring(0, firstDot + 1);
-                        body = trimmed.substring(firstDot + 1).trim();
-                    }
-                    return `<div class="skill-card">
-                        ${title ? `<div class="skill-title">${title}</div>` : ''}
-                        <p>${body || trimmed}</p>
-                    </div>`;
-                }).join('');
-            }
-
-            if (sections.comunicacion_como_me_comunico) fillContent('contentCommYo', sections.comunicacion_como_me_comunico);
-            if (sections.comunicacion_como_comunicarte_conmigo) fillContent('contentCommOtros', sections.comunicacion_como_comunicarte_conmigo);
-            if (sections.bajo_presion) fillContent('contentPresion', sections.bajo_presion);
-            if (sections.adaptacion) fillContent('contentAdaptacion', sections.adaptacion);
-
-        } catch (err) {
-            console.error('AI generation error:', err);
-            document.querySelectorAll('[id^="content"]').forEach(el => {
-                if (el.querySelector('p[style*="italic"]')) {
-                    el.innerHTML = '<p style="color: var(--text-light);">No se pudo generar el análisis. Intenta recargar la página.</p>';
+            if (group === 'estilo') {
+                if (sections.etiqueta_estilo) {
+                    document.getElementById('reportStyle').textContent = sections.etiqueta_estilo;
                 }
-            });
-        }
+                if (sections.caracteristicas) fillContent('contentCaracteristicas', sections.caracteristicas);
+                if (sections.estilo_personal) fillContent('contentEstilo', sections.estilo_personal);
+            }
+
+            if (group === 'interpersonal') {
+                // Reconstruir habilidades desde campos individuales
+                const skillEntries = [];
+                for (let i = 1; i <= 3; i++) {
+                    const titulo = sections[`habilidad_${i}_titulo`];
+                    const desc = sections[`habilidad_${i}`];
+                    if (titulo && desc) {
+                        skillEntries.push({ titulo, desc });
+                    }
+                }
+                if (skillEntries.length > 0) {
+                    const container = document.getElementById('contentHabilidades');
+                    container.innerHTML = skillEntries.map(s =>
+                        `<div class="skill-card">
+                            <div class="skill-title">${s.titulo}</div>
+                            <p>${s.desc}</p>
+                        </div>`
+                    ).join('');
+                }
+
+                if (sections.comunicacion_yo) fillContent('contentCommYo', sections.comunicacion_yo);
+                if (sections.comunicacion_otros) fillContent('contentCommOtros', sections.comunicacion_otros);
+            }
+
+            if (group === 'contexto') {
+                if (sections.bajo_presion) fillContent('contentPresion', sections.bajo_presion);
+                if (sections.adaptacion) fillContent('contentAdaptacion', sections.adaptacion);
+            }
+        });
+
+        // Marcar secciones que no se generaron
+        const pendingEls = document.querySelectorAll('[id^="content"] p[style*="italic"]');
+        pendingEls.forEach(el => {
+            el.innerHTML = 'No se pudo generar el análisis. Intenta recargar la página.';
+            el.style.color = 'var(--text-light)';
+            el.style.fontStyle = 'normal';
+        });
     }
 
     function fillContent(elementId, text) {
