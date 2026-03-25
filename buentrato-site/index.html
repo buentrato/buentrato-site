@@ -843,6 +843,7 @@ function showPortal() {
 
     // Update instrument cards
     const instruments = u.instruments || {};
+    const portalCode = sessionStorage.getItem('portalCode') || '';
 
     document.querySelectorAll('.tool-card[data-instrument]').forEach(card => {
         const key = card.dataset.instrument;
@@ -852,7 +853,12 @@ function showPortal() {
             // Enable card
             card.classList.remove('locked');
             card.classList.add('active-card');
-            card.href = inst.path || '#';
+            // Append portal code so instrument pages can link back without re-login
+            let href = inst.path || '#';
+            if (portalCode && href !== '#') {
+                href += (href.includes('?') ? '&' : '?') + 'portal=' + encodeURIComponent(portalCode);
+            }
+            card.href = href;
             card.style.pointerEvents = 'auto';
             card.style.opacity = '1';
             const badge = card.querySelector('.tool-card-badge');

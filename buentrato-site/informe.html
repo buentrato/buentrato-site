@@ -767,7 +767,8 @@
 
     // Back to portal with session
     (function setupBackLink() {
-        const portalCode = sessionStorage.getItem('portalCode');
+        const params = new URLSearchParams(window.location.search);
+        const portalCode = params.get('portal') || sessionStorage.getItem('portalCode');
         if (portalCode) {
             document.getElementById('backToPortal').href = '/index.html?code=' + encodeURIComponent(portalCode);
         }
