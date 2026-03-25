@@ -783,6 +783,9 @@ async function loginPortal() {
     document.getElementById('loadingText').textContent = 'Buscando tu perfil...';
     document.getElementById('loadingSub').textContent = 'Conectando con la base de datos';
 
+    // Save portal code for "back to portal" links in instrument pages
+    sessionStorage.setItem('portalCode', code);
+
     // Demo mode
     if (code.toLowerCase() === 'demo2026') {
         currentUser = DEMO_PROFILE;

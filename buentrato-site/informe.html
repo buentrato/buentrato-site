@@ -514,6 +514,19 @@
             border-radius: 1px;
         }
 
+        .back-to-portal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .back-to-portal:hover { text-decoration: underline; }
+
         /* Mobile */
         @media (max-width: 600px) {
             .entry-card { padding: 32px 24px; }
@@ -553,6 +566,11 @@
 
 <!-- REPORT -->
 <div class="report" id="reportContainer">
+
+    <a id="backToPortal" href="/index.html" class="back-to-portal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Volver al portal
+    </a>
 
     <!-- Header -->
     <div class="report-header">
@@ -746,6 +764,14 @@
     const NAMES = {
         D: 'Dominancia', I: 'Influencia', S: 'Serenidad', C: 'Cumplimiento'
     };
+
+    // Back to portal with session
+    (function setupBackLink() {
+        const portalCode = sessionStorage.getItem('portalCode');
+        if (portalCode) {
+            document.getElementById('backToPortal').href = '/index.html?code=' + encodeURIComponent(portalCode);
+        }
+    })();
 
     const DEMO_DISC = {
         name: "Camila Torres",
