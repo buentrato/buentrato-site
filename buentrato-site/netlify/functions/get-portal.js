@@ -183,6 +183,15 @@ exports.handler = async (event) => {
             path: "/disc"
         };
 
+        // Plan de desarrollo: disponible si tiene al menos 2 instrumentos
+        const availableCount = ['disc', 'ie', 'autoliderazgo', 'estilos', 'clima']
+            .filter(k => available[k] && available[k].available).length;
+        available.plan = {
+            available: availableCount >= 2,
+            code: null,
+            path: "/plan"
+        };
+
         // 4. Armar perfil
         const profile = {
             name: persona.nombre_completo || (persona.nombre + " " + persona.apellido),

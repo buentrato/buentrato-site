@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="carita.png">
+    <title>Plan de Desarrollo — BuenTrato.AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0380A6;
+            --primary-dark: #026B8A;
+            --primary-deeper: #01516A;
+            --primary-light: #E6F4F9;
+            --primary-lighter: #F2FAFE;
+            --accent: #04B5D6;
+            --accent-light: #E0F5FA;
+            --gray: #777579;
+            --gray-light: #F5F5F5;
+            --white: #FFFFFF;
+            --text: #2D2D2D;
+            --text-light: #666666;
+            /* Area levels */
+            --fortaleza: #059669;
+            --fortaleza-bg: #ECFDF5;
+            --oportunidad: #D97706;
+            --oportunidad-bg: #FFF7ED;
+            --critica: #DC2626;
+            --critica-bg: #FEF2F2;
+            /* Roadmap phases */
+            --fase1: #04B5D6;
+            --fase2: #0380A6;
+            --fase3: #01516A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-light);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* === ENTRY SCREEN === */
+        .entry-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            padding: 20px;
+        }
+
+        .entry-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .entry-card .logo { height: 90px; margin-bottom: 24px; }
+
+        .entry-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .entry-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+
+        .entry-error {
+            color: #C0392B;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* === LOADING === */
+        .loading-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: var(--white); font-size: 16px; font-weight: 500; }
+        .loading-sub { color: rgba(255,255,255,0.7); font-size: 13px; }
+
+        /* === REPORT === */
+        .report {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .back-link:hover { background: var(--primary-light); }
+
+        /* Header */
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            border-radius: 20px;
+            padding: 40px 36px;
+            color: var(--white);
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .report-header .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative; z-index: 1;
+        }
+
+        .logo-img { height: 56px; }
+        .logo-img.white { filter: brightness(0) invert(1); }
+
+        .report-header .date-badge {
+            font-size: 12px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 14px;
+            border-radius: 20px;
+        }
+
+        .report-header .person-name {
+            font-size: 28px; font-weight: 700;
+            margin-bottom: 6px;
+            position: relative; z-index: 1;
+        }
+
+        .report-header .person-role {
+            font-size: 15px; opacity: 0.85;
+            position: relative; z-index: 1;
+        }
+
+        .report-header .report-type {
+            display: inline-block;
+            margin-top: 16px;
+            background: rgba(255,255,255,0.18);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative; z-index: 1;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .brand-line {
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent), #6DCFE0);
+            border-radius: 2px;
+            margin: 0 0 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(3,128,166,0.06);
+            border: 1px solid rgba(3,128,166,0.06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+        }
+
+        /* Instruments overview mini-bars */
+        .instruments-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .inst-mini {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .inst-mini-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inst-mini-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .inst-mini-bar {
+            height: 6px;
+            background: #E0E0E0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .inst-mini-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.2s ease;
+        }
+
+        .inst-not-available {
+            opacity: 0.4;
+        }
+
+        /* AI content areas */
+        .ai-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        .ai-text-loading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 0;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .ai-text-loading .mini-spinner {
+            width: 20px; height: 20px;
+            border: 3px solid #E0E0E0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .ai-error {
+            color: #C0392B;
+            font-size: 14px;
+            padding: 12px 16px;
+            background: #FEF2F2;
+            border-radius: 10px;
+        }
+
+        /* Area cards */
+        .area-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(3,128,166,0.06);
+            border: 1px solid rgba(3,128,166,0.06);
+        }
+
+        .area-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .area-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .area-fuentes {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .area-nivel-badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .nivel-fortaleza { background: var(--fortaleza-bg); color: var(--fortaleza); }
+        .nivel-oportunidad { background: var(--oportunidad-bg); color: var(--oportunidad); }
+        .nivel-critica { background: var(--critica-bg); color: var(--critica); }
+
+        .area-analisis {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .herramientas-section {
+            background: var(--primary-lighter);
+            border-radius: 12px;
+            padding: 20px 24px;
+        }
+
+        .herramientas-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .herramienta-item {
+            margin-bottom: 12px;
+        }
+
+        .herramienta-item:last-child { margin-bottom: 0; }
+
+        .herramienta-item p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* Roadmap section */
+        .roadmap-section { margin-top: 8px; }
+
+        .fase-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(3,128,166,0.06);
+            border-left: 4px solid var(--primary);
+            position: relative;
+        }
+
+        .fase-card.fase-1 { border-left-color: var(--fase1); }
+        .fase-card.fase-2 { border-left-color: var(--fase2); }
+        .fase-card.fase-3 { border-left-color: var(--fase3); }
+
+        .fase-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .fase-number {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .fase-1 .fase-number { background: var(--fase1); }
+        .fase-2 .fase-number { background: var(--fase2); }
+        .fase-3 .fase-number { background: var(--fase3); }
+
+        .fase-title-block { flex: 1; }
+
+        .fase-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .fase-periodo {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .fase-objetivo {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .accion-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .accion-item:last-child { margin-bottom: 0; }
+
+        /* Cierre card */
+        .cierre-card {
+            background: linear-gradient(135deg, var(--primary-deeper), var(--primary-dark));
+            border-radius: 16px;
+            padding: 32px;
+            color: var(--white);
+            margin-top: 20px;
+        }
+
+        .cierre-card .card-title {
+            color: var(--white);
+        }
+
+        .cierre-text {
+            font-size: 15px;
+            line-height: 1.8;
+            opacity: 0.92;
+        }
+
+        /* Learning style note */
+        .learning-note {
+            background: var(--accent-light);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+            border: 1px solid rgba(4, 181, 214, 0.15);
+        }
+
+        .learning-note-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .learning-note p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-deeper);
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .section-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .footer img {
+            height: 28px;
+            opacity: 0.3;
+            margin-bottom: 8px;
+        }
+
+        /* Mobile */
+        @media (max-width: 700px) {
+            .report { padding: 12px; }
+            .card, .area-card, .fase-card { padding: 20px; }
+            .report-header { padding: 28px 20px; }
+            .report-header .person-name { font-size: 22px; }
+            .instruments-overview { grid-template-columns: 1fr 1fr; }
+            .area-header { flex-direction: column; }
+            .entry-card { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ENTRY (only shown if no portal param) -->
+<div class="entry-screen" id="entryScreen" style="display:none;">
+    <div class="entry-card">
+        <img src="logo.png" alt="BuenTrato.AI" class="logo">
+        <h1>Plan de Desarrollo</h1>
+        <p>Este informe se genera desde el portal. Vuelve al portal e ingresa con tu codigo personal.</p>
+        <a href="/" style="display:inline-block; margin-top:16px; color:var(--primary); font-weight:600; text-decoration:none;">Ir al portal</a>
+        <div class="entry-error" id="entryError"></div>
+    </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+    <img src="logo.png" alt="BuenTrato.AI" style="height:64px; filter: brightness(0) invert(1);">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Recopilando tus resultados...</div>
+    <div class="loading-sub" id="loadingSub">Consultando todos los instrumentos</div>
+</div>
+
+<!-- REPORT -->
+<div class="report" id="reportContainer">
+
+    <a href="/" class="back-link" id="backToPortal">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Volver al portal
+    </a>
+
+    <!-- Header -->
+    <div class="report-header">
+        <div class="logo-row">
+            <img src="logo.png" alt="BuenTrato.AI" class="logo-img white">
+            <span class="date-badge" id="reportDate"></span>
+        </div>
+        <div class="person-name" id="personName"></div>
+        <div class="person-role" id="personRole"></div>
+        <div class="report-type">Plan de Desarrollo Personal</div>
+    </div>
+    <div class="brand-line"></div>
+
+    <!-- Instruments Overview -->
+    <div class="card">
+        <div class="card-title">
+            <div class="icon"><img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;"></div>
+            Tu perfil integral
+        </div>
+        <div class="instruments-overview" id="instrumentsOverview"></div>
+    </div>
+
+    <!-- AI: Resumen Ejecutivo -->
+    <div class="card">
+        <div class="card-title">
+            <div class="icon"><img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain;"></div>
+            <span id="planTitulo">Resumen ejecutivo</span>
+        </div>
+        <div id="resumenContent" class="ai-text">
+            <div class="ai-text-loading">
+                <div class="mini-spinner"></div>
+                Generando tu resumen ejecutivo con IA...
+            </div>
+        </div>
+        <div id="fortalezasContent" style="margin-top:20px;"></div>
+        <div id="learningNote"></div>
+    </div>
+
+    <!-- Section: Areas de Desarrollo -->
+    <div class="section-title">
+        <div class="section-icon"><img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;"></div>
+        Areas clave de desarrollo
+    </div>
+
+    <div id="areasContainer">
+        <div class="card">
+            <div class="ai-text-loading">
+                <div class="mini-spinner"></div>
+                Identificando tus areas de desarrollo...
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Roadmap -->
+    <div class="section-title">
+        <div class="section-icon"><img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;"></div>
+        Tu roadmap 30-60-90 dias
+    </div>
+
+    <div id="roadmapContainer">
+        <div class="card">
+            <div class="ai-text-loading">
+                <div class="mini-spinner"></div>
+                Construyendo tu plan de accion...
+            </div>
+        </div>
+    </div>
+
+    <!-- Cierre -->
+    <div id="cierreContainer"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <img src="logo.png" alt="BuenTrato.AI"><br>
+        &copy; 2026 BuenTrato.AI &mdash; Mejores relaciones, mejores equipos
+    </div>
+</div>
+
+<script>
+// ============================================
+// DEMO DATA
+// ============================================
+const DEMO_PLAN = {
+    name: "Camila Torres",
+    firstName: "Camila",
+    role: "Coordinadora de Proyectos",
+    area: "Operaciones",
+    company: "Empresa Demo",
+    availableCount: 5,
+    instruments: {
+        disc: {
+            available: true,
+            natural: { D: 22, I: 30, S: 18, C: 30 },
+            adaptado: { D: 28, I: 25, S: 20, C: 27 },
+            primaryStyle: "I",
+            primaryStyleName: "Influencia",
+            secondaryStyle: "C",
+            secondaryStyleName: "Cumplimiento"
+        },
+        ie: {
+            available: true,
+            scores: { autoconciencia: 80, autorregulacion: 60, motivacion: 80, empatia: 80, habilidades_sociales: 60 },
+            niveles: { autoconciencia: "Alto", autorregulacion: "Medio", motivacion: "Alto", empatia: "Alto", habilidades_sociales: "Medio" },
+            general: 72,
+            nivelGeneral: "Medio"
+        },
+        autoliderazgo: {
+            available: true,
+            scores: { autoconciencia: 75, autogestion: 73, regulacion_emocional: 100, motivacion: 100, adaptabilidad: 50 },
+            niveles: { autoconciencia: "Alto", autogestion: "Medio", regulacion_emocional: "Alto", motivacion: "Alto", adaptabilidad: "Medio" },
+            general: 73,
+            nivelGeneral: "Medio"
+        },
+        estilos: {
+            available: true,
+            scores: { visual: 67, auditivo: 50, verbal: 83, kinestesico: 33 },
+            dominante: "Verbal",
+            ranking: ["Verbal", "Visual", "Auditivo", "Kinestésico"]
+        },
+        clima: {
+            available: true,
+            scores: { seguridad_psi: 80, comunicacion: 60, valoracion: 60, colaboracion: 80, liderazgo: 60 },
+            general: 68
+        }
+    }
+};
+
+let profileData = null;
+
+// ============================================
+// INIT
+// ============================================
+(async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const portalCode = params.get('portal') || sessionStorage.getItem('portalCode');
+
+    if (!portalCode) {
+        document.getElementById('entryScreen').style.display = 'flex';
+        document.getElementById('loadingScreen').style.display = 'none';
+        return;
+    }
+
+    // Show loading
+    document.getElementById('loadingScreen').style.display = 'flex';
+
+    // Demo mode
+    if (portalCode.toLowerCase() === 'demo2026') {
+        profileData = DEMO_PLAN;
+        await new Promise(r => setTimeout(r, 600));
+        showReport();
+        return;
+    }
+
+    // Real mode: fetch all data
+    try {
+        const resp = await fetch('/.netlify/functions/get-plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ portalCode })
+        });
+
+        if (!resp.ok) {
+            let msg = 'Error al cargar datos';
+            try { msg = (await resp.json()).error || msg; } catch(e) {}
+            throw new Error(msg);
+        }
+
+        profileData = await resp.json();
+    } catch (err) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('entryScreen').style.display = 'flex';
+        const errEl = document.getElementById('entryError');
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+        return;
+    }
+
+    showReport();
+})();
+
+// ============================================
+// SHOW REPORT
+// ============================================
+function showReport() {
+    const p = profileData;
+
+    // Hide loading, show report
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('reportContainer').style.display = 'block';
+
+    // Header
+    document.getElementById('personName').textContent = p.name;
+    document.getElementById('personRole').textContent =
+        [p.role, p.area, p.company || ''].filter(Boolean).join(' · ');
+    document.getElementById('reportDate').textContent =
+        new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long' });
+
+    // Back to portal link
+    setupBackLink();
+
+    // Instruments overview
+    renderInstrumentsOverview(p.instruments);
+
+    // Generate AI content (3 parallel calls)
+    generateAIContent(p);
+}
+
+// ============================================
+// BACK TO PORTAL
+// ============================================
+function setupBackLink() {
+    const params = new URLSearchParams(window.location.search);
+    const portalCode = params.get('portal') || sessionStorage.getItem('portalCode');
+    const link = document.getElementById('backToPortal');
+    if (portalCode) {
+        link.href = '/?code=' + encodeURIComponent(portalCode);
+    }
+}
+
+// ============================================
+// INSTRUMENTS OVERVIEW
+// ============================================
+function renderInstrumentsOverview(instruments) {
+    const container = document.getElementById('instrumentsOverview');
+    const items = [
+        { key: 'disc', name: 'DISC', getValue: (i) => i.available ? i.primaryStyleName : null, getScore: () => null, color: '#01516A' },
+        { key: 'ie', name: 'Inteligencia Emocional', getValue: (i) => i.available ? i.general + '%' : null, getScore: (i) => i.general, color: '#0380A6' },
+        { key: 'autoliderazgo', name: 'Autoliderazgo', getValue: (i) => i.available ? i.general + '%' : null, getScore: (i) => i.general, color: '#04B5D6' },
+        { key: 'estilos', name: 'Estilo de Aprendizaje', getValue: (i) => i.available ? i.dominante : null, getScore: () => null, color: '#6DCFE0' },
+        { key: 'clima', name: 'Experiencia Equipo', getValue: (i) => i.available ? i.general + '%' : null, getScore: (i) => i.general, color: '#026B8A' }
+    ];
+
+    container.innerHTML = items.map(item => {
+        const inst = instruments[item.key];
+        if (!inst || !inst.available) {
+            return `<div class="inst-mini inst-not-available">
+                <div class="inst-mini-name">${item.name}</div>
+                <div class="inst-mini-score" style="font-size:14px; color:var(--text-light);">No evaluado</div>
+            </div>`;
+        }
+
+        const value = item.getValue(inst);
+        const score = item.getScore ? item.getScore(inst) : null;
+
+        // Special case for DISC: show style bars
+        if (item.key === 'disc') {
+            return `<div class="inst-mini">
+                <div class="inst-mini-name">${item.name}</div>
+                <div class="inst-mini-score" style="font-size:16px;">${inst.primaryStyleName}</div>
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                    <div style="flex:1; text-align:center;">
+                        <div style="font-size:10px; color:var(--text-light);">D</div>
+                        <div style="height:4px; background:#E0E0E0; border-radius:2px; overflow:hidden;"><div style="height:100%; width:${inst.natural.D}%; background:#01516A; border-radius:2px;"></div></div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                        <div style="font-size:10px; color:var(--text-light);">I</div>
+                        <div style="height:4px; background:#E0E0E0; border-radius:2px; overflow:hidden;"><div style="height:100%; width:${inst.natural.I}%; background:#0380A6; border-radius:2px;"></div></div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                        <div style="font-size:10px; color:var(--text-light);">S</div>
+                        <div style="height:4px; background:#E0E0E0; border-radius:2px; overflow:hidden;"><div style="height:100%; width:${inst.natural.S}%; background:#04B5D6; border-radius:2px;"></div></div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                        <div style="font-size:10px; color:var(--text-light);">C</div>
+                        <div style="height:4px; background:#E0E0E0; border-radius:2px; overflow:hidden;"><div style="height:100%; width:${inst.natural.C}%; background:#6DCFE0; border-radius:2px;"></div></div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Special for estilos: show dominant
+        if (item.key === 'estilos') {
+            return `<div class="inst-mini">
+                <div class="inst-mini-name">${item.name}</div>
+                <div class="inst-mini-score" style="font-size:16px;">${inst.dominante}</div>
+                <div style="font-size:11px; color:var(--text-light); margin-top:2px;">${inst.ranking.join(' > ')}</div>
+            </div>`;
+        }
+
+        // Default: score + bar
+        return `<div class="inst-mini">
+            <div class="inst-mini-name">${item.name}</div>
+            <div class="inst-mini-score">${value}</div>
+            <div class="inst-mini-bar"><div class="inst-mini-fill" style="width:${score}%; background:${item.color};"></div></div>
+        </div>`;
+    }).join('');
+}
+
+// ============================================
+// GENERATE AI CONTENT (3 parallel calls)
+// ============================================
+async function generateAIContent(profile) {
+    const payload = {
+        name: profile.name,
+        role: profile.role,
+        area: profile.area,
+        company: profile.company || '',
+        instruments: profile.instruments
+    };
+
+    // 3 parallel calls
+    const [resumenResult, areasResult, roadmapResult] = await Promise.allSettled([
+        callGenerate(payload, 'resumen'),
+        callGenerate(payload, 'areas_desarrollo'),
+        callGenerate(payload, 'roadmap')
+    ]);
+
+    // Fill resumen
+    if (resumenResult.status === 'fulfilled' && resumenResult.value) {
+        fillResumen(resumenResult.value);
+    } else {
+        document.getElementById('resumenContent').innerHTML =
+            '<div class="ai-error">No se pudo generar el resumen. Recarga la pagina para intentar de nuevo.</div>';
+    }
+
+    // Fill areas
+    if (areasResult.status === 'fulfilled' && areasResult.value) {
+        fillAreas(areasResult.value);
+    } else {
+        document.getElementById('areasContainer').innerHTML =
+            '<div class="card"><div class="ai-error">No se pudo generar el analisis de areas. Recarga la pagina.</div></div>';
+    }
+
+    // Fill roadmap
+    if (roadmapResult.status === 'fulfilled' && roadmapResult.value) {
+        fillRoadmap(roadmapResult.value);
+    } else {
+        document.getElementById('roadmapContainer').innerHTML =
+            '<div class="card"><div class="ai-error">No se pudo generar el roadmap. Recarga la pagina.</div></div>';
+    }
+}
+
+async function callGenerate(profile, group) {
+    const resp = await fetch('/.netlify/functions/generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profile, group })
+    });
+
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+
+    const data = await resp.json();
+    return data.sections;
+}
+
+// ============================================
+// FILL RESUMEN
+// ============================================
+function fillResumen(s) {
+    // Update title
+    if (s.titulo_plan) {
+        document.getElementById('planTitulo').textContent = s.titulo_plan;
+    }
+
+    // Resumen text
+    document.getElementById('resumenContent').innerHTML =
+        `<div class="ai-text">${formatText(s.resumen_ejecutivo)}</div>`;
+
+    // Fortalezas
+    if (s.perfil_fortalezas) {
+        document.getElementById('fortalezasContent').innerHTML = `
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #E5E7EB;">
+                <div style="font-size:15px; font-weight:700; color:var(--primary-dark); margin-bottom:10px;">
+                    <img src="carita.png" alt="" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;">
+                    Tus principales fortalezas
+                </div>
+                <div class="ai-text">${formatText(s.perfil_fortalezas)}</div>
+            </div>`;
+    }
+
+    // Learning style note
+    if (s.nota_aprendizaje) {
+        document.getElementById('learningNote').innerHTML = `
+            <div class="learning-note">
+                <div class="learning-note-label">
+                    <img src="carita.png" alt="" style="width:14px; height:14px; vertical-align:middle; margin-right:4px;">
+                    Personalizado para tu estilo de aprendizaje
+                </div>
+                <p>${s.nota_aprendizaje}</p>
+            </div>`;
+    }
+}
+
+// ============================================
+// FILL AREAS DE DESARROLLO
+// ============================================
+function fillAreas(s) {
+    let html = '';
+
+    for (let i = 1; i <= 4; i++) {
+        const nombre = s[`area${i}_nombre`];
+        if (!nombre) continue;
+
+        const fuentes = s[`area${i}_fuentes`] || '';
+        const nivel = s[`area${i}_nivel`] || 'oportunidad';
+        const analisis = s[`area${i}_analisis`] || '';
+        const h1Titulo = s[`area${i}_herramienta1_titulo`] || '';
+        const h1Texto = s[`area${i}_herramienta1`] || '';
+        const h2Titulo = s[`area${i}_herramienta2_titulo`] || '';
+        const h2Texto = s[`area${i}_herramienta2`] || '';
+
+        const nivelLabel = nivel === 'fortaleza' ? 'Fortaleza' : nivel === 'critica' ? 'Critica' : 'Oportunidad';
+        const nivelClass = nivel === 'fortaleza' ? 'nivel-fortaleza' : nivel === 'critica' ? 'nivel-critica' : 'nivel-oportunidad';
+
+        html += `
+        <div class="area-card">
+            <div class="area-header">
+                <div>
+                    <div class="area-name">${nombre}</div>
+                    <div class="area-fuentes">${fuentes}</div>
+                </div>
+                <span class="area-nivel-badge ${nivelClass}">${nivelLabel}</span>
+            </div>
+            <div class="area-analisis">${formatText(analisis)}</div>
+            <div class="herramientas-section">
+                <div class="herramientas-label">
+                    <img src="carita.png" alt="" style="width:12px; height:12px; vertical-align:middle; margin-right:4px;">
+                    Herramientas recomendadas
+                </div>
+                ${h1Titulo ? `<div class="herramienta-item"><p><strong>${h1Titulo}.</strong> ${h1Texto}</p></div>` : ''}
+                ${h2Titulo ? `<div class="herramienta-item"><p><strong>${h2Titulo}.</strong> ${h2Texto}</p></div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    document.getElementById('areasContainer').innerHTML = html || '<div class="card"><div class="ai-error">No se identificaron areas de desarrollo.</div></div>';
+}
+
+// ============================================
+// FILL ROADMAP
+// ============================================
+function fillRoadmap(s) {
+    let html = '';
+
+    for (let i = 1; i <= 3; i++) {
+        const titulo = s[`fase${i}_titulo`];
+        if (!titulo) continue;
+
+        const periodo = s[`fase${i}_periodo`] || '';
+        const objetivo = s[`fase${i}_objetivo`] || '';
+
+        let acciones = '';
+        for (let j = 1; j <= 3; j++) {
+            const aTitulo = s[`fase${i}_accion${j}_titulo`];
+            const aTexto = s[`fase${i}_accion${j}`];
+            if (aTitulo && aTexto) {
+                acciones += `<div class="accion-item"><strong>${aTitulo}.</strong> ${aTexto}</div>`;
+            }
+        }
+
+        html += `
+        <div class="fase-card fase-${i}">
+            <div class="fase-header">
+                <div class="fase-number">${i}</div>
+                <div class="fase-title-block">
+                    <div class="fase-title">${titulo}</div>
+                    <div class="fase-periodo">${periodo}</div>
+                </div>
+            </div>
+            <div class="fase-objetivo">${objetivo}</div>
+            ${acciones}
+        </div>`;
+    }
+
+    document.getElementById('roadmapContainer').innerHTML = html || '<div class="card"><div class="ai-error">No se pudo generar el roadmap.</div></div>';
+
+    // Cierre
+    if (s.mensaje_cierre) {
+        document.getElementById('cierreContainer').innerHTML = `
+            <div class="cierre-card">
+                <div class="card-title">
+                    <div class="icon" style="background:rgba(255,255,255,0.15);">
+                        <img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain; filter:brightness(0) invert(1);">
+                    </div>
+                    Tu camino de desarrollo
+                </div>
+                <div class="cierre-text">${formatText(s.mensaje_cierre)}</div>
+            </div>`;
+    }
+}
+
+// ============================================
+// UTILS
+// ============================================
+function formatText(text) {
+    if (!text) return '';
+    // Convert **bold** to <strong>
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Convert newlines to paragraphs
+    return text.split('\n\n').map(p => `<p style="margin-bottom:12px;">${p.trim()}</p>`).join('');
+}
+</script>
+</body>
+</html>
