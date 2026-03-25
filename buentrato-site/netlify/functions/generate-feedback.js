@@ -1,154 +1,108 @@
-const fetch = require("node-fetch");
+// ==========================================
+// Netlify Serverless Function: generate-feedback
+// Llama a Claude API para generar feedback DISC personalizado
+// ==========================================
 
-exports.handler = async (event, context) => {
-    // Add CORS headers
-    const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Content-Type": "application/json"
-    };
+exports.handler = async (event) => {
+    // Solo aceptar POST
+    if (event.httpMethod !== "POST") {
+        return { statusCode: 405, body: "Method Not Allowed" };
+    }
 
-    // Handle preflight
-    if (event.httpMethod === "OPTIONS") {
-        return { statusCode: 200, headers, body: "" };
+    // Verificar que la API key está configurada
+    const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+    if (!CLAUDE_API_KEY) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Claude API key no configurada" })
+        };
     }
 
     try {
-        const body = JSON.parse(event.body);
-        const { person1, person2, topic, teamName } = body;
+        const { person, companion, topic, topicId } = JSON.parse(event.body);
 
-        if (!person1 || !person2 || !topic) {
-            return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ error: "Missing required fields" })
-            };
-        }
+        const discDescriptions = {
+            D: "Dominancia - Directo, decidido, orientado a resultados, competitivo",
+            I: "Influencia - Entusiasta, optimista, colaborativo, expresivo",
+            S: "Estabilidad - Paciente, confiable, buen oyente, leal",
+            C: "Cumplimiento - Analítico, preciso, sistemático, cauteloso"
+        };
 
-        const apiKey = process.env.ANTHROPIC_API_KEY;
-        if (!apiKey) {
-            return {
-                statusCode: 500,
-                headers,
-                body: JSON.stringify({ error: "Missing ANTHROPIC_API_KEY" })
-            };
-        }
+        // Construir info de perfil adaptado si existe
+        const personAdaptado = person.discAdaptado
+            ? `\n- Puntajes Adaptado (cómo se comporta en el trabajo): D=${person.discAdaptado.D}, I=${person.discAdaptado.I}, S=${person.discAdaptado.S}, C=${person.discAdaptado.C}`
+            : "";
+        const companionAdaptado = companion.discAdaptado
+            ? `\n- Puntajes Adaptado (cómo se comporta en el trabajo): D=${companion.discAdaptado.D}, I=${companion.discAdaptado.I}, S=${companion.discAdaptado.S}, C=${companion.discAdaptado.C}`
+            : "";
 
-        // Build prompt for Claude
-        const prompt = `Eres un experto en dinámicas humanas, comportamiento DISC y relaciones interpersonales en contextos laborales latinoamericanos.
+        const prompt = `Eres un experto en perfiles DISC y relaciones laborales de la empresa BuenTrato.AI.
 
-Necesito que generes feedback personalizado en español sobre la relación entre dos personas respecto a un tema específico. El feedback debe ser práctico, empático y accionable.
+Genera un análisis personalizado y práctico para mejorar la relación entre dos personas de un equipo de trabajo.
 
-PERSONAS:
-- Persona 1: ${person1.name} (${person1.role})
-  - Estilo DISC Natural: D=${person1.disc.D}%, I=${person1.disc.I}%, S=${person1.disc.S}%, C=${person1.disc.C}%
-  - Estilo Primario: ${person1.primaryStyle}
+PERSONA 1 (quien consulta):
+- Nombre: ${person.name}
+- Rol: ${person.role}
+- Perfil DISC principal: ${discDescriptions[person.primaryStyle]}
+- Puntajes Natural (personalidad base): D=${person.disc.D}, I=${person.disc.I}, S=${person.disc.S}, C=${person.disc.C}${personAdaptado}
 
-- Persona 2: ${person2.name} (${person2.role})
-  - Estilo DISC Natural: D=${person2.disc.D}%, I=${person2.disc.I}%, S=${person2.disc.S}%, C=${person2.disc.C}%
-  - Estilo Primario: ${person2.primaryStyle}
+PERSONA 2 (compañero/a):
+- Nombre: ${companion.name}
+- Rol: ${companion.role}
+- Perfil DISC principal: ${discDescriptions[companion.primaryStyle]}
+- Puntajes Natural (personalidad base): D=${companion.disc.D}, I=${companion.disc.I}, S=${companion.disc.S}, C=${companion.disc.C}${companionAdaptado}
 
-TEMA A ABORDAR: ${topic}
-EQUIPO: ${teamName || "Sin especificar"}
+TEMA ESPECÍFICO: ${topic}
 
-Por favor genera feedback con la siguiente estructura en JSON:
-{
-  "feedback": {
-    "strengths": ["Lista de 2-3 fortalezas de su relación respecto a este tema"],
-    "challenges": ["Lista de 2-3 desafíos o roces potenciales"],
-    "tips": ["Tip 1 para mejorar la comunicación", "Tip 2 específico para ${topic}", "Tip 3 para fortalecer la relación"]
-  }
-}
-
-El tono debe ser profesional pero cálido, reconociendo las diferencias como oportunidades de aprendizaje mutuo. Incluye referencias a los estilos DISC solo cuando sean relevantes y ayuden a la comprensión.`;
+INSTRUCCIONES:
+- Escribe como si hablaras directamente a ${person.name} (usa "tú")
+- Menciona a ${companion.name} por su nombre
+- Sé específico al tema "${topic}" — no des consejos genéricos
+- Usa un tono cálido pero profesional
+- Considera los puntajes exactos DISC (tanto Natural como Adaptado si están disponibles), no solo el estilo primario
+- Si hay diferencia significativa entre Natural y Adaptado, menciona cómo eso afecta la dinámica
+- Da 2-3 párrafos cortos con insights profundos y accionables
+- No uses viñetas ni listas — escribe en prosa fluida
+- Escribe en español
+- No incluyas encabezados ni títulos`;
 
         const response = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": apiKey,
+                "x-api-key": CLAUDE_API_KEY,
                 "anthropic-version": "2023-06-01"
             },
             body: JSON.stringify({
                 model: "claude-sonnet-4-20250514",
-                max_tokens: 1000,
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ]
+                max_tokens: 600,
+                messages: [{ role: "user", content: prompt }]
             })
         });
 
         if (!response.ok) {
-            const error = await response.text();
-            console.error("Claude API error:", response.status, error);
-
-            // Return fallback feedback
+            const errText = await response.text();
+            console.error("Claude API error:", errText);
             return {
-                statusCode: 200,
-                headers,
-                body: JSON.stringify({
-                    feedback: {
-                        strengths: [
-                            `${person1.name} y ${person2.name} pueden colaborar de manera efectiva en ${topic} aprovechando sus diferencias de estilos.`,
-                            "Ambos tienen potencial para aprender mutuamente de sus perspectivas únicas."
-                        ],
-                        challenges: [
-                            "Es importante que ambos reconozcan y respeten sus diferentes enfoques.",
-                            "La comunicación explícita sobre expectativas es clave en este tema."
-                        ],
-                        tips: [
-                            `En ${topic}, ${person1.name} debe comunicar claramente sus objetivos y ${person2.name} puede asegurar que se consideren todos los detalles.`,
-                            "Acuerden previamente cómo abordarán este tema para evitar malentendidos.",
-                            "Celebren los pequeños avances juntos para fortalecer la confianza mutua."
-                        ]
-                    }
-                })
+                statusCode: response.status,
+                body: JSON.stringify({ error: "Error al generar feedback" })
             };
         }
 
         const data = await response.json();
-        const content = data.content[0].text;
-
-        // Try to parse JSON from Claude's response
-        let feedback;
-        try {
-            // Extract JSON from the response (Claude might include extra text)
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                const parsed = JSON.parse(jsonMatch[0]);
-                feedback = parsed.feedback || parsed;
-            } else {
-                feedback = {
-                    strengths: ["Los estilos de ambos pueden complementarse bien"],
-                    challenges: ["Comunicación clara es esencial"],
-                    tips: ["Establezcan expectativas claras", "Respeten los diferentes enfoques", "Comuníquense regularmente"]
-                };
-            }
-        } catch (e) {
-            console.log("Could not parse Claude JSON, using fallback");
-            feedback = {
-                strengths: ["Los estilos de ambos pueden complementarse bien"],
-                challenges: ["Comunicación clara es esencial"],
-                tips: ["Establezcan expectativas claras", "Respeten los diferentes enfoques", "Comuníquense regularmente"]
-            };
-        }
+        const feedback = data.content[0].text;
 
         return {
             statusCode: 200,
-            headers,
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ feedback })
         };
 
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Function error:", error);
         return {
             statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({ error: "Error interno del servidor" })
         };
     }
 };

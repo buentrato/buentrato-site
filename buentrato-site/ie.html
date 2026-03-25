@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="carita.png">
+    <title>Inteligencia Emocional — BuenTrato.AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0380A6;
+            --primary-dark: #026B8A;
+            --primary-deeper: #01516A;
+            --primary-light: #E6F4F9;
+            --primary-lighter: #F2FAFE;
+            --accent: #04B5D6;
+            --accent-light: #E0F5FA;
+            --gray: #777579;
+            --gray-light: #F5F5F5;
+            --white: #FFFFFF;
+            --text: #2D2D2D;
+            --text-light: #666666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-light);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .entry-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            padding: 20px;
+        }
+
+        .entry-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .entry-card .logo { height: 90px; margin-bottom: 24px; }
+
+        .entry-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .entry-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-family: 'Inter', monospace;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .code-input:focus { border-color: var(--primary); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .entry-error {
+            color: #C0392B;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .demo-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: var(--primary);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .loading-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: var(--white); font-size: 16px; font-weight: 500; }
+        .loading-sub { color: rgba(255,255,255,0.7); font-size: 13px; }
+
+        .report {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-deeper) 0%, var(--primary-dark) 40%, var(--primary) 100%);
+            border-radius: 20px;
+            padding: 40px 36px;
+            color: var(--white);
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .report-header .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-img { height: 56px; }
+        .logo-img.white { filter: brightness(0) invert(1); }
+
+        .report-header .date-badge {
+            font-size: 12px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 14px;
+            border-radius: 20px;
+        }
+
+        .report-header .person-name {
+            font-size: 28px; font-weight: 700;
+            margin-bottom: 6px;
+            position: relative; z-index: 1;
+        }
+
+        .report-header .person-role {
+            font-size: 15px; opacity: 0.85;
+            position: relative; z-index: 1;
+        }
+
+        .report-header .report-type {
+            display: inline-block;
+            margin-top: 16px;
+            background: rgba(255,255,255,0.18);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative; z-index: 1;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .brand-line {
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent), #6DCFE0);
+            border-radius: 2px;
+            margin: 0 0 24px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(3,128,166,0.06);
+            border: 1px solid rgba(3,128,166,0.06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+        }
+
+        .radar-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .dimension-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .dimension-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .dim-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dim-icon img { width: 24px; height: 24px; object-fit: contain; }
+
+        .dim-info { flex: 1; min-width: 0; }
+
+        .dim-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .dim-sublabel {
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 1px 8px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .dim-bar-track {
+            height: 10px;
+            background: #F0F2F4;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .dim-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1.2s ease;
+        }
+
+        .dim-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 48px;
+            text-align: right;
+        }
+
+        .score-summary {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .score-big {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .score-nivel {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .score-meter {
+            width: 200px;
+            height: 8px;
+            background: #F0F2F4;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            overflow: hidden;
+        }
+
+        .score-meter-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent));
+            transition: width 1.5s ease;
+        }
+
+        .ai-section {
+            background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .ai-section .ai-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-section p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .ai-section p:last-child { margin-bottom: 0; }
+
+        .ai-loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-loading .spinner-small {
+            width: 24px; height: 24px;
+            border: 3px solid #E5E7EB;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        .back-to-portal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .back-to-portal:hover { text-decoration: underline; }
+
+        .report-footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .footer-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-light), var(--primary), var(--primary-light), transparent);
+            margin: 0 40px 16px;
+        }
+
+        @media (max-width: 600px) {
+            .entry-card { padding: 32px 24px; }
+            .report-header { padding: 28px 24px; }
+            .report-header .person-name { font-size: 22px; }
+            .card { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="entry-screen" id="entryScreen">
+    <div class="entry-card">
+        <img src="logo.png" alt="BuenTrato.AI" class="logo">
+        <h1>Inteligencia Emocional</h1>
+        <p>Ingresa tu codigo personal para ver tu informe de inteligencia emocional: autoconciencia, autorregulacion, motivacion, empatia y habilidades sociales.</p>
+        <input type="text" class="code-input" id="codeInput"
+               placeholder="Ingresa tu codigo"
+               autocomplete="off" spellcheck="false">
+        <button class="btn-primary" id="btnAccess" onclick="loadReport()">
+            Ver mi informe
+        </button>
+        <div class="entry-error" id="entryError"></div>
+        <div class="demo-link" onclick="loadDemo()">Probar con datos de ejemplo (demo2026)</div>
+    </div>
+</div>
+
+<div class="loading-screen" id="loadingScreen">
+    <img src="logo.png" alt="BuenTrato.AI" class="logo-img white" style="height:64px;">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Buscando tu perfil...</div>
+    <div class="loading-sub" id="loadingSub">Esto toma unos segundos</div>
+</div>
+
+<div class="report" id="reportContainer">
+
+    <a href="/index.html" class="back-to-portal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Volver al portal
+    </a>
+
+    <div class="report-header">
+        <div class="logo-row">
+            <img src="logo.png" alt="BuenTrato.AI" class="logo-img white">
+            <span class="date-badge" id="reportDate"></span>
+        </div>
+        <div class="person-name" id="reportName"></div>
+        <div class="person-role" id="reportRole"></div>
+        <div class="report-type">
+            <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain; vertical-align:middle; filter: brightness(0) invert(1); margin-right:6px;">
+            Inteligencia Emocional
+        </div>
+    </div>
+
+    <div class="brand-line"></div>
+
+    <div class="card">
+        <div class="score-summary">
+            <div class="score-big" id="scoreGeneral">--</div>
+            <div class="score-label">Indice general de inteligencia emocional</div>
+            <div class="score-nivel" id="scoreNivel"></div>
+            <div class="score-meter">
+                <div class="score-meter-fill" id="scoreMeterFill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
+            Tu perfil emocional
+        </div>
+        <div class="radar-container">
+            <canvas id="radarChart" width="360" height="360"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
+            Detalle por dimension
+        </div>
+        <div class="dimension-list" id="dimensionList"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
+            Analisis personalizado
+        </div>
+        <div class="ai-section" id="aiSection">
+            <div class="ai-loading">
+                <div class="spinner-small"></div>
+                <p style="color: var(--primary); font-size: 13px;">Generando analisis personalizado...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-footer">
+        <div class="footer-line"></div>
+        <img src="logo.png" alt="BuenTrato.AI" class="logo-img" style="opacity: 0.5; margin-bottom: 8px;"><br>
+        Informe generado con inteligencia artificial por BuenTrato.AI<br>
+        Este informe es confidencial y de uso personal.
+    </div>
+</div>
+
+<script>
+const DIMENSIONS = [
+    { id: 'autoconciencia',      label: 'Autoconciencia',       color: '#01516A', desc: 'Reconocer tus emociones y como afectan tus pensamientos y comportamiento' },
+    { id: 'autorregulacion',     label: 'Autorregulacion',      color: '#026B8A', desc: 'Manejar tus emociones de forma saludable y adaptarte a los cambios' },
+    { id: 'motivacion',          label: 'Motivacion',           color: '#0380A6', desc: 'Tu impulso interno para alcanzar metas y mantener una actitud positiva' },
+    { id: 'empatia',             label: 'Empatia',              color: '#04B5D6', desc: 'Comprender las emociones de los demas y responder con sensibilidad' },
+    { id: 'habilidades_sociales', label: 'Habilidades sociales', color: '#6DCFE0', desc: 'Construir relaciones, comunicarte y colaborar de forma efectiva' }
+];
+
+const DEMO_PROFILES = {
+    "demo2026": {
+        name: "Camila Torres",
+        role: "Coordinadora de Proyectos",
+        company: "Empresa Demo",
+        area: "Operaciones",
+        date: "marzo de 2026",
+        ieGeneral: 72,
+        nivelGeneral: "Medio",
+        lectura: "Nivel funcional con oportunidades de mejora",
+        interpretacion: "Tu resultado refleja una base funcional en tu manejo emocional. En muchas situaciones logras comprender lo que sientes y responder de forma adecuada, aunque hay espacios donde podrias ganar mayor claridad y constancia.",
+        scores: {
+            autoconciencia: 80,
+            autorregulacion: 64,
+            motivacion: 72,
+            empatia: 68,
+            habilidades_sociales: 76
+        },
+        niveles: {
+            autoconciencia: "Alto",
+            autorregulacion: "Medio",
+            motivacion: "Medio",
+            empatia: "Medio",
+            habilidades_sociales: "Medio"
+        }
+    }
+};
+
+let currentProfile = null;
+
+document.getElementById('codeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loadReport();
+});
+
+(function checkUrlCode() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code') || params.get('c');
+    if (code) {
+        document.getElementById('codeInput').value = code;
+        loadReport();
+    }
+})();
+
+function loadDemo() {
+    document.getElementById('codeInput').value = 'demo2026';
+    loadReport();
+}
+
+async function loadReport() {
+    const code = document.getElementById('codeInput').value.trim();
+    if (!code) { showError('Ingresa tu codigo personal'); return; }
+
+    document.getElementById('entryScreen').style.display = 'none';
+    const loading = document.getElementById('loadingScreen');
+    loading.style.display = 'flex';
+    document.getElementById('loadingText').textContent = 'Buscando tu perfil...';
+    document.getElementById('loadingSub').textContent = 'Conectando con la base de datos';
+
+    const demoProfile = DEMO_PROFILES[code.toLowerCase()];
+    if (demoProfile) {
+        currentProfile = demoProfile;
+        await delay(600);
+    } else {
+        try {
+            const resp = await fetch('/.netlify/functions/get-ie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+
+            if (!resp.ok) {
+                let errorMsg = 'Codigo no encontrado. Verifica que sea correcto.';
+                try {
+                    const err = await resp.json();
+                    errorMsg = err.error || errorMsg;
+                } catch(e) {}
+                throw new Error(errorMsg);
+            }
+
+            currentProfile = await resp.json();
+        } catch (err) {
+            loading.style.display = 'none';
+            document.getElementById('entryScreen').style.display = 'flex';
+            showError(err.message);
+            return;
+        }
+    }
+
+    document.getElementById('loadingText').textContent = 'Construyendo tu informe...';
+    document.getElementById('loadingSub').textContent = 'Analizando tu perfil emocional';
+    await delay(400);
+
+    renderHeader();
+    renderScore();
+    renderRadar();
+    renderDimensions();
+
+    loading.style.display = 'none';
+    document.getElementById('reportContainer').style.display = 'block';
+
+    await delay(800);
+    renderAI();
+}
+
+function showError(msg) {
+    const el = document.getElementById('entryError');
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function renderHeader() {
+    const d = currentProfile;
+    document.getElementById('reportName').textContent = d.name;
+    let roleText = d.role;
+    if (d.company) roleText += ' - ' + d.company;
+    if (d.area) roleText += ' - ' + d.area;
+    document.getElementById('reportRole').textContent = roleText;
+    document.getElementById('reportDate').textContent = d.date;
+}
+
+function renderScore() {
+    const avg = currentProfile.ieGeneral
+        || Math.round(Object.values(currentProfile.scores).reduce((a, b) => a + b, 0) / Object.values(currentProfile.scores).length);
+    document.getElementById('scoreGeneral').textContent = avg;
+
+    const nivel = currentProfile.nivelGeneral || '';
+    const nivelEl = document.getElementById('scoreNivel');
+    if (nivel === 'Alto') {
+        nivelEl.textContent = 'Nivel Alto';
+        nivelEl.style.background = '#E6F4F9';
+        nivelEl.style.color = '#01516A';
+    } else if (nivel === 'Medio') {
+        nivelEl.textContent = 'Nivel Medio';
+        nivelEl.style.background = '#FFF7ED';
+        nivelEl.style.color = '#9A6700';
+    } else {
+        nivelEl.textContent = 'Nivel en desarrollo';
+        nivelEl.style.background = '#FEF2F2';
+        nivelEl.style.color = '#991B1B';
+    }
+
+    setTimeout(() => {
+        document.getElementById('scoreMeterFill').style.width = avg + '%';
+    }, 100);
+}
+
+function renderRadar() {
+    const canvas = document.getElementById('radarChart');
+    const ctx = canvas.getContext('2d');
+    const size = 360;
+    const cx = size / 2, cy = size / 2;
+    const r = size * 0.35;
+    const n = DIMENSIONS.length;
+
+    canvas.width = size;
+    canvas.height = size;
+    ctx.clearRect(0, 0, size, size);
+
+    [0.25, 0.5, 0.75, 1].forEach(level => {
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+            const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+            const x = cx + Math.cos(angle) * r * level;
+            const y = cy + Math.sin(angle) * r * level;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = '#E5E7EB';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    for (let i = 0; i < n; i++) {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+        ctx.strokeStyle = '#E5E7EB';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    const scores = currentProfile.scores;
+    ctx.beginPath();
+    const points = [];
+    DIMENSIONS.forEach((dim, i) => {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const val = scores[dim.id] / 100;
+        const x = cx + Math.cos(angle) * r * val;
+        const y = cy + Math.sin(angle) * r * val;
+        points.push({ x, y, dim });
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(3, 128, 166, 0.15)';
+    ctx.fill();
+    ctx.strokeStyle = '#0380A6';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = p.dim.color;
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    });
+
+    DIMENSIONS.forEach((dim, i) => {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const labelR = r + 30;
+        const lx = cx + Math.cos(angle) * labelR;
+        const ly = cy + Math.sin(angle) * labelR;
+
+        ctx.fillStyle = dim.color;
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(dim.label, lx, ly);
+
+        ctx.fillStyle = '#2D2D2D';
+        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.fillText(scores[dim.id] + '%', lx, ly + 16);
+    });
+}
+
+function renderDimensions() {
+    const container = document.getElementById('dimensionList');
+    const scores = currentProfile.scores;
+    const niveles = currentProfile.niveles || {};
+
+    container.innerHTML = DIMENSIONS.map(dim => {
+        const score = scores[dim.id];
+        const nivel = niveles[dim.id] || '';
+        const nivelColor = nivel === 'Alto' ? 'background:#E6F4F9;color:#01516A;' : nivel === 'Medio' ? 'background:#FFF7ED;color:#9A6700;' : 'background:#FEF2F2;color:#991B1B;';
+        return `
+            <div class="dimension-item">
+                <div class="dim-icon" style="background: ${dim.color}15;">
+                    <img src="carita.png" alt="">
+                </div>
+                <div class="dim-info">
+                    <div class="dim-label">${dim.label}</div>
+                    ${nivel ? `<span class="dim-sublabel" style="${nivelColor}">${nivel}</span>` : ''}
+                    <div style="font-size:12px; color:var(--text-light); margin-bottom:6px;">${dim.desc}</div>
+                    <div class="dim-bar-track">
+                        <div class="dim-bar-fill" style="width: 0%; background: ${dim.color};" data-target="${score}"></div>
+                    </div>
+                </div>
+                <div class="dim-score" style="color: ${dim.color};">${score}%</div>
+            </div>`;
+    }).join('');
+
+    setTimeout(() => {
+        container.querySelectorAll('.dim-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.target + '%';
+        });
+    }, 100);
+}
+
+function renderAI() {
+    const d = currentProfile;
+    const name = d.name.split(' ')[0];
+
+    // Use Airtable interpretation if available
+    if (d.interpretacion) {
+        document.getElementById('aiSection').innerHTML = `
+            <div class="ai-title">
+                <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;">
+                Analisis personalizado
+            </div>
+            <p>${name}, tu lectura general es: <strong>${d.lectura}</strong>.</p>
+            <p>${d.interpretacion}</p>
+            <p>Este perfil sera el punto de partida para medir tu evolucion emocional a lo largo del programa.</p>
+        `;
+        return;
+    }
+
+    // Fallback: generate from scores
+    const scores = d.scores;
+    const sorted = DIMENSIONS.map(dim => ({ ...dim, score: scores[dim.id] })).sort((a, b) => b.score - a.score);
+    const strengths = sorted.slice(0, 2);
+    const opportunities = sorted.slice(-2).reverse();
+
+    document.getElementById('aiSection').innerHTML = `
+        <div class="ai-title">
+            <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;">
+            Analisis personalizado
+        </div>
+        <p>${name}, tu lectura general es: <strong>${d.lectura || 'Nivel funcional'}</strong>.</p>
+        <p>Tus principales <strong>fortalezas</strong> son <strong>${strengths[0].label}</strong> (${strengths[0].score}%) y <strong>${strengths[1].label}</strong> (${strengths[1].score}%).</p>
+        <p>Las areas con mayor <strong>oportunidad de crecimiento</strong> son <strong>${opportunities[0].label}</strong> (${opportunities[0].score}%) y <strong>${opportunities[1].label}</strong> (${opportunities[1].score}%).</p>
+        <p>Este perfil sera el punto de partida para medir tu evolucion emocional a lo largo del programa.</p>
+    `;
+}
+</script>
+</body>
+</html>
