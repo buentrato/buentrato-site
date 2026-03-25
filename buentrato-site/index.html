@@ -17,6 +17,103 @@
             min-height: 100vh;
         }
 
+        /* === ENTRY SCREEN === */
+        .entry-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #01516A 0%, #026B8A 40%, #0380A6 100%);
+            padding: 20px;
+        }
+        .entry-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .entry-card .logo { height: 90px; margin-bottom: 24px; }
+        .entry-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #026B8A;
+            margin-bottom: 8px;
+        }
+        .entry-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 28px;
+        }
+        .code-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-family: 'Inter', monospace;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .code-input:focus { border-color: #0380A6; }
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: #0380A6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.3s, transform 0.1s;
+        }
+        .btn-primary:hover { background: #026B8A; }
+        .btn-primary:active { transform: scale(0.98); }
+        .entry-error {
+            color: #C0392B;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+        .demo-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #0380A6;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* === LOADING === */
+        .loading-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, #01516A 0%, #026B8A 40%, #0380A6 100%);
+            gap: 24px;
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: white; font-size: 16px; font-weight: 500; }
+        .loading-sub { color: rgba(255,255,255,0.7); font-size: 13px; }
+
+        /* === PORTAL (hidden until login) === */
+        .portal { display: none; }
+
         /* === HEADER === */
         .header {
             background: linear-gradient(135deg, #01516A 0%, #026B8A 40%, #0380A6 100%);
@@ -47,6 +144,10 @@
             font-size: 13px;
             opacity: 0.85;
         }
+        .header-user-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
         .header-avatar {
             width: 36px; height: 36px;
             border-radius: 50%;
@@ -54,6 +155,14 @@
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 14px;
         }
+        .header-logout {
+            font-size: 12px;
+            opacity: 0.7;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 2px;
+        }
+        .header-logout:hover { opacity: 1; }
 
         /* === ROLE TABS === */
         .role-tabs {
@@ -75,9 +184,7 @@
             align-items: center;
             gap: 8px;
         }
-        .role-tab:hover {
-            color: rgba(255,255,255,0.85);
-        }
+        .role-tab:hover { color: rgba(255,255,255,0.85); }
         .role-tab.active {
             color: white;
             border-bottom-color: white;
@@ -87,9 +194,7 @@
             object-fit: contain;
             opacity: 0.7;
         }
-        .role-tab.active .tab-icon {
-            opacity: 1;
-        }
+        .role-tab.active .tab-icon { opacity: 1; }
 
         /* === MAIN === */
         .main {
@@ -110,19 +215,14 @@
         }
 
         /* === CATEGORY === */
-        .category {
-            margin-bottom: 36px;
-        }
+        .category { margin-bottom: 36px; }
         .category-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 16px;
         }
-        .category-icon {
-            width: 24px; height: 24px;
-            object-fit: contain;
-        }
+        .category-icon { width: 24px; height: 24px; object-fit: contain; }
         .category-title {
             font-size: 17px;
             font-weight: 700;
@@ -164,6 +264,10 @@
             opacity: 0.45;
             pointer-events: none;
         }
+        .tool-card.locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
         .tool-card-top {
             display: flex;
             align-items: flex-start;
@@ -186,6 +290,7 @@
         }
         .badge-active { background: #E6F6F9; color: #0380A6; }
         .badge-soon { background: #F0EEEF; color: #777579; }
+        .badge-locked { background: #FFF7ED; color: #9A6700; }
         .badge-new { background: #ECFDF5; color: #059669; }
         .tool-card-title {
             font-size: 15px;
@@ -196,11 +301,6 @@
             font-size: 13px;
             color: #777579;
             line-height: 1.5;
-        }
-        .tool-card-month {
-            font-size: 11px;
-            color: #04B5D6;
-            font-weight: 600;
         }
 
         /* === FOOTER === */
@@ -223,10 +323,45 @@
             .header-top { flex-direction: column; gap: 12px; }
             .role-tab { padding: 10px 16px; font-size: 13px; }
             .header { position: relative; }
+            .entry-card { padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
+
+<!-- =============================== -->
+<!-- ENTRY SCREEN (LOGIN)            -->
+<!-- =============================== -->
+<div class="entry-screen" id="entryScreen">
+    <div class="entry-card">
+        <img src="logo.png" alt="BuenTrato.AI" class="logo">
+        <h1>Hola!</h1>
+        <p>Ingresa tu codigo personal para acceder a tus instrumentos y ver tus informes.</p>
+        <input type="text" class="code-input" id="codeInput"
+               placeholder="Ingresa tu codigo"
+               autocomplete="off" spellcheck="false">
+        <button class="btn-primary" onclick="loginPortal()">
+            Ingresar al portal
+        </button>
+        <div class="entry-error" id="entryError"></div>
+        <div class="demo-link" onclick="loginDemo()">Explorar con datos de ejemplo (demo2026)</div>
+    </div>
+</div>
+
+<!-- =============================== -->
+<!-- LOADING                          -->
+<!-- =============================== -->
+<div class="loading-screen" id="loadingScreen">
+    <img src="logo.png" alt="BuenTrato.AI" style="height:64px; filter: brightness(0) invert(1);">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Buscando tu perfil...</div>
+    <div class="loading-sub" id="loadingSub">Conectando con la base de datos</div>
+</div>
+
+<!-- =============================== -->
+<!-- PORTAL (visible after login)    -->
+<!-- =============================== -->
+<div class="portal" id="portalContainer">
 
     <!-- HEADER -->
     <div class="header">
@@ -235,7 +370,10 @@
                 <img src="logo.png" alt="BuenTrato.AI">
             </div>
             <div class="header-user">
-                <span>Hola!</span>
+                <div>
+                    <div class="header-user-name" id="headerName">Hola!</div>
+                    <div class="header-logout" onclick="logout()">Cambiar usuario</div>
+                </div>
                 <div class="header-avatar">
                     <img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain; filter: brightness(0) invert(1);">
                 </div>
@@ -272,46 +410,45 @@
                     <div class="category-line"></div>
                 </div>
                 <div class="tools-grid">
-                    <a href="/informe" class="tool-card">
+                    <a href="#" class="tool-card locked" id="card-disc" data-instrument="disc">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E2EEF3;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-active">Activa</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Informe DISC Individual</div>
                         <div class="tool-card-desc">Tu perfil comportamental completo: estilo natural, adaptado, fortalezas y oportunidades de desarrollo.</div>
-                        <div class="tool-card-month">Mes 2 del programa</div>
                     </a>
 
-                    <a href="/ie" class="tool-card">
+                    <a href="#" class="tool-card locked" id="card-ie" data-instrument="ie">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E6F4F9;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-active">Activa</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Inteligencia Emocional</div>
                         <div class="tool-card-desc">Tu perfil emocional: autoconciencia, autorregulaci&oacute;n, empat&iacute;a, motivaci&oacute;n y habilidades sociales.</div>
                     </a>
 
-                    <a href="#" class="tool-card disabled">
+                    <a href="#" class="tool-card locked" id="card-estilos" data-instrument="estilos">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E0F5FA;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Estilos de Aprendizaje</div>
                         <div class="tool-card-desc">C&oacute;mo aprendes mejor: visual, auditivo, lector/escritor o kinest&eacute;sico. Optimiza tu desarrollo.</div>
                     </a>
 
-                    <a href="/autoliderazgo" class="tool-card">
+                    <a href="#" class="tool-card locked" id="card-autoliderazgo" data-instrument="autoliderazgo">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #EBF8FB;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-active">Activa</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Autoliderazgo</div>
                         <div class="tool-card-desc">Tu capacidad de dirigirte a ti mismo/a: autodisciplina, proactividad y gesti&oacute;n personal.</div>
@@ -327,38 +464,26 @@
                     <div class="category-line"></div>
                 </div>
                 <div class="tools-grid">
-                    <a href="/experiencia" class="tool-card">
+                    <a href="#" class="tool-card locked" id="card-clima" data-instrument="clima">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E2EEF3;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-active">Activa</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Experiencia en el equipo</div>
                         <div class="tool-card-desc">Tu percepci&oacute;n personal sobre el clima, la confianza y la din&aacute;mica de trabajo en tu equipo.</div>
                     </a>
 
-                    <a href="/disc" class="tool-card">
+                    <a href="#" class="tool-card locked" id="card-feedback" data-instrument="feedback">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E6F4F9;">
                                 <img src="carita.png" alt="">
                             </div>
-                            <span class="tool-card-badge badge-active">Activa</span>
+                            <span class="tool-card-badge badge-locked">No disponible</span>
                         </div>
                         <div class="tool-card-title">Feedback de Relacionamiento</div>
                         <div class="tool-card-desc">Consejos personalizados para mejorar tu relaci&oacute;n con cada compa&ntilde;ero/a, basados en sus perfiles DISC.</div>
-                        <div class="tool-card-month">Mes 2 del programa</div>
-                    </a>
-
-                    <a href="#" class="tool-card disabled">
-                        <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E0F5FA;">
-                                <img src="carita.png" alt="">
-                            </div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
-                        </div>
-                        <div class="tool-card-title">Seguridad Psicol&oacute;gica</div>
-                        <div class="tool-card-desc">Qu&eacute; tan seguro/a te sientes para tomar riesgos, opinar y ser vulnerable en tu equipo.</div>
                     </a>
                 </div>
             </div>
@@ -400,8 +525,6 @@
         <!-- TAB: MI EQUIPO        -->
         <!-- ===================== -->
         <div class="tab-content" id="tab-lider">
-
-            <!-- Mapa del equipo -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -411,20 +534,15 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Mapa DISC del equipo</div>
                         <div class="tool-card-desc">Visualizaci&oacute;n completa de los perfiles DISC de tu equipo: composici&oacute;n, din&aacute;micas y compatibilidad.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E6F4F9;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Din&aacute;micas de relacionamiento</div>
@@ -432,8 +550,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Dashboard -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -443,31 +559,23 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E0F5FA;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E0F5FA;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Clima de mi equipo</div>
                         <div class="tool-card-desc">Resultados de clima laboral agregados por equipo. Identifica fortalezas y alertas.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #EBF8FB;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #EBF8FB;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Inteligencia Emocional del equipo</div>
                         <div class="tool-card-desc">Perfil emocional colectivo: d&oacute;nde brilla tu equipo y d&oacute;nde puede crecer.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E6F4F9;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Estilos de aprendizaje del equipo</div>
@@ -475,8 +583,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Liderazgo -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -486,20 +592,15 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Gu&iacute;as de liderazgo con IA</div>
                         <div class="tool-card-desc">Recomendaciones personalizadas para liderar tu equipo seg&uacute;n su composici&oacute;n DISC real.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E6F4F9;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Evoluci&oacute;n del equipo</div>
@@ -513,8 +614,6 @@
         <!-- TAB: MI EMPRESA       -->
         <!-- ===================== -->
         <div class="tab-content" id="tab-rrhh">
-
-            <!-- Informes -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -524,31 +623,23 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Vista por equipos</div>
                         <div class="tool-card-desc">Compara clima, engagement y perfiles DISC entre &aacute;reas y equipos de la organizaci&oacute;n.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E6F4F9;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Vista por empresa</div>
                         <div class="tool-card-desc">Indicadores agregados a nivel organizacional: tendencias, alertas y fortalezas.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E0F5FA;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E0F5FA;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Informes autom&aacute;ticos con IA</div>
@@ -556,8 +647,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Gestión -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -567,31 +656,23 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Gesti&oacute;n de participantes</div>
                         <div class="tool-card-desc">Invita personas, asigna a equipos, activa instrumentos y gestiona accesos al portal.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E6F4F9;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Seguimiento del programa</div>
                         <div class="tool-card-desc">Qu&eacute; equipos van al d&iacute;a, qui&eacute;n no ha respondido y el avance general del programa.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E0F5FA;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E0F5FA;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Exportar datos</div>
@@ -599,8 +680,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Evolución empresa -->
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
@@ -610,20 +689,15 @@
                 <div class="tools-grid">
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #EBF8FB;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #EBF8FB;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Evoluci&oacute;n inicial vs. final</div>
                         <div class="tool-card-desc">Evidencia concreta de cu&aacute;nto cambi&oacute; la organizaci&oacute;n: clima inicial contra clima final.</div>
                     </a>
-
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;">
-                                <img src="carita.png" alt="">
-                            </div>
+                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
                             <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
                         </div>
                         <div class="tool-card-title">Identidad organizacional</div>
@@ -642,19 +716,189 @@
         <a href="mailto:hola@buentrato.ai" style="color: #0380A6; text-decoration: none;">hola@buentrato.ai</a>
     </div>
 
-    <script>
-        // Tab switching
-        document.querySelectorAll('.role-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Update tabs
-                document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                // Update content
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                const target = document.getElementById('tab-' + tab.dataset.tab);
-                if (target) target.classList.add('active');
-            });
+</div>
+
+<script>
+// ============================================
+// DEMO DATA: all instruments available
+// ============================================
+const DEMO_PROFILE = {
+    name: "Camila Torres",
+    firstName: "Camila",
+    role: "Coordinadora de Proyectos",
+    area: "Operaciones",
+    instruments: {
+        disc:           { available: true, path: "/informe?code=demo2026" },
+        ie:             { available: true, path: "/ie?code=demo2026" },
+        estilos:        { available: true, path: "/estilos?code=demo2026" },
+        autoliderazgo:  { available: true, path: "/autoliderazgo?code=demo2026" },
+        clima:          { available: true, path: "/experiencia?code=demo2026" },
+        feedback:       { available: true, path: "/disc" }
+    }
+};
+
+let currentUser = null;
+
+// ============================================
+// ENTRY
+// ============================================
+document.getElementById('codeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loginPortal();
+});
+
+function loginDemo() {
+    document.getElementById('codeInput').value = 'demo2026';
+    loginPortal();
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('portalContainer').style.display = 'none';
+    document.getElementById('entryScreen').style.display = 'flex';
+    document.getElementById('codeInput').value = '';
+    document.getElementById('entryError').style.display = 'none';
+    // Reset cards to locked
+    document.querySelectorAll('.tool-card[data-instrument]').forEach(card => {
+        card.classList.add('locked');
+        card.classList.remove('active-card');
+        card.href = '#';
+        const badge = card.querySelector('.tool-card-badge');
+        if (badge) {
+            badge.className = 'tool-card-badge badge-locked';
+            badge.textContent = 'No disponible';
+        }
+    });
+}
+
+async function loginPortal() {
+    const code = document.getElementById('codeInput').value.trim();
+    if (!code) {
+        showError('Ingresa tu codigo personal');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('entryScreen').style.display = 'none';
+    document.getElementById('loadingScreen').style.display = 'flex';
+    document.getElementById('loadingText').textContent = 'Buscando tu perfil...';
+    document.getElementById('loadingSub').textContent = 'Conectando con la base de datos';
+
+    // Demo mode
+    if (code.toLowerCase() === 'demo2026') {
+        currentUser = DEMO_PROFILE;
+        await delay(600);
+        showPortal();
+        return;
+    }
+
+    // Real mode: call get-portal function
+    try {
+        const resp = await fetch('/.netlify/functions/get-portal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
         });
-    </script>
+
+        if (!resp.ok) {
+            let errorMsg = 'Codigo no encontrado. Verifica que sea correcto.';
+            try {
+                const err = await resp.json();
+                errorMsg = err.error || errorMsg;
+            } catch(e) {}
+            throw new Error(errorMsg);
+        }
+
+        currentUser = await resp.json();
+    } catch (err) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('entryScreen').style.display = 'flex';
+        showError(err.message);
+        return;
+    }
+
+    await delay(300);
+    showPortal();
+}
+
+function showError(msg) {
+    const el = document.getElementById('entryError');
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ============================================
+// SHOW PORTAL
+// ============================================
+function showPortal() {
+    const u = currentUser;
+
+    // Set header name
+    document.getElementById('headerName').textContent =
+        'Hola, ' + (u.firstName || u.name.split(' ')[0]) + '!';
+
+    // Update instrument cards
+    const instruments = u.instruments || {};
+
+    document.querySelectorAll('.tool-card[data-instrument]').forEach(card => {
+        const key = card.dataset.instrument;
+        const inst = instruments[key];
+
+        if (inst && inst.available) {
+            // Enable card
+            card.classList.remove('locked');
+            card.classList.add('active-card');
+            card.href = inst.path || '#';
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+            const badge = card.querySelector('.tool-card-badge');
+            if (badge) {
+                badge.className = 'tool-card-badge badge-active';
+                badge.textContent = 'Disponible';
+            }
+        } else {
+            // Keep locked
+            card.classList.add('locked');
+            card.classList.remove('active-card');
+            card.href = '#';
+            const badge = card.querySelector('.tool-card-badge');
+            if (badge) {
+                badge.className = 'tool-card-badge badge-locked';
+                badge.textContent = 'No disponible';
+            }
+        }
+    });
+
+    // Hide loading, show portal
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('portalContainer').style.display = 'block';
+}
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        const target = document.getElementById('tab-' + tab.dataset.tab);
+        if (target) target.classList.add('active');
+    });
+});
+
+// ============================================
+// CHECK URL PARAMS (auto-login)
+// ============================================
+(function checkUrlCode() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code') || params.get('c');
+    if (code) {
+        document.getElementById('codeInput').value = code;
+        loginPortal();
+    }
+})();
+</script>
 </body>
 </html>

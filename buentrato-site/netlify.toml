@@ -30,3 +30,8 @@
   from = "/autoliderazgo"
   to = "/autoliderazgo.html"
   status = 200
+
+[[redirects]]
+  from = "/estilos"
+  to = "/estilos.html"
+  status = 200
