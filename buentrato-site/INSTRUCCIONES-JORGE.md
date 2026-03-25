@@ -1,186 +1,87 @@
-# Instrucciones de Despliegue: BuenTrato.AI en Netlify
+# Guía para subir BuenTrato.AI a Netlify
 
-## Resumen
-Este es el sitio web completo de BuenTrato.AI con landing page, herramienta DISC y funciones serverless. Se desplegará en Netlify conectado a GitHub con el dominio buentrato.ai.
+## Lo que tienes en esta carpeta
 
----
-
-## Paso 1: Crear Repositorio en GitHub
-
-1. Ve a https://github.com/new
-2. Crea un nuevo repositorio con el nombre: **buentrato-site**
-3. Selecciona "Private" (privado) para mayor seguridad
-4. No inicialices con README ni .gitignore
-5. Haz clic en "Create repository"
-
----
-
-## Paso 2: Subir Archivos al Repositorio
-
-En tu terminal local:
-
-```bash
-# Navega a la carpeta del proyecto
-cd /ruta/a/buentrato-site
-
-# Inicializa git
-git init
-
-# Añade el repositorio remoto (reemplaza TU_USUARIO)
-git remote add origin https://github.com/TU_USUARIO/buentrato-site.git
-
-# Añade todos los archivos
-git add .
-
-# Realiza el primer commit
-git commit -m "Initial commit: BuenTrato.AI website with landing page and DISC feedback tool"
-
-# Sube a GitHub
-git branch -M main
-git push -u origin main
 ```
-
-### Archivos que se subirán:
-- `index.html` - Landing page profesional
-- `disc.html` - Herramienta de feedback DISC
-- `logo.png` - Logo de BuenTrato.AI
-- `netlify.toml` - Configuración de Netlify
-- `netlify/functions/get-team.js` - Función para obtener datos de equipos desde Airtable
-- `netlify/functions/generate-feedback.js` - Función para generar feedback con Claude API
-
----
-
-## Paso 3: Conectar con Netlify
-
-1. Ve a https://app.netlify.com
-2. Haz clic en "Import an existing project"
-3. Selecciona "GitHub"
-4. Autoriza Netlify en tu cuenta de GitHub
-5. Busca y selecciona el repositorio **buentrato-site**
-6. Haz clic en "Deploy site"
-
-### Configuración de Build (Netlify debería detectarlo automáticamente):
-- **Build command**: (dejar vacío)
-- **Publish directory**: `.` (el directorio raíz)
-
-Netlify comenzará a desplegar automáticamente.
-
----
-
-## Paso 4: Configurar Variables de Entorno
-
-Una vez desplegado en Netlify:
-
-1. Ve a tu sitio en Netlify
-2. Navega a: **Site settings** → **Build & deploy** → **Environment**
-3. Haz clic en "Edit variables"
-4. Añade las siguientes variables:
-
-| Variable | Valor |
-|----------|-------|
-| `AIRTABLE_API_KEY` | Tu API Key de Airtable (obtén en https://airtable.com/account/tokens) |
-| `ANTHROPIC_API_KEY` | Tu API Key de Anthropic (obtén en https://console.anthropic.com/api/keys) |
-
-5. Haz clic en "Save"
-6. En Netlify, ve a **Deployments** y redeploy el sitio para que use las nuevas variables:
-   - Haz clic en el deployment más reciente
-   - Selecciona "Redeploy without cache"
-
----
-
-## Paso 5: Configurar Dominio Personalizado
-
-1. En tu sitio de Netlify, ve a **Site settings** → **Domain management**
-2. Haz clic en "Add custom domain"
-3. Escribe: `buentrato.ai`
-4. Netlify te mostrará instrucciones DNS
-
-### Configurar DNS en tu proveedor de dominios (GoDaddy, Namecheap, etc.):
-
-1. Accede a tu panel de control de dominios
-2. Busca "DNS" o "Name Servers"
-3. Añade un registro **CNAME** con:
-   - **Host**: `buentrato` (o el subdominio)
-   - **Value**: Tu URL de Netlify (ej: `buentrato-site.netlify.app`)
-   - **TTL**: 3600 (o predeterminado)
-
-4. Si prefieres usar Name Servers de Netlify:
-   - Reemplaza los Name Servers de tu dominio con los que proporciona Netlify
-   - Esto puede tomar 24-48 horas en propagarse
-
----
-
-## Paso 6: Verificar el Despliegue
-
-1. Espera a que el dominio se propague (puede tardar 24-48 horas)
-2. Visita https://buentrato.ai
-3. Verifica que:
-   - La landing page carga correctamente
-   - El logo aparece
-   - Los botones "Solicitar Demo" dirigen a Fillout
-   - El link "Feedback DISC" funciona → `/disc`
-
-### Prueba las funciones serverless:
-
-```bash
-# Prueba get-team (con un código de equipo válido)
-curl "https://buentrato.ai/.netlify/functions/get-team?code=DEMO2026"
-
-# Prueba generate-feedback con POST
-curl -X POST "https://buentrato.ai/.netlify/functions/generate-feedback" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "person1": {"name": "Ana García", "role": "Directora", "disc": {"D": 85, "I": 45, "S": 30, "C": 60}, "primaryStyle": "D"},
-    "person2": {"name": "Carlos Méndez", "role": "Diseñador", "disc": {"D": 30, "I": 80, "S": 55, "C": 40}, "primaryStyle": "I"},
-    "topic": "Comunicación",
-    "teamName": "Equipo Demo"
-  }'
+buentrato-portal/
+├── index.html                          ← Portal principal
+├── disc.html                           ← App de feedback DISC
+├── netlify.toml                        ← Configuración de Netlify
+└── netlify/functions/
+    ├── generate-feedback.js            ← Función que conecta con Claude API
+    └── get-team.js                     ← Función que lee equipos de Airtable
 ```
 
 ---
 
-## Paso 7: Monitoreo y Mantenimiento
+## Paso 0: Liberar el nombre "buentrato" en Netlify
 
-### En Netlify:
-- **Logs de funciones**: Site → **Functions** para ver errores
-- **Logs de despliegue**: **Deployments** para ver el historial
-- **Analytics**: Monitorea visitas y rendimiento
-- **Environment**: Recuerda actualizar API keys cuando expiren
+Tu sitio actual `buentrato.netlify.app` tiene las calculadoras de Tualotuyo SAS. Para liberar ese nombre:
 
-### Próximos pasos:
-1. Conectar a Fillout (ya está en los botones CTA)
-2. Vincular con Airtable para datos en tiempo real
-3. Implementar analytics (Google Analytics, etc.)
-4. Crear página de blog si es necesario
+1. Ve a **app.netlify.com** y entra al sitio `buentrato`
+2. Ve a **"Site configuration"** → **"Change site name"**
+3. Cámbialo a otro nombre (ej: `tualotuyo`) → quedará en `tualotuyo.netlify.app`
+4. Tus calculadoras siguen funcionando igual, solo cambia la dirección
 
 ---
 
-## Solución de Problemas
+## Paso 1: Subir BuenTrato.AI a Netlify
 
-### Las funciones serverless devuelven 404
-- Verifica que `netlify.toml` está en la raíz
-- Asegúrate de que `AIRTABLE_API_KEY` y `ANTHROPIC_API_KEY` están configuradas
-- Revisa los logs: **Site → Functions**
-
-### El dominio no resuelve
-- Espera 24-48 horas para propagación DNS
-- Verifica que el CNAME está configurado correctamente
-- En Netlify, confirma que el dominio está verificado (debe tener un checkmark verde)
-
-### Errores de Airtable
-- Verifica que la API Key es válida y está en el formato correcto
-- Comprueba que tienes acceso a la base `appaTeQAba3xYfycx`
-- Confirma que los nombres de campos en Airtable coinciden exactamente
-
-### Errores de Claude API
-- Verifica que tienes créditos disponibles en Anthropic
-- Asegúrate de que la API Key no está expirada
-- Revisa los logs para ver el mensaje de error exacto
+1. En **app.netlify.com**, busca el botón **"Add new site"** → **"Deploy manually"**
+2. **Arrastra toda la carpeta `buentrato-portal`** al área que dice "drag and drop"
+3. Espera unos segundos — Netlify te dará una URL temporal
+4. Ve a **"Site configuration"** → **"Change site name"** y ponle **`buentrato`**
+   - Tu URL quedaría: `buentrato.netlify.app`
 
 ---
 
-## Contacto
-Para preguntas o soporte:
-- Jorge: jorge@buentrato.ai
-- Juliana: juliana@buentrato.ai
-- Oriana: oriana@buentrato.ai
+## Paso 2: Configurar la API de Claude
+
+Para que el feedback con IA funcione, necesitas agregar tu API key:
+
+1. En tu sitio de Netlify, ve a **"Site configuration"** → **"Environment variables"**
+2. Haz clic en **"Add a variable"**
+3. Escribe:
+   - **Key:** `CLAUDE_API_KEY`
+   - **Value:** tu API key de Anthropic (la que empieza con `sk-ant-...`)
+4. Guarda
+
+**Nota:** Sin este paso, la app funciona igual pero solo muestra los consejos predefinidos (sin el análisis personalizado de IA).
+
+---
+
+## Paso 3: Probar
+
+1. Abre tu URL (ej: `buentrato.netlify.app`)
+2. Deberías ver el portal con las herramientas
+3. Haz clic en "Feedback de Relacionamiento DISC"
+4. Ingresa el código: **DEMO2026**
+5. Prueba seleccionando personas y temas
+
+---
+
+## Paso 4: Configurar Airtable
+
+Para que la app lea los equipos reales desde tu Airtable:
+
+1. En Netlify, ve a **"Project configuration"** → **"Environment variables"**
+2. Agrega DOS variables nuevas:
+   - **Key:** `AIRTABLE_API_KEY` → **Value:** tu Personal Access Token de Airtable
+   - **Key:** `AIRTABLE_BASE_ID` → **Value:** el ID de tu base (empieza con `app...`)
+3. Vuelve a hacer deploy (arrastra la carpeta de nuevo en Deploys)
+
+Los códigos de equipo se generan automáticamente a partir de Empresa + Equipo.
+Al ingresar un código incorrecto, la consola del navegador (F12) muestra todos los códigos disponibles.
+
+---
+
+## Próximos pasos (los hacemos juntos)
+
+- [ ] Personalizar colores y logo de BuenTrato.AI
+- [ ] Agregar dominio personalizado (ej: app.buentrato.ai)
+
+---
+
+## ¿Algo no funciona?
+
+Tráeme el error o cuéntame qué pasó y lo resolvemos juntos en nuestra próxima conversación.

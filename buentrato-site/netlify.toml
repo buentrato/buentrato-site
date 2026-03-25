@@ -5,6 +5,7 @@
 [functions]
   node_bundler = "esbuild"
 
+# Redirects para Single Page App behavior
 [[redirects]]
   from = "/disc"
   to = "/disc.html"
@@ -13,4 +14,19 @@
 [[redirects]]
   from = "/informe"
   to = "/informe.html"
+  status = 200
+
+[[redirects]]
+  from = "/experiencia"
+  to = "/experiencia.html"
+  status = 200
+
+[[redirects]]
+  from = "/ie"
+  to = "/ie.html"
+  status = 200
+
+[[redirects]]
+  from = "/autoliderazgo"
+  to = "/autoliderazgo.html"
   status = 200

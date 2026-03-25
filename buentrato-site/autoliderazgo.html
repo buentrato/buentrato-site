@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="carita.png">
-    <title>Experiencia en el Equipo — BuenTrato.AI</title>
+    <title>Autoliderazgo — BuenTrato.AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,7 +33,6 @@
             line-height: 1.7;
         }
 
-        /* === ENTRY SCREEN === */
         .entry-screen {
             min-height: 100vh;
             display: flex;
@@ -116,7 +115,6 @@
             text-decoration: underline;
         }
 
-        /* === LOADING === */
         .loading-screen {
             min-height: 100vh;
             display: none;
@@ -140,7 +138,6 @@
         .loading-text { color: var(--white); font-size: 16px; font-weight: 500; }
         .loading-sub { color: rgba(255,255,255,0.7); font-size: 13px; }
 
-        /* === REPORT === */
         .report {
             display: none;
             max-width: 800px;
@@ -216,7 +213,6 @@
             margin: 0 0 24px;
         }
 
-        /* === CARDS === */
         .card {
             background: var(--white);
             border-radius: 16px;
@@ -245,18 +241,11 @@
             background: var(--primary-light);
         }
 
-        /* === RADAR CHART === */
         .radar-container {
             text-align: center;
             margin-bottom: 24px;
         }
 
-        .radar-container canvas {
-            max-width: 360px;
-            margin: 0 auto;
-        }
-
-        /* === DIMENSION BARS === */
         .dimension-list { display: flex; flex-direction: column; gap: 16px; }
 
         .dimension-item {
@@ -282,6 +271,15 @@
             font-size: 14px;
             font-weight: 600;
             color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .dim-sublabel {
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 1px 8px;
+            display: inline-block;
             margin-bottom: 4px;
         }
 
@@ -306,7 +304,49 @@
             text-align: right;
         }
 
-        /* === AI SECTION === */
+        .score-summary {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .score-big {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .score-nivel {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .score-meter {
+            width: 200px;
+            height: 8px;
+            background: #F0F2F4;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            overflow: hidden;
+        }
+
+        .score-meter-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent));
+            transition: width 1.5s ease;
+        }
+
         .ai-section {
             background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
             border-radius: 12px;
@@ -348,42 +388,6 @@
             margin: 0 auto 10px;
         }
 
-        /* === SCORE SUMMARY === */
-        .score-summary {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .score-big {
-            font-size: 56px;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1;
-        }
-
-        .score-label {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        .score-meter {
-            width: 200px;
-            height: 8px;
-            background: #F0F2F4;
-            border-radius: 4px;
-            margin: 12px auto 0;
-            overflow: hidden;
-        }
-
-        .score-meter-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, var(--primary-deeper), var(--primary), var(--accent));
-            transition: width 1.5s ease;
-        }
-
-        /* === BACK LINK === */
         .back-to-portal {
             display: inline-flex;
             align-items: center;
@@ -397,7 +401,6 @@
 
         .back-to-portal:hover { text-decoration: underline; }
 
-        /* === FOOTER === */
         .report-footer {
             text-align: center;
             padding: 32px 20px;
@@ -411,7 +414,6 @@
             margin: 0 40px 16px;
         }
 
-        /* === MOBILE === */
         @media (max-width: 600px) {
             .entry-card { padding: 32px 24px; }
             .report-header { padding: 28px 24px; }
@@ -422,12 +424,11 @@
 </head>
 <body>
 
-<!-- ENTRY SCREEN -->
 <div class="entry-screen" id="entryScreen">
     <div class="entry-card">
         <img src="logo.png" alt="BuenTrato.AI" class="logo">
-        <h1>Experiencia en el Equipo</h1>
-        <p>Ingresa tu codigo personal para ver tu informe sobre como experimentas la dinamica de tu equipo de trabajo.</p>
+        <h1>Autoliderazgo</h1>
+        <p>Ingresa tu codigo personal para ver tu informe de autoliderazgo: autoconciencia, autogestion, regulacion emocional, motivacion y adaptabilidad.</p>
         <input type="text" class="code-input" id="codeInput"
                placeholder="Ingresa tu codigo"
                autocomplete="off" spellcheck="false">
@@ -439,7 +440,6 @@
     </div>
 </div>
 
-<!-- LOADING SCREEN -->
 <div class="loading-screen" id="loadingScreen">
     <img src="logo.png" alt="BuenTrato.AI" class="logo-img white" style="height:64px;">
     <div class="spinner"></div>
@@ -447,7 +447,6 @@
     <div class="loading-sub" id="loadingSub">Esto toma unos segundos</div>
 </div>
 
-<!-- REPORT -->
 <div class="report" id="reportContainer">
 
     <a href="/index.html" class="back-to-portal">
@@ -455,7 +454,6 @@
         Volver al portal
     </a>
 
-    <!-- Header -->
     <div class="report-header">
         <div class="logo-row">
             <img src="logo.png" alt="BuenTrato.AI" class="logo-img white">
@@ -465,35 +463,33 @@
         <div class="person-role" id="reportRole"></div>
         <div class="report-type">
             <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain; vertical-align:middle; filter: brightness(0) invert(1); margin-right:6px;">
-            Experiencia en el Equipo
+            Autoliderazgo
         </div>
     </div>
 
     <div class="brand-line"></div>
 
-    <!-- Score general -->
     <div class="card">
         <div class="score-summary">
             <div class="score-big" id="scoreGeneral">--</div>
-            <div class="score-label">Clima general percibido</div>
+            <div class="score-label">Indice general de autoliderazgo</div>
+            <div class="score-nivel" id="scoreNivel"></div>
             <div class="score-meter">
                 <div class="score-meter-fill" id="scoreMeterFill" style="width: 0%"></div>
             </div>
         </div>
     </div>
 
-    <!-- Radar -->
     <div class="card">
         <div class="card-title">
             <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
-            Tu experiencia por dimension
+            Tu perfil de autoliderazgo
         </div>
         <div class="radar-container">
             <canvas id="radarChart" width="360" height="360"></canvas>
         </div>
     </div>
 
-    <!-- Dimensiones detalle -->
     <div class="card">
         <div class="card-title">
             <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
@@ -502,7 +498,6 @@
         <div class="dimension-list" id="dimensionList"></div>
     </div>
 
-    <!-- AI Analysis -->
     <div class="card">
         <div class="card-title">
             <div class="icon"><img src="carita.png" alt="" style="width:24px; height:24px; object-fit:contain;"></div>
@@ -511,12 +506,11 @@
         <div class="ai-section" id="aiSection">
             <div class="ai-loading">
                 <div class="spinner-small"></div>
-                <p style="color: var(--primary); font-size: 13px;">Generando analisis personalizado con IA...</p>
+                <p style="color: var(--primary); font-size: 13px;">Generando analisis personalizado...</p>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="report-footer">
         <div class="footer-line"></div>
         <img src="logo.png" alt="BuenTrato.AI" class="logo-img" style="opacity: 0.5; margin-bottom: 8px;"><br>
@@ -526,21 +520,14 @@
 </div>
 
 <script>
-// =============================================
-// DIMENSIONS CONFIG (basado en Clima_Preguntas de Airtable)
-// Escala original: 1-5 (Likert). Se muestra como porcentaje (1=20%, 5=100%)
-// =============================================
 const DIMENSIONS = [
-    { id: 'seguridad_psi',   label: 'Seguridad psicologica',      color: '#01516A', question: 'Me siento seguro/a para ser autentico/a y expresar lo que pienso en mi equipo' },
-    { id: 'comunicacion',    label: 'Comunicacion',                color: '#026B8A', question: 'Nos escuchamos y resolvemos los desacuerdos a traves del dialogo' },
-    { id: 'valoracion',      label: 'Valoracion y reconocimiento', color: '#0380A6', question: 'Siento que mis aportes son valorados por las personas con las que trabajo' },
-    { id: 'colaboracion',    label: 'Colaboracion y apoyo',        color: '#04B5D6', question: 'La forma en que nos relacionamos facilita el trabajo diario' },
-    { id: 'liderazgo',       label: 'Liderazgo',                   color: '#6DCFE0', question: 'Tengo claro que se espera de mi rol y que es prioritario para el equipo' }
+    { id: 'autoconciencia',       label: 'Autoconciencia',        color: '#01516A', desc: 'Capacidad de reconocer tus emociones, valores y patrones de comportamiento' },
+    { id: 'autogestion',          label: 'Autogestion',           color: '#026B8A', desc: 'Habilidad para planificar, organizar tu tiempo y mantener el enfoque en tus metas' },
+    { id: 'regulacion_emocional', label: 'Regulacion emocional',  color: '#0380A6', desc: 'Capacidad de manejar tus emociones ante situaciones de presion o conflicto' },
+    { id: 'motivacion',           label: 'Motivacion',            color: '#04B5D6', desc: 'Tu impulso interno para sostenerte ante desafios y buscar proposito en lo que haces' },
+    { id: 'adaptabilidad',        label: 'Adaptabilidad',         color: '#6DCFE0', desc: 'Flexibilidad para ajustarte a cambios, aprender de errores y encontrar nuevas soluciones' }
 ];
 
-// =============================================
-// DEMO DATA (datos ficticios, sin personas ni empresas reales)
-// =============================================
 const DEMO_PROFILES = {
     "demo2026": {
         name: "Camila Torres",
@@ -548,29 +535,33 @@ const DEMO_PROFILES = {
         company: "Empresa Demo",
         area: "Operaciones",
         date: "marzo de 2026",
-        lectura: "Percibe un clima saludable con oportunidades de mejora",
-        textoBase: "",
-        climaGeneral: 78,
+        totalGeneral: 78,
+        nivelGeneral: "Alto",
+        lectura: "Nivel solido y consistente",
+        interpretacion: "Tu resultado muestra un autoliderazgo solido. Tiendes a planificarte con claridad, gestionar tus emociones, mantener la motivacion y adaptarte a los cambios. El reto esta en sostener estas practicas bajo presion y seguir desarrollando tu conciencia sobre tus propios patrones.",
         scores: {
-            seguridad_psi: 82,
-            comunicacion: 68,
-            valoracion: 90,
-            colaboracion: 76,
-            liderazgo: 72
+            autoconciencia: 75,
+            autogestion: 73,
+            regulacion_emocional: 100,
+            motivacion: 100,
+            adaptabilidad: 50
+        },
+        niveles: {
+            autoconciencia: "Medio",
+            autogestion: "Medio",
+            regulacion_emocional: "Alto",
+            motivacion: "Alto",
+            adaptabilidad: "Bajo"
         }
     }
 };
 
-// =============================================
-// ENTRY
-// =============================================
 let currentProfile = null;
 
 document.getElementById('codeInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') loadReport();
 });
 
-// Check URL params
 (function checkUrlCode() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code') || params.get('c');
@@ -589,22 +580,19 @@ async function loadReport() {
     const code = document.getElementById('codeInput').value.trim();
     if (!code) { showError('Ingresa tu codigo personal'); return; }
 
-    // Show loading
     document.getElementById('entryScreen').style.display = 'none';
     const loading = document.getElementById('loadingScreen');
     loading.style.display = 'flex';
     document.getElementById('loadingText').textContent = 'Buscando tu perfil...';
     document.getElementById('loadingSub').textContent = 'Conectando con la base de datos';
 
-    // Check demo first
     const demoProfile = DEMO_PROFILES[code.toLowerCase()];
     if (demoProfile) {
         currentProfile = demoProfile;
         await delay(600);
     } else {
-        // Call serverless function
         try {
-            const resp = await fetch('/.netlify/functions/get-clima', {
+            const resp = await fetch('/.netlify/functions/get-autoliderazgo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
@@ -615,7 +603,7 @@ async function loadReport() {
                 try {
                     const err = await resp.json();
                     errorMsg = err.error || errorMsg;
-                } catch(e) { /* response wasn't JSON */ }
+                } catch(e) {}
                 throw new Error(errorMsg);
             }
 
@@ -629,10 +617,9 @@ async function loadReport() {
     }
 
     document.getElementById('loadingText').textContent = 'Construyendo tu informe...';
-    document.getElementById('loadingSub').textContent = 'Analizando tus resultados';
+    document.getElementById('loadingSub').textContent = 'Analizando tu perfil de autoliderazgo';
     await delay(400);
 
-    // Render report
     renderHeader();
     renderScore();
     renderRadar();
@@ -641,7 +628,6 @@ async function loadReport() {
     loading.style.display = 'none';
     document.getElementById('reportContainer').style.display = 'block';
 
-    // Generate AI analysis
     await delay(800);
     renderAI();
 }
@@ -654,9 +640,6 @@ function showError(msg) {
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// =============================================
-// RENDER HEADER
-// =============================================
 function renderHeader() {
     const d = currentProfile;
     document.getElementById('reportName').textContent = d.name;
@@ -667,21 +650,32 @@ function renderHeader() {
     document.getElementById('reportDate').textContent = d.date;
 }
 
-// =============================================
-// RENDER SCORE
-// =============================================
 function renderScore() {
-    const avg = currentProfile.climaGeneral
+    const avg = currentProfile.totalGeneral
         || Math.round(Object.values(currentProfile.scores).reduce((a, b) => a + b, 0) / Object.values(currentProfile.scores).length);
     document.getElementById('scoreGeneral').textContent = avg;
+
+    const nivel = currentProfile.nivelGeneral || '';
+    const nivelEl = document.getElementById('scoreNivel');
+    if (nivel === 'Alto') {
+        nivelEl.textContent = 'Nivel Alto';
+        nivelEl.style.background = '#E6F4F9';
+        nivelEl.style.color = '#01516A';
+    } else if (nivel === 'Medio') {
+        nivelEl.textContent = 'Nivel Medio';
+        nivelEl.style.background = '#FFF7ED';
+        nivelEl.style.color = '#9A6700';
+    } else {
+        nivelEl.textContent = 'Nivel en desarrollo';
+        nivelEl.style.background = '#FEF2F2';
+        nivelEl.style.color = '#991B1B';
+    }
+
     setTimeout(() => {
         document.getElementById('scoreMeterFill').style.width = avg + '%';
     }, 100);
 }
 
-// =============================================
-// RENDER RADAR CHART
-// =============================================
 function renderRadar() {
     const canvas = document.getElementById('radarChart');
     const ctx = canvas.getContext('2d');
@@ -694,7 +688,6 @@ function renderRadar() {
     canvas.height = size;
     ctx.clearRect(0, 0, size, size);
 
-    // Grid levels
     [0.25, 0.5, 0.75, 1].forEach(level => {
         ctx.beginPath();
         for (let i = 0; i < n; i++) {
@@ -707,18 +700,8 @@ function renderRadar() {
         ctx.strokeStyle = '#E5E7EB';
         ctx.lineWidth = 1;
         ctx.stroke();
-
-        // Percentage label on first axis
-        if (level > 0) {
-            const labelY = cy - r * level - 4;
-            ctx.fillStyle = '#C0C0C0';
-            ctx.font = '10px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(Math.round(level * 100), cx, labelY);
-        }
     });
 
-    // Axis lines
     for (let i = 0; i < n; i++) {
         const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
         ctx.beginPath();
@@ -729,7 +712,6 @@ function renderRadar() {
         ctx.stroke();
     }
 
-    // Data polygon
     const scores = currentProfile.scores;
     ctx.beginPath();
     const points = [];
@@ -748,7 +730,6 @@ function renderRadar() {
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Points
     points.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
@@ -759,7 +740,6 @@ function renderRadar() {
         ctx.stroke();
     });
 
-    // Labels
     DIMENSIONS.forEach((dim, i) => {
         const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
         const labelR = r + 30;
@@ -767,28 +747,26 @@ function renderRadar() {
         const ly = cy + Math.sin(angle) * labelR;
 
         ctx.fillStyle = dim.color;
-        ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.font = 'bold 11px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(dim.label, lx, ly);
 
-        // Score below label
         ctx.fillStyle = '#2D2D2D';
         ctx.font = 'bold 14px Inter, sans-serif';
         ctx.fillText(scores[dim.id] + '%', lx, ly + 16);
     });
 }
 
-// =============================================
-// RENDER DIMENSIONS LIST
-// =============================================
 function renderDimensions() {
     const container = document.getElementById('dimensionList');
     const scores = currentProfile.scores;
+    const niveles = currentProfile.niveles || {};
 
     container.innerHTML = DIMENSIONS.map(dim => {
         const score = scores[dim.id];
-        const level = score >= 80 ? 'Fortaleza' : score >= 60 ? 'Saludable' : 'Oportunidad';
+        const nivel = niveles[dim.id] || '';
+        const nivelColor = nivel === 'Alto' ? 'background:#E6F4F9;color:#01516A;' : nivel === 'Medio' ? 'background:#FFF7ED;color:#9A6700;' : 'background:#FEF2F2;color:#991B1B;';
         return `
             <div class="dimension-item">
                 <div class="dim-icon" style="background: ${dim.color}15;">
@@ -796,7 +774,8 @@ function renderDimensions() {
                 </div>
                 <div class="dim-info">
                     <div class="dim-label">${dim.label}</div>
-                    <div style="font-size:12px; color:var(--text-light); margin-bottom:6px;">${dim.question}</div>
+                    ${nivel ? `<span class="dim-sublabel" style="${nivelColor}">${nivel}</span>` : ''}
+                    <div style="font-size:12px; color:var(--text-light); margin-bottom:6px;">${dim.desc}</div>
                     <div class="dim-bar-track">
                         <div class="dim-bar-fill" style="width: 0%; background: ${dim.color};" data-target="${score}"></div>
                     </div>
@@ -805,7 +784,6 @@ function renderDimensions() {
             </div>`;
     }).join('');
 
-    // Animate bars
     setTimeout(() => {
         container.querySelectorAll('.dim-bar-fill').forEach(bar => {
             bar.style.width = bar.dataset.target + '%';
@@ -813,61 +791,40 @@ function renderDimensions() {
     }, 100);
 }
 
-// =============================================
-// RENDER AI ANALYSIS
-// =============================================
 function renderAI() {
-    const scores = currentProfile.scores;
-    const name = currentProfile.name.split(' ')[0];
+    const d = currentProfile;
+    const name = d.name.split(' ')[0];
 
-    // Find strengths and opportunities
-    const sorted = DIMENSIONS.map(d => ({ ...d, score: scores[d.id] })).sort((a, b) => b.score - a.score);
+    // Use Airtable interpretation if available
+    if (d.interpretacion) {
+        document.getElementById('aiSection').innerHTML = `
+            <div class="ai-title">
+                <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;">
+                Analisis personalizado
+            </div>
+            <p>${name}, tu lectura general es: <strong>${d.lectura}</strong>.</p>
+            <p>${d.interpretacion}</p>
+            <p>Este perfil sera el punto de partida para medir tu evolucion en autoliderazgo a lo largo del programa.</p>
+        `;
+        return;
+    }
+
+    // Fallback: generate from scores
+    const scores = d.scores;
+    const sorted = DIMENSIONS.map(dim => ({ ...dim, score: scores[dim.id] })).sort((a, b) => b.score - a.score);
     const strengths = sorted.slice(0, 2);
     const opportunities = sorted.slice(-2).reverse();
 
-    const avg = Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / Object.values(scores).length);
-
-    let levelText = currentProfile.lectura || '';
-    if (!levelText) {
-        if (avg >= 80) levelText = 'Percibe un clima muy positivo en su equipo';
-        else if (avg >= 65) levelText = 'Percibe un clima saludable con oportunidades de mejora';
-        else levelText = 'Percibe senales de tension en el clima de su equipo';
-    }
-
-    const html = `
+    document.getElementById('aiSection').innerHTML = `
         <div class="ai-title">
             <img src="carita.png" alt="" style="width:18px; height:18px; object-fit:contain;">
             Analisis personalizado
         </div>
-        <p>${name}, tu lectura general es: <strong>${levelText}</strong>. Con un clima general percibido de <strong>${avg}%</strong>, se puede ver que hay dimensiones en las que te sientes especialmente bien y otras donde hay oportunidades de mejora.</p>
-        <p>Tus principales <strong>fortalezas</strong> son <strong>${strengths[0].label}</strong> (${strengths[0].score}%) y <strong>${strengths[1].label}</strong> (${strengths[1].score}%). Esto indica que ${getStrengthText(strengths[0].id)} y que ${getStrengthText(strengths[1].id).toLowerCase()}.</p>
-        <p>Las areas con mayor <strong>oportunidad de crecimiento</strong> son <strong>${opportunities[0].label}</strong> (${opportunities[0].score}%) y <strong>${opportunities[1].label}</strong> (${opportunities[1].score}%). ${getOpportunityText(opportunities[0].id)}</p>
-        <p>Este perfil sera el punto de partida para medir tu evolucion a lo largo del programa. Al final del proceso, vamos a comparar estos resultados con una nueva medicion para ver como ha cambiado tu experiencia.</p>
+        <p>${name}, tu lectura general es: <strong>${d.lectura || 'Nivel funcional'}</strong>.</p>
+        <p>Tus principales <strong>fortalezas</strong> son <strong>${strengths[0].label}</strong> (${strengths[0].score}%) y <strong>${strengths[1].label}</strong> (${strengths[1].score}%).</p>
+        <p>Las areas con mayor <strong>oportunidad de crecimiento</strong> son <strong>${opportunities[0].label}</strong> (${opportunities[0].score}%) y <strong>${opportunities[1].label}</strong> (${opportunities[1].score}%).</p>
+        <p>Este perfil sera el punto de partida para medir tu evolucion en autoliderazgo a lo largo del programa.</p>
     `;
-
-    document.getElementById('aiSection').innerHTML = html;
-}
-
-function getStrengthText(id) {
-    const texts = {
-        seguridad_psi: 'Sientes un alto nivel de seguridad para ser autentico/a y expresar lo que piensas dentro de tu equipo',
-        comunicacion: 'Percibes que la comunicacion en tu equipo es abierta, respetuosa y orientada al dialogo',
-        valoracion: 'Te sientes valorado/a y reconocido/a por tus aportes al equipo',
-        colaboracion: 'Sientes que la dinamica de trabajo en equipo fluye bien y hay apoyo mutuo',
-        liderazgo: 'Percibes claridad en tu rol, las prioridades y la direccion del equipo'
-    };
-    return texts[id] || '';
-}
-
-function getOpportunityText(id) {
-    const texts = {
-        seguridad_psi: 'Trabajar en la seguridad psicologica puede abrir la puerta a conversaciones mas honestas y a una mayor cohesion del equipo.',
-        comunicacion: 'Mejorar la comunicacion permitiria que el equipo resuelva desacuerdos mas rapido y tome mejores decisiones juntos.',
-        valoracion: 'Cuando sentimos que nuestro trabajo es valorado, aumenta la motivacion y el compromiso. Este es un aspecto que tu equipo podria trabajar.',
-        colaboracion: 'Fortalecer la colaboracion y el apoyo mutuo ayudaria a que el equipo trabaje de manera mas fluida y eficiente.',
-        liderazgo: 'Mayor claridad en el liderazgo, los roles y las prioridades puede generar mas foco y menos frustracion en el dia a dia.'
-    };
-    return texts[id] || '';
 }
 </script>
 </body>
