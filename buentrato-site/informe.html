@@ -747,6 +747,22 @@
         D: 'Dominancia', I: 'Influencia', S: 'Serenidad', C: 'Cumplimiento'
     };
 
+    const DEMO_DISC = {
+        name: "Camila Torres",
+        role: "Coordinadora de Proyectos",
+        company: "Empresa Demo",
+        area: "Operaciones",
+        date: "2026-03-01",
+        discNatural: { D: 22, I: 30, S: 18, C: 30 },
+        discAdaptado: { D: 28, I: 25, S: 20, C: 27 },
+        primaryStyle: "I",
+        primaryStyleName: "Influencia",
+        secondaryStyle: "C",
+        secondaryStyleName: "Cumplimiento",
+        rawNatural: { D: 5, I: 7, S: 4, C: 7 },
+        rawAdaptado: { D: 7, I: 6, S: 5, C: 6 }
+    };
+
     // ============ ENTRY ============
     document.getElementById('codeInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') loadReport();
@@ -776,18 +792,29 @@
 
         try {
             updateLoading('Buscando tu perfil...', 'Conectando con la base de datos');
-            const resp = await fetch('/.netlify/functions/get-report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code })
-            });
 
-            if (!resp.ok) {
-                const err = await resp.json();
-                throw new Error(err.error || 'Error al buscar perfil');
+            // Demo mode
+            if (code.toLowerCase() === 'demo2026') {
+                profileData = DEMO_DISC;
+                await new Promise(r => setTimeout(r, 600));
+            } else {
+                const resp = await fetch('/.netlify/functions/get-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                if (!resp.ok) {
+                    let errorMsg = 'Error al buscar perfil';
+                    try {
+                        const err = await resp.json();
+                        errorMsg = err.error || errorMsg;
+                    } catch(e) {}
+                    throw new Error(errorMsg);
+                }
+
+                profileData = await resp.json();
             }
-
-            profileData = await resp.json();
 
             updateLoading('Construyendo tu informe...', 'Dibujando gráficos DISC');
             renderHeader();

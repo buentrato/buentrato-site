@@ -117,18 +117,12 @@ exports.handler = async (event) => {
         const promises = {};
 
         // DISC: buscar evaluacion_uid en EVALUACIONES vinculadas a esta persona
+        // {persona} es un linked record cuyo campo primario es email
         promises.disc = airtableFetch(
             BASE_BUENTRATO,
             TABLE_EVALUACIONES,
-            `AND({persona} = '${persona.nombre_completo}', {estado} = 'Completada')`,
+            `AND({persona} = '${email}', {estado} = 'Completada')`,
             5
-        ).catch(() => []);
-
-        // Alternativa para DISC: buscar directamente en Respuestas Equipo por email
-        promises.disc_pruebas = airtableFetch(
-            BASE_PRUEBAS,
-            INSTRUMENTS.disc.table,
-            emailFormula
         ).catch(() => []);
 
         // Resto de instrumentos: buscar en PRUEBAS por email
@@ -150,21 +144,18 @@ exports.handler = async (event) => {
         // 3. Construir respuesta con instrumentos disponibles
         const available = {};
 
-        // DISC: preferir evaluacion_uid de EVALUACIONES, si no, buscar en PRUEBAS
+        // DISC: necesita evaluacion_uid para ir directo al informe
         if (resolved.disc && resolved.disc.length > 0) {
             const eval0 = resolved.disc[0].fields;
-            available.disc = {
-                available: true,
-                code: eval0.evaluacion_uid,
-                path: INSTRUMENTS.disc.path + "?code=" + encodeURIComponent(eval0.evaluacion_uid)
-            };
-        } else if (resolved.disc_pruebas && resolved.disc_pruebas.length > 0) {
-            // Fallback: encontró en Respuestas Equipo pero no tenemos evaluacion_uid directo
-            available.disc = {
-                available: true,
-                code: null,
-                path: INSTRUMENTS.disc.path
-            };
+            if (eval0.evaluacion_uid) {
+                available.disc = {
+                    available: true,
+                    code: eval0.evaluacion_uid,
+                    path: INSTRUMENTS.disc.path + "?code=" + encodeURIComponent(eval0.evaluacion_uid)
+                };
+            } else {
+                available.disc = { available: false };
+            }
         } else {
             available.disc = { available: false };
         }
