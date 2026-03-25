@@ -479,25 +479,16 @@ function renderRadarChart(instruments) {
     const ctx = canvas.getContext('2d');
     const W = 240, H = 240, cx = W/2, cy = H/2, R = 90;
 
-    // Collect scores for radar — use general scores from each instrument
+    // Collect scores for radar — ONLY instruments with a meaningful general score (0-100%)
+    // DISC and Estilos are excluded: DISC is a distribution profile (not a score),
+    // Estilos is a preference ranking (not comparable on the same scale)
     const dims = [];
     if (instruments.ie && instruments.ie.available)
-        dims.push({ label: 'IE', value: instruments.ie.general, color: '#0380A6' });
+        dims.push({ label: 'Int. Emocional', value: instruments.ie.general, color: '#0380A6' });
     if (instruments.autoliderazgo && instruments.autoliderazgo.available)
         dims.push({ label: 'Autoliderazgo', value: instruments.autoliderazgo.general, color: '#04B5D6' });
     if (instruments.clima && instruments.clima.available)
-        dims.push({ label: 'Clima', value: instruments.clima.general, color: '#026B8A' });
-    if (instruments.disc && instruments.disc.available) {
-        // Use average of DISC natural percentages
-        const d = instruments.disc.natural;
-        const avg = Math.round((d.D + d.I + d.S + d.C) / 4);
-        dims.push({ label: 'DISC', value: avg, color: '#01516A' });
-    }
-    if (instruments.estilos && instruments.estilos.available) {
-        const es = instruments.estilos.scores;
-        const max = Math.max(es.visual, es.auditivo, es.verbal, es.kinestesico);
-        dims.push({ label: 'Aprendizaje', value: max, color: '#6DCFE0' });
-    }
+        dims.push({ label: 'Clima Equipo', value: instruments.clima.general, color: '#026B8A' });
 
     if (dims.length < 3) {
         canvas.style.display = 'none';
