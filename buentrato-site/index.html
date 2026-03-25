@@ -3,197 +3,658 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuenTrato.AI — Portal de Herramientas</title>
+    <link rel="icon" type="image/png" href="carita.png">
+    <title>BuenTrato.AI — Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #F7F8F9;
             color: #2D2D2D;
             min-height: 100vh;
         }
 
-        /* Header */
+        /* === HEADER === */
         .header {
-            background: linear-gradient(135deg, #0380A6, #026B8A);
-            padding: 40px 20px;
+            background: linear-gradient(135deg, #01516A 0%, #026B8A 40%, #0380A6 100%);
+            padding: 32px 20px 0;
             text-align: center;
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .header-logo {
-            margin-bottom: 16px;
+        .header-top {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
         }
         .header-logo img {
-            width: 180px;
-            height: 90px;
+            height: 96px;
             object-fit: contain;
             filter: brightness(0) invert(1);
-            opacity: 0.9;
         }
-        .header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            opacity: 0.85;
         }
-        .header h1 .brand-buen { color: white; }
-        .header h1 .brand-trato { color: rgba(255,255,255,0.75); }
-        .header p {
-            font-size: 16px;
-            opacity: 0.9;
+        .header-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
         }
 
-        /* Main */
-        .main {
-            max-width: 800px;
+        /* === ROLE TABS === */
+        .role-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            max-width: 960px;
             margin: 0 auto;
-            padding: 40px 20px;
         }
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #2D2D2D;
-            margin-bottom: 8px;
+        .role-tab {
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .section-subtitle {
-            font-size: 15px;
-            color: #777579;
-            margin-bottom: 28px;
+        .role-tab:hover {
+            color: rgba(255,255,255,0.85);
+        }
+        .role-tab.active {
+            color: white;
+            border-bottom-color: white;
+        }
+        .role-tab .tab-icon {
+            width: 18px; height: 18px;
+            object-fit: contain;
+            opacity: 0.7;
+        }
+        .role-tab.active .tab-icon {
+            opacity: 1;
         }
 
-        /* Tool Cards */
+        /* === MAIN === */
+        .main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* === TAB CONTENT === */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === CATEGORY === */
+        .category {
+            margin-bottom: 36px;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .category-icon {
+            width: 24px; height: 24px;
+            object-fit: contain;
+        }
+        .category-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #01516A;
+        }
+        .category-line {
+            flex: 1;
+            height: 1px;
+            background: #E5E7EB;
+            margin-left: 8px;
+        }
+
+        /* === TOOL CARDS === */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
         }
         .tool-card {
             background: white;
-            border-radius: 16px;
-            padding: 28px;
+            border-radius: 14px;
+            padding: 24px;
             border: 2px solid #E5E7EB;
             text-decoration: none;
             color: inherit;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             cursor: pointer;
+            position: relative;
         }
         .tool-card:hover {
             border-color: #0380A6;
-            box-shadow: 0 8px 24px rgba(3, 128, 166, 0.12);
+            box-shadow: 0 8px 24px rgba(3, 128, 166, 0.10);
             transform: translateY(-2px);
         }
-        .tool-card-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
+        .tool-card.disabled {
+            opacity: 0.45;
+            pointer-events: none;
         }
+        .tool-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        .tool-card-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tool-card-icon img {
+            width: 32px; height: 32px; object-fit: contain;
+        }
+        .tool-card-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-active { background: #E6F6F9; color: #0380A6; }
+        .badge-soon { background: #F0EEEF; color: #777579; }
+        .badge-new { background: #ECFDF5; color: #059669; }
         .tool-card-title {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             color: #2D2D2D;
         }
         .tool-card-desc {
-            font-size: 14px;
+            font-size: 13px;
             color: #777579;
-            line-height: 1.6;
+            line-height: 1.5;
         }
-        .tool-card-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+        .tool-card-month {
+            font-size: 11px;
+            color: #04B5D6;
             font-weight: 600;
-            width: fit-content;
-        }
-        .badge-active {
-            background: #E6F6F9;
-            color: #0380A6;
-        }
-        .badge-soon {
-            background: #F0EEEF;
-            color: #777579;
         }
 
-        /* Footer */
+        /* === FOOTER === */
         .footer {
             text-align: center;
-            padding: 30px 20px;
+            padding: 24px 20px;
             color: #777579;
-            font-size: 13px;
+            font-size: 12px;
             border-top: 1px solid #EEEDEF;
         }
+        .footer-logo {
+            height: 32px;
+            opacity: 0.3;
+            margin-bottom: 8px;
+        }
 
-        @media (max-width: 600px) {
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            .header h1 { font-size: 26px; }
+        /* === MOBILE === */
+        @media (max-width: 700px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .header-top { flex-direction: column; gap: 12px; }
+            .role-tab { padding: 10px 16px; font-size: 13px; }
+            .header { position: relative; }
         }
     </style>
 </head>
 <body>
+
+    <!-- HEADER -->
     <div class="header">
-        <div class="header-logo">
-            <!-- BuenTrato.AI smiley logo -->
-            <img src="logo.png" alt="BuenTrato.AI">
+        <div class="header-top">
+            <div class="header-logo">
+                <img src="logo.png" alt="BuenTrato.AI">
+            </div>
+            <div class="header-user">
+                <span>Hola!</span>
+                <div class="header-avatar">
+                    <img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain; filter: brightness(0) invert(1);">
+                </div>
+            </div>
         </div>
-        <h1><span class="brand-buen">Buen</span><span class="brand-trato">Trato.ai</span></h1>
-        <p>Herramientas para construir mejores relaciones en equipos de trabajo</p>
+        <div class="role-tabs">
+            <div class="role-tab active" data-tab="persona">
+                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
+                Mi perfil
+            </div>
+            <div class="role-tab" data-tab="lider">
+                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
+                Mi equipo
+            </div>
+            <div class="role-tab" data-tab="rrhh">
+                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
+                Mi empresa
+            </div>
+        </div>
     </div>
 
     <div class="main">
-        <h2 class="section-title">Herramientas disponibles</h2>
-        <p class="section-subtitle">Selecciona la herramienta que necesitas</p>
 
-        <div class="tools-grid">
-            <!-- Informe DISC Individual -->
-            <a href="/informe.html" class="tool-card">
-                <div class="tool-card-icon" style="background: #E6F6F9;"><img src="carita.png" alt="" style="width:40px; height:40px; object-fit:contain;"></div>
-                <div>
-                    <div class="tool-card-title">Informe DISC Individual</div>
-                    <div class="tool-card-desc">
-                        Informe detallado del perfil DISC de cada persona del equipo.
-                    </div>
-                </div>
-                <span class="tool-card-badge badge-active">Activa</span>
-            </a>
+        <!-- ===================== -->
+        <!-- TAB: MI PERFIL        -->
+        <!-- ===================== -->
+        <div class="tab-content active" id="tab-persona">
 
-            <!-- Feedback de Relacionamiento -->
-            <a href="/disc.html" class="tool-card">
-                <div class="tool-card-icon" style="background: #E6F6F9;"><img src="carita.png" alt="" style="width:40px; height:40px; object-fit:contain;"></div>
-                <div>
-                    <div class="tool-card-title">Feedback de Relacionamiento DISC</div>
-                    <div class="tool-card-desc">
-                        Selecciona tu nombre y el de un compañero/a para recibir consejos personalizados
-                        sobre cómo mejorar tu relación laboral, basados en sus perfiles DISC.
-                    </div>
+            <!-- Autoconocimiento -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Autoconocimiento</span>
+                    <div class="category-line"></div>
                 </div>
-                <span class="tool-card-badge badge-active">Activa</span>
-            </a>
+                <div class="tools-grid">
+                    <a href="/informe" class="tool-card">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-active">Activa</span>
+                        </div>
+                        <div class="tool-card-title">Informe DISC Individual</div>
+                        <div class="tool-card-desc">Tu perfil comportamental completo: estilo natural, adaptado, fortalezas y oportunidades de desarrollo.</div>
+                        <div class="tool-card-month">Mes 2 del programa</div>
+                    </a>
 
-            <!-- Mapa de Equipo -->
-            <a href="#" class="tool-card" style="opacity: 0.5; pointer-events: none;">
-                <div class="tool-card-icon" style="background: #F0EEEF;"><img src="carita.png" alt="" style="width:40px; height:40px; object-fit:contain; opacity:0.4;"></div>
-                <div>
-                    <div class="tool-card-title">Mapa de Equipo DISC</div>
-                    <div class="tool-card-desc">
-                        Visualización del equipo completo con dinámicas grupales y compatibilidad.
-                    </div>
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Inteligencia Emocional</div>
+                        <div class="tool-card-desc">Tu perfil emocional: autoconciencia, autorregulaci&oacute;n, empat&iacute;a, motivaci&oacute;n y habilidades sociales.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E0F5FA;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Estilos de Aprendizaje</div>
+                        <div class="tool-card-desc">C&oacute;mo aprendes mejor: visual, auditivo, lector/escritor o kinest&eacute;sico. Optimiza tu desarrollo.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #EBF8FB;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Autoliderazgo</div>
+                        <div class="tool-card-desc">Tu capacidad de dirigirte a ti mismo/a: autodisciplina, proactividad y gesti&oacute;n personal.</div>
+                    </a>
                 </div>
-                <span class="tool-card-badge badge-soon">Próximamente</span>
-            </a>
+            </div>
+
+            <!-- Relaciones -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Relaciones</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="/experiencia" class="tool-card">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-active">Activa</span>
+                        </div>
+                        <div class="tool-card-title">Experiencia en el equipo</div>
+                        <div class="tool-card-desc">Tu percepci&oacute;n personal sobre el clima, la confianza y la din&aacute;mica de trabajo en tu equipo.</div>
+                    </a>
+
+                    <a href="/disc" class="tool-card">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-active">Activa</span>
+                        </div>
+                        <div class="tool-card-title">Feedback de Relacionamiento</div>
+                        <div class="tool-card-desc">Consejos personalizados para mejorar tu relaci&oacute;n con cada compa&ntilde;ero/a, basados en sus perfiles DISC.</div>
+                        <div class="tool-card-month">Mes 2 del programa</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E0F5FA;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Seguridad Psicol&oacute;gica</div>
+                        <div class="tool-card-desc">Qu&eacute; tan seguro/a te sientes para tomar riesgos, opinar y ser vulnerable en tu equipo.</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Evolución -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Mi evoluci&oacute;n</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Mi evoluci&oacute;n en el tiempo</div>
+                        <div class="tool-card-desc">Visualiza c&oacute;mo han cambiado tus resultados mes a mes a lo largo del programa.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Plan de desarrollo personal</div>
+                        <div class="tool-card-desc">Recomendaciones de IA basadas en todos tus resultados combinados para tu crecimiento.</div>
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <!-- ===================== -->
+        <!-- TAB: MI EQUIPO        -->
+        <!-- ===================== -->
+        <div class="tab-content" id="tab-lider">
+
+            <!-- Mapa del equipo -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Mapa del equipo</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Mapa DISC del equipo</div>
+                        <div class="tool-card-desc">Visualizaci&oacute;n completa de los perfiles DISC de tu equipo: composici&oacute;n, din&aacute;micas y compatibilidad.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Din&aacute;micas de relacionamiento</div>
+                        <div class="tool-card-desc">Qui&eacute;n conecta bien con qui&eacute;n, d&oacute;nde hay tensiones y c&oacute;mo fortalecer los v&iacute;nculos del equipo.</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Dashboard del equipo</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E0F5FA;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Clima de mi equipo</div>
+                        <div class="tool-card-desc">Resultados de clima laboral agregados por equipo. Identifica fortalezas y alertas.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #EBF8FB;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Inteligencia Emocional del equipo</div>
+                        <div class="tool-card-desc">Perfil emocional colectivo: d&oacute;nde brilla tu equipo y d&oacute;nde puede crecer.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Estilos de aprendizaje del equipo</div>
+                        <div class="tool-card-desc">C&oacute;mo aprende tu equipo y c&oacute;mo adaptar capacitaciones y comunicaciones.</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Liderazgo -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Gu&iacute;as de liderazgo</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Gu&iacute;as de liderazgo con IA</div>
+                        <div class="tool-card-desc">Recomendaciones personalizadas para liderar tu equipo seg&uacute;n su composici&oacute;n DISC real.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Evoluci&oacute;n del equipo</div>
+                        <div class="tool-card-desc">C&oacute;mo ha cambiado tu equipo a lo largo del programa: clima, relaciones y desempe&ntilde;o.</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== -->
+        <!-- TAB: MI EMPRESA       -->
+        <!-- ===================== -->
+        <div class="tab-content" id="tab-rrhh">
+
+            <!-- Informes -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Informes ejecutivos</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Vista por equipos</div>
+                        <div class="tool-card-desc">Compara clima, engagement y perfiles DISC entre &aacute;reas y equipos de la organizaci&oacute;n.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Vista por empresa</div>
+                        <div class="tool-card-desc">Indicadores agregados a nivel organizacional: tendencias, alertas y fortalezas.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E0F5FA;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Informes autom&aacute;ticos con IA</div>
+                        <div class="tool-card-desc">Res&uacute;menes ejecutivos generados con IA para presentar a directivos y stakeholders.</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Gestión -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Gesti&oacute;n del programa</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Gesti&oacute;n de participantes</div>
+                        <div class="tool-card-desc">Invita personas, asigna a equipos, activa instrumentos y gestiona accesos al portal.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E6F4F9;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Seguimiento del programa</div>
+                        <div class="tool-card-desc">Qu&eacute; equipos van al d&iacute;a, qui&eacute;n no ha respondido y el avance general del programa.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E0F5FA;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Exportar datos</div>
+                        <div class="tool-card-desc">Descarga informes en PDF o Excel para presentar a directivos y toma de decisiones.</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Evolución empresa -->
+            <div class="category">
+                <div class="category-header">
+                    <img src="carita.png" alt="" class="category-icon">
+                    <span class="category-title">Evoluci&oacute;n</span>
+                    <div class="category-line"></div>
+                </div>
+                <div class="tools-grid">
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #EBF8FB;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Evoluci&oacute;n inicial vs. final</div>
+                        <div class="tool-card-desc">Evidencia concreta de cu&aacute;nto cambi&oacute; la organizaci&oacute;n: clima inicial contra clima final.</div>
+                    </a>
+
+                    <a href="#" class="tool-card disabled">
+                        <div class="tool-card-top">
+                            <div class="tool-card-icon" style="background: #E2EEF3;">
+                                <img src="carita.png" alt="">
+                            </div>
+                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                        </div>
+                        <div class="tool-card-title">Identidad organizacional</div>
+                        <div class="tool-card-desc">El perfil colectivo de la organizaci&oacute;n: valores vividos, cultura real y aspiraciones.</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- FOOTER -->
     <div class="footer">
-        &copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos
+        <img src="logo.png" alt="BuenTrato.AI" class="footer-logo"><br>
+        &copy; 2026 BuenTrato.AI &mdash; Mejores relaciones, mejores equipos<br>
+        <a href="mailto:hola@buentrato.ai" style="color: #0380A6; text-decoration: none;">hola@buentrato.ai</a>
     </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update tabs
+                document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                const target = document.getElementById('tab-' + tab.dataset.tab);
+                if (target) target.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
