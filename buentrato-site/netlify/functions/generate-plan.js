@@ -1,7 +1,7 @@
 // ==========================================
 // Netlify Serverless Function: generate-plan
 // Genera plan de desarrollo personalizado con Claude AI
-// Recibe todos los resultados de instrumentos y genera en 3 grupos paralelos
+// VERSION 2: Conciso y visual — keywords destacadas, textos cortos
 // Grupos: "resumen", "areas_desarrollo", "roadmap"
 // ==========================================
 
@@ -27,7 +27,6 @@ exports.handler = async (event) => {
         // Build comprehensive data context from ALL instruments
         let dataContext = "";
 
-        // DISC
         if (p.instruments.disc && p.instruments.disc.available) {
             const d = p.instruments.disc;
             dataContext += `\n=== PERFIL DISC ===
@@ -35,168 +34,148 @@ Estilo primario: ${d.primaryStyleName} (${d.primaryStyle})
 Estilo secundario: ${d.secondaryStyleName} (${d.secondaryStyle})
 Natural: D=${d.natural.D}%, I=${d.natural.I}%, S=${d.natural.S}%, C=${d.natural.C}%
 Adaptado: D=${d.adaptado.D}%, I=${d.adaptado.I}%, S=${d.adaptado.S}%, C=${d.adaptado.C}%
-Brecha Natural→Adaptado: D=${d.adaptado.D - d.natural.D > 0 ? '+' : ''}${d.adaptado.D - d.natural.D}%, I=${d.adaptado.I - d.natural.I > 0 ? '+' : ''}${d.adaptado.I - d.natural.I}%, S=${d.adaptado.S - d.natural.S > 0 ? '+' : ''}${d.adaptado.S - d.natural.S}%, C=${d.adaptado.C - d.natural.C > 0 ? '+' : ''}${d.adaptado.C - d.natural.C}%
 (D=Dominancia/resultados, I=Influencia/personas, S=Serenidad/estabilidad, C=Cumplimiento/calidad)`;
         }
 
-        // IE
         if (p.instruments.ie && p.instruments.ie.available) {
             const ie = p.instruments.ie;
-            dataContext += `\n\n=== INTELIGENCIA EMOCIONAL (IE General: ${ie.general}% - ${ie.nivelGeneral}) ===
-Autoconciencia: ${ie.scores.autoconciencia}% (${ie.niveles.autoconciencia})
-Autorregulación: ${ie.scores.autorregulacion}% (${ie.niveles.autorregulacion})
-Motivación: ${ie.scores.motivacion}% (${ie.niveles.motivacion})
-Empatía: ${ie.scores.empatia}% (${ie.niveles.empatia})
-Habilidades Sociales: ${ie.scores.habilidades_sociales}% (${ie.niveles.habilidades_sociales})
-(Escala: Bajo ≤55%, Medio 56-80%, Alto >80%)`;
+            dataContext += `\n\n=== INTELIGENCIA EMOCIONAL (General: ${ie.general}% - ${ie.nivelGeneral}) ===
+Autoconciencia: ${ie.scores.autoconciencia}%, Autorregulación: ${ie.scores.autorregulacion}%, Motivación: ${ie.scores.motivacion}%, Empatía: ${ie.scores.empatia}%, Habilidades Sociales: ${ie.scores.habilidades_sociales}%
+(Bajo ≤55%, Medio 56-80%, Alto >80%)`;
         }
 
-        // Autoliderazgo
         if (p.instruments.autoliderazgo && p.instruments.autoliderazgo.available) {
             const al = p.instruments.autoliderazgo;
-            dataContext += `\n\n=== AUTOLIDERAZGO (General: ${al.general}% - ${al.nivelGeneral}) ===
-Autoconciencia: ${al.scores.autoconciencia}%
-Autogestión: ${al.scores.autogestion}%
-Regulación Emocional: ${al.scores.regulacion_emocional}%
-Motivación: ${al.scores.motivacion}%
-Adaptabilidad: ${al.scores.adaptabilidad}%`;
+            dataContext += `\n\n=== AUTOLIDERAZGO (General: ${al.general}%) ===
+Autoconciencia: ${al.scores.autoconciencia}%, Autogestión: ${al.scores.autogestion}%, Regulación Emocional: ${al.scores.regulacion_emocional}%, Motivación: ${al.scores.motivacion}%, Adaptabilidad: ${al.scores.adaptabilidad}%`;
         }
 
-        // Estilos de Aprendizaje
         if (p.instruments.estilos && p.instruments.estilos.available) {
             const es = p.instruments.estilos;
             dataContext += `\n\n=== ESTILOS DE APRENDIZAJE (Dominante: ${es.dominante}) ===
-Visual: ${es.scores.visual}%
-Auditivo: ${es.scores.auditivo}%
-Verbal (Lector/Escritor): ${es.scores.verbal}%
-Kinestésico: ${es.scores.kinestesico}%
-Ranking: ${es.ranking.join(' > ')}`;
+Visual: ${es.scores.visual}%, Auditivo: ${es.scores.auditivo}%, Verbal: ${es.scores.verbal}%, Kinestésico: ${es.scores.kinestesico}%`;
         }
 
-        // Clima/Experiencia
         if (p.instruments.clima && p.instruments.clima.available) {
             const cl = p.instruments.clima;
-            dataContext += `\n\n=== EXPERIENCIA EN EL EQUIPO (Clima General: ${cl.general}%) ===
-Seguridad Psicológica: ${cl.scores.seguridad_psi}%
-Comunicación: ${cl.scores.comunicacion}%
-Valoración y Reconocimiento: ${cl.scores.valoracion}%
-Colaboración y Apoyo: ${cl.scores.colaboracion}%
-Liderazgo: ${cl.scores.liderazgo}%
-(Escala: porcentaje de satisfacción)`;
+            dataContext += `\n\n=== EXPERIENCIA EN EL EQUIPO (Clima: ${cl.general}%) ===
+Seguridad Psicológica: ${cl.scores.seguridad_psi}%, Comunicación: ${cl.scores.comunicacion}%, Valoración: ${cl.scores.valoracion}%, Colaboración: ${cl.scores.colaboracion}%, Liderazgo: ${cl.scores.liderazgo}%`;
         }
 
-        const base = `Eres una psicóloga organizacional senior y coach ejecutiva de BuenTrato.AI. Estás creando un PLAN DE DESARROLLO PERSONALIZADO para ${firstName}, ${p.role} en ${p.company || 'su empresa'} (área: ${p.area || 'no especificada'}).
+        const estiloAprendizaje = (p.instruments.estilos && p.instruments.estilos.available)
+            ? p.instruments.estilos.dominante : "mixto";
 
-Tienes acceso a TODOS los resultados de sus evaluaciones:
+        const base = `Eres una coach ejecutiva de BuenTrato.AI creando un PLAN DE DESARROLLO para ${firstName}, ${p.role} en ${p.company || 'su empresa'} (área: ${p.area || 'no especificada'}).
+
+Datos de TODAS sus evaluaciones:
 ${dataContext}
 
-Reglas generales:
-- Usa "tú". Español latinoamericano. Tono cálido, empático y profesional.
-- CRUZA datos entre instrumentos para encontrar patrones (ej: si IE.autorregulación es baja Y DISC muestra alta D, hay un patrón de impulsividad bajo presión).
-- Sé específica con los datos numéricos.
-- NO uses viñetas, listas numeradas ni bullets. Escribe en prosa fluida.
-- Para herramientas/ejercicios: escribe cada uno como un párrafo con título en negritas.
+REGLAS CRÍTICAS DE FORMATO:
+- Usa "tú". Español latinoamericano. Tono cálido y profesional.
+- SÉ CONCISA: frases cortas y directas. Máximo 3 oraciones por campo de texto.
+- CRUZA datos entre instrumentos para encontrar patrones.
+- Usa **negritas** para resaltar las 2-3 palabras clave más importantes de cada texto (conceptos, porcentajes clave, nombres de competencias).
+- NO uses viñetas, listas ni bullets.
 - Responde SOLO JSON válido sin markdown.`;
 
         let prompt;
 
         if (group === "resumen") {
-            const estiloAprendizaje = (p.instruments.estilos && p.instruments.estilos.available)
-                ? p.instruments.estilos.dominante : "no evaluado";
-
             prompt = base + `
 
-Genera el RESUMEN EJECUTIVO del plan de desarrollo:
+Genera el resumen ejecutivo CONCISO:
 {
-  "titulo_plan": "Frase de 5-10 palabras que capture la esencia de su plan de desarrollo (ej: 'Potenciar tu liderazgo emocional para inspirar equipos')",
-  "resumen_ejecutivo": "3-4 párrafos de resumen ejecutivo. Primer párrafo: visión integral de quién es ${firstName} según TODOS sus resultados cruzados (no repitas cada instrumento por separado, sintetiza). Segundo párrafo: sus principales fortalezas cruzando instrumentos. Tercer párrafo: las principales oportunidades de desarrollo que emergen al cruzar los datos. Cuarto párrafo: la dirección general del plan.",
-  "perfil_fortalezas": "1-2 párrafos describiendo sus TOP 3 fortalezas más notables, sustentadas con datos de múltiples instrumentos.",
-  "nota_aprendizaje": "1 párrafo explicando que como su estilo de aprendizaje dominante es ${estiloAprendizaje}, las herramientas y recomendaciones del plan se han personalizado para aprovechar esta preferencia. Describe brevemente qué significa esto en la práctica."
+  "titulo_plan": "Frase de 5-8 palabras que capture la esencia del plan (ej: 'Potenciar tu liderazgo emocional')",
+  "subtitulo": "1 oración corta complementaria al título",
+  "resumen": "Máximo 3 oraciones: quién es ${firstName} según sus resultados cruzados. Resalta **keywords** en negritas.",
+  "fortaleza1_nombre": "Nombre corto de su fortaleza #1 (2-4 palabras)",
+  "fortaleza1_dato": "Dato numérico clave que sustenta esta fortaleza (ej: 'IE Empatía 80% + DISC I 30%')",
+  "fortaleza1_texto": "1 oración explicando cómo se manifiesta en su trabajo. Usa **negritas** en keywords.",
+  "fortaleza2_nombre": "Nombre corto de su fortaleza #2",
+  "fortaleza2_dato": "Dato numérico clave",
+  "fortaleza2_texto": "1 oración. Usa **negritas** en keywords.",
+  "fortaleza3_nombre": "Nombre corto de su fortaleza #3",
+  "fortaleza3_dato": "Dato numérico clave",
+  "fortaleza3_texto": "1 oración. Usa **negritas** en keywords.",
+  "nota_aprendizaje": "1 oración corta: su estilo dominante es ${estiloAprendizaje}, por lo que las herramientas están adaptadas a esa preferencia."
 }`;
 
         } else if (group === "areas_desarrollo") {
-            const estiloAprendizaje = (p.instruments.estilos && p.instruments.estilos.available)
-                ? p.instruments.estilos.dominante : "mixto";
-
             prompt = base + `
 
-IMPORTANTE: Personaliza el TIPO de herramientas según su estilo de aprendizaje dominante (${estiloAprendizaje}):
-- Si es Visual: recomienda mapas mentales, videos, infografías, diagramas, visualizaciones
-- Si es Auditivo: recomienda podcasts, conversaciones, mentoring verbal, audiobooks
-- Si es Verbal: recomienda lecturas, journaling, escritura reflexiva, artículos
-- Si es Kinestésico: recomienda role-playing, ejercicios prácticos, simulaciones, learning by doing
+Personaliza herramientas según estilo de aprendizaje ${estiloAprendizaje}:
+- Visual: mapas mentales, videos, diagramas
+- Auditivo: podcasts, mentoring verbal, audiobooks
+- Verbal: lecturas, journaling, escritura reflexiva
+- Kinestésico: role-playing, ejercicios prácticos, simulaciones
 
-Identifica las 4 ÁREAS DE DESARROLLO MÁS IMPORTANTES cruzando TODOS los instrumentos. Cada área debe estar sustentada por datos de AL MENOS 2 instrumentos diferentes. Prioriza por impacto en su rol como ${p.role}.
+Identifica 4 ÁREAS DE DESARROLLO cruzando AL MENOS 2 instrumentos cada una.
 
 {
-  "area1_nombre": "Nombre conciso del área (3-6 palabras)",
-  "area1_fuentes": "De qué instrumentos viene (ej: 'DISC + IE + Clima')",
+  "area1_nombre": "Nombre conciso (2-5 palabras)",
+  "area1_fuentes": "Instrumentos (ej: 'DISC + IE')",
   "area1_nivel": "fortaleza|oportunidad|critica",
-  "area1_analisis": "1-2 párrafos analizando esta área cruzando datos de múltiples instrumentos. Menciona porcentajes específicos.",
-  "area1_herramienta1_titulo": "Nombre de la herramienta/ejercicio (3-6 palabras)",
-  "area1_herramienta1": "2-3 oraciones describiendo el ejercicio o herramienta concreta, personalizada para su estilo de aprendizaje ${estiloAprendizaje}.",
-  "area1_herramienta2_titulo": "Nombre de la segunda herramienta",
-  "area1_herramienta2": "2-3 oraciones con otra herramienta concreta.",
+  "area1_insight": "1-2 oraciones con el hallazgo principal cruzando instrumentos. Usa **negritas** en datos clave y keywords.",
+  "area1_herramienta1_titulo": "Nombre corto de la herramienta (2-5 palabras)",
+  "area1_herramienta1_tipo": "lectura|ejercicio|practica|reflexion|curso",
+  "area1_herramienta1": "1 oración concreta describiendo qué hacer. Personalizada para estilo ${estiloAprendizaje}.",
+  "area1_herramienta2_titulo": "Nombre corto",
+  "area1_herramienta2_tipo": "lectura|ejercicio|practica|reflexion|curso",
+  "area1_herramienta2": "1 oración concreta.",
   "area2_nombre": "...",
   "area2_fuentes": "...",
   "area2_nivel": "fortaleza|oportunidad|critica",
-  "area2_analisis": "...",
+  "area2_insight": "...",
   "area2_herramienta1_titulo": "...",
+  "area2_herramienta1_tipo": "...",
   "area2_herramienta1": "...",
   "area2_herramienta2_titulo": "...",
+  "area2_herramienta2_tipo": "...",
   "area2_herramienta2": "...",
   "area3_nombre": "...",
   "area3_fuentes": "...",
   "area3_nivel": "fortaleza|oportunidad|critica",
-  "area3_analisis": "...",
+  "area3_insight": "...",
   "area3_herramienta1_titulo": "...",
+  "area3_herramienta1_tipo": "...",
   "area3_herramienta1": "...",
   "area3_herramienta2_titulo": "...",
+  "area3_herramienta2_tipo": "...",
   "area3_herramienta2": "...",
   "area4_nombre": "...",
   "area4_fuentes": "...",
   "area4_nivel": "fortaleza|oportunidad|critica",
-  "area4_analisis": "...",
+  "area4_insight": "...",
   "area4_herramienta1_titulo": "...",
+  "area4_herramienta1_tipo": "...",
   "area4_herramienta1": "...",
   "area4_herramienta2_titulo": "...",
+  "area4_herramienta2_tipo": "...",
   "area4_herramienta2": "..."
 }`;
 
         } else if (group === "roadmap") {
             prompt = base + `
 
-Genera un ROADMAP DE DESARROLLO en 3 fases (30-60-90 días). Cada fase debe incluir acciones específicas y medibles basadas en los datos de los instrumentos.
+Genera un ROADMAP 30-60-90 días. Acciones concretas y medibles, 1 oración cada una.
 
 {
-  "fase1_titulo": "Título de la fase 1 (ej: 'Fundamentos y Quick Wins')",
-  "fase1_periodo": "Primeros 30 días",
-  "fase1_objetivo": "1 oración con el objetivo principal de esta fase.",
-  "fase1_accion1_titulo": "Título de la acción (3-6 palabras)",
-  "fase1_accion1": "2-3 oraciones describiendo una acción concreta y medible. Referencia datos específicos de los instrumentos.",
-  "fase1_accion2_titulo": "Título de la segunda acción",
-  "fase1_accion2": "2-3 oraciones con otra acción concreta.",
-  "fase1_accion3_titulo": "Título de la tercera acción",
-  "fase1_accion3": "2-3 oraciones con otra acción concreta.",
-  "fase2_titulo": "Título de la fase 2 (ej: 'Desarrollo y Práctica')",
-  "fase2_periodo": "Días 31-60",
-  "fase2_objetivo": "1 oración con el objetivo principal.",
-  "fase2_accion1_titulo": "...",
-  "fase2_accion1": "...",
-  "fase2_accion2_titulo": "...",
-  "fase2_accion2": "...",
-  "fase2_accion3_titulo": "...",
-  "fase2_accion3": "...",
-  "fase3_titulo": "Título de la fase 3 (ej: 'Integración y Consolidación')",
-  "fase3_periodo": "Días 61-90",
-  "fase3_objetivo": "1 oración con el objetivo principal.",
-  "fase3_accion1_titulo": "...",
-  "fase3_accion1": "...",
-  "fase3_accion2_titulo": "...",
-  "fase3_accion2": "...",
-  "fase3_accion3_titulo": "...",
-  "fase3_accion3": "...",
-  "mensaje_cierre": "1-2 párrafos de cierre motivacional personalizado para ${firstName}. Reconoce sus fortalezas, anímala/o a comprometerse con el plan, y recuérdale que el desarrollo es un proceso continuo."
+  "fase1_titulo": "Título corto fase 1 (ej: 'Quick Wins')",
+  "fase1_objetivo": "1 oración con el objetivo.",
+  "fase1_accion1": "1 oración: acción concreta y medible con **keywords** en negritas.",
+  "fase1_accion2": "1 oración: otra acción concreta.",
+  "fase1_accion3": "1 oración: otra acción concreta.",
+  "fase2_titulo": "Título corto fase 2",
+  "fase2_objetivo": "1 oración.",
+  "fase2_accion1": "1 oración con **keywords**.",
+  "fase2_accion2": "1 oración.",
+  "fase2_accion3": "1 oración.",
+  "fase3_titulo": "Título corto fase 3",
+  "fase3_objetivo": "1 oración.",
+  "fase3_accion1": "1 oración con **keywords**.",
+  "fase3_accion2": "1 oración.",
+  "fase3_accion3": "1 oración.",
+  "mensaje_cierre": "2-3 oraciones de cierre motivacional para ${firstName}. Reconoce fortalezas y anima al compromiso."
 }`;
 
         } else {
@@ -212,7 +191,7 @@ Genera un ROADMAP DE DESARROLLO en 3 fases (30-60-90 días). Cada fase debe incl
             },
             body: JSON.stringify({
                 model: "claude-haiku-4-5-20251001",
-                max_tokens: 2500,
+                max_tokens: 2000,
                 messages: [{ role: "user", content: prompt }]
             })
         });
