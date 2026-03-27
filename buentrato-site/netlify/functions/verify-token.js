@@ -69,7 +69,7 @@ exports.handler = async (event) => {
     try {
         const { token } = JSON.parse(event.body);
 
-        if (!token || token.length < 10) {
+        if (!token || token.length < 6) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: "Token inválido" })
