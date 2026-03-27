@@ -335,16 +335,34 @@
 <div class="entry-screen" id="entryScreen">
     <div class="entry-card">
         <img src="logo.png" alt="BuenTrato.AI" class="logo">
-        <h1>Hola!</h1>
-        <p>Ingresa tu codigo personal para acceder a tus instrumentos y ver tus informes.</p>
-        <input type="text" class="code-input" id="codeInput"
-               placeholder="Ingresa tu codigo"
-               autocomplete="off" spellcheck="false">
-        <button class="btn-primary" onclick="loginPortal()">
-            Ingresar al portal
-        </button>
-        <div class="entry-error" id="entryError"></div>
-        <div class="demo-link" onclick="loginDemo()">Explorar con datos de ejemplo (demo2026)</div>
+
+        <!-- Paso 1: Pedir email -->
+        <div id="emailStep">
+            <h1>Hola!</h1>
+            <p>Ingresa tu email para acceder a tus instrumentos y ver tus informes.</p>
+            <input type="email" class="code-input" id="emailInput"
+                   placeholder="tu@email.com"
+                   autocomplete="email" spellcheck="false"
+                   style="text-align:left; letter-spacing:normal; font-family:'Inter',sans-serif;">
+            <button class="btn-primary" onclick="sendMagicLink()">
+                Enviar enlace de acceso
+            </button>
+            <div class="entry-error" id="entryError"></div>
+            <div class="demo-link" onclick="loginDemo()">Explorar con datos de ejemplo</div>
+        </div>
+
+        <!-- Paso 2: Email enviado (confirmación) -->
+        <div id="emailSentStep" style="display:none;">
+            <div style="font-size:48px; margin-bottom:16px;">&#9993;</div>
+            <h1>Revisa tu email</h1>
+            <p id="emailSentMsg">Te enviamos un enlace de acceso. Revisa tu bandeja de entrada.</p>
+            <button class="btn-primary" onclick="showEmailStep()" style="background:#6DCFE0; color:#01516A;">
+                Volver a intentar
+            </button>
+        </div>
+
+        <!-- Hidden: input para código legacy (acceso directo por URL con ?code=) -->
+        <input type="hidden" id="codeInput">
     </div>
 </div>
 
@@ -743,21 +761,80 @@ let currentUser = null;
 // ============================================
 // ENTRY
 // ============================================
-document.getElementById('codeInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') loginPortal();
+// Enter key en email input
+document.getElementById('emailInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMagicLink();
 });
 
+// Auto-login: detectar ?token= en URL (magic link desde email)
+(function autoLogin() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const code = params.get('code');
+
+    // Limpiar URL para que no quede el token visible
+    if (token || code) {
+        window.history.replaceState({}, '', '/');
+    }
+
+    if (token) {
+        loginWithToken(token);
+    } else if (code) {
+        loginPortalWithCode(code);
+    }
+})();
+
+// --- Magic Link Login ---
+async function sendMagicLink() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !email.includes('@')) {
+        showError('Ingresa un email v\u00e1lido');
+        return;
+    }
+
+    document.getElementById('entryError').style.display = 'none';
+    const btn = document.querySelector('#emailStep .btn-primary');
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+
+    try {
+        const resp = await fetch('/.netlify/functions/send-magic-link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await resp.json();
+
+        // Mostrar confirmaci\u00f3n
+        document.getElementById('emailStep').style.display = 'none';
+        document.getElementById('emailSentStep').style.display = 'block';
+        document.getElementById('emailSentMsg').textContent =
+            `Enviamos un enlace de acceso a ${email}. Rev\u00edsa tu bandeja de entrada (y spam).`;
+    } catch (err) {
+        showError('Error al enviar. Int\u00e9ntalo de nuevo.');
+    } finally {
+        btn.textContent = 'Enviar enlace de acceso';
+        btn.disabled = false;
+    }
+}
+
+function showEmailStep() {
+    document.getElementById('emailSentStep').style.display = 'none';
+    document.getElementById('emailStep').style.display = 'block';
+}
+
 function loginDemo() {
-    document.getElementById('codeInput').value = 'demo2026';
-    loginPortal();
+    loginPortalWithCode('demo2026');
 }
 
 function logout() {
     currentUser = null;
     document.getElementById('portalContainer').style.display = 'none';
     document.getElementById('entryScreen').style.display = 'flex';
-    document.getElementById('codeInput').value = '';
+    document.getElementById('emailInput').value = '';
     document.getElementById('entryError').style.display = 'none';
+    showEmailStep();
     // Reset cards to locked
     document.querySelectorAll('.tool-card[data-instrument]').forEach(card => {
         card.classList.add('locked');
@@ -771,20 +848,55 @@ function logout() {
     });
 }
 
-async function loginPortal() {
-    const code = document.getElementById('codeInput').value.trim();
-    if (!code) {
-        showError('Ingresa tu codigo personal');
+// --- Login with magic token (from email link) ---
+async function loginWithToken(token) {
+    document.getElementById('entryScreen').style.display = 'none';
+    document.getElementById('loadingScreen').style.display = 'flex';
+    document.getElementById('loadingText').textContent = 'Verificando acceso...';
+    document.getElementById('loadingSub').textContent = 'Cargando tu perfil';
+
+    try {
+        const resp = await fetch('/.netlify/functions/verify-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+
+        if (!resp.ok) {
+            let errorMsg = 'Enlace inv\u00e1lido o expirado. Solicita uno nuevo.';
+            try {
+                const err = await resp.json();
+                errorMsg = err.error || errorMsg;
+            } catch(e) {}
+            throw new Error(errorMsg);
+        }
+
+        currentUser = await resp.json();
+
+        // Guardar portalCode para navegaci\u00f3n interna
+        if (currentUser.portalCode) {
+            sessionStorage.setItem('portalCode', currentUser.portalCode);
+        }
+    } catch (err) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('entryScreen').style.display = 'flex';
+        showError(err.message);
         return;
     }
 
-    // Show loading
+    await delay(300);
+    showPortal();
+}
+
+// --- Login with portal code (legacy + demo) ---
+async function loginPortalWithCode(code) {
+    if (!code) return;
+
     document.getElementById('entryScreen').style.display = 'none';
     document.getElementById('loadingScreen').style.display = 'flex';
     document.getElementById('loadingText').textContent = 'Buscando tu perfil...';
     document.getElementById('loadingSub').textContent = 'Conectando con la base de datos';
 
-    // Save portal code for "back to portal" links in instrument pages
     sessionStorage.setItem('portalCode', code);
 
     // Demo mode
@@ -804,7 +916,7 @@ async function loginPortal() {
         });
 
         if (!resp.ok) {
-            let errorMsg = 'Codigo no encontrado. Verifica que sea correcto.';
+            let errorMsg = 'C\u00f3digo no encontrado.';
             try {
                 const err = await resp.json();
                 errorMsg = err.error || errorMsg;
