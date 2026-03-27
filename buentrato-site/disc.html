@@ -1141,11 +1141,12 @@ if (portalCode) {
     .then(r => r.ok ? r.json() : Promise.reject('not found'))
     .then(profile => {
         if (profile.name) {
-            const personName = profile.name.trim().toLowerCase();
+            const norm = s => s.trim().replace(/\s+/g, ' ').toLowerCase();
+            const personName = norm(profile.name);
             // Buscar en todos los equipos por nombre
             for (const [teamCode, team] of Object.entries(DEMO_TEAMS)) {
                 const member = team.members.find(m =>
-                    m.name.trim().toLowerCase() === personName
+                    norm(m.name) === personName
                 );
                 if (member) {
                     state.teamCode = teamCode;
