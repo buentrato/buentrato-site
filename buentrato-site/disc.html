@@ -1122,7 +1122,49 @@ async function fetchAIFeedback() {
 // ==========================================
 // INIT
 // ==========================================
-render();
+const urlParams = new URLSearchParams(window.location.search);
+const portalCode = urlParams.get('portal');
+
+if (portalCode) {
+    // Mostrar pantalla de carga mientras resolvemos el equipo
+    document.getElementById('app').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top:16px;color:var(--gray);font-size:14px;">Cargando tu equipo...</p>
+        </div>`;
+
+    fetch('/.netlify/functions/get-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: portalCode })
+    })
+    .then(r => r.ok ? r.json() : Promise.reject('not found'))
+    .then(profile => {
+        if (profile.name) {
+            const personName = profile.name.trim().toLowerCase();
+            // Buscar en todos los equipos por nombre
+            for (const [teamCode, team] of Object.entries(DEMO_TEAMS)) {
+                const member = team.members.find(m =>
+                    m.name.trim().toLowerCase() === personName
+                );
+                if (member) {
+                    state.teamCode = teamCode;
+                    state.team = team;
+                    state.person = member;
+                    state.portalCode = portalCode;
+                    state.screen = "step2";
+                    render();
+                    return;
+                }
+            }
+        }
+        // No se encontró en ningún equipo — mostrar acceso normal
+        render();
+    })
+    .catch(() => render());
+} else {
+    render();
+}
 </script>
 
 </body>
