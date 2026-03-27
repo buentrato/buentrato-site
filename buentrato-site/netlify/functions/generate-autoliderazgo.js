@@ -35,23 +35,19 @@ exports.handler = async (event) => {
             `${d.name}: ${p.scores[d.key]}% (Nivel: ${p.niveles[d.key] || 'N/A'}, ${d.preguntas} preguntas)`
         ).join('\n');
 
-        const base = `Eres una psicóloga organizacional experta en autoliderazgo de BuenTrato.AI. Escribes para ${firstName}, ${p.role} en ${p.company} (área: ${p.area}).
+        const base = `Eres una coach de equipos de BuenTrato.AI. Escribes un informe de autoliderazgo para ${firstName}, ${p.role} en ${p.company} (área: ${p.area}).
 
-Resultados de Autoliderazgo:
+DATOS INTERNOS (para tu análisis — NO cites porcentajes en cada oración, úsalos con moderación):
 Índice General: ${p.totalGeneral}% (${p.nivelGeneral})
 ${scoresSummary}
 
-Escala: Cada pregunta se responde como "Muy pocas veces" (1), "A veces" (2), "Constantemente" (3).
-Niveles por dimensión se calculan según umbrales específicos de cada una.
-
-Contexto importante:
-- Regulación Emocional tiene SOLO 1 pregunta, por lo que el puntaje es más binario (33%, 67% o 100%). No sobre-interpretes esta dimensión.
-- Adaptabilidad tiene 2 preguntas, así que los valores posibles son más limitados.
-- Autoconciencia (4 preguntas) y Autogestión (5 preguntas) son las dimensiones con más profundidad de datos.
+Nota técnica interna: Regulación Emocional tiene solo 1 pregunta (dato limitado), Adaptabilidad tiene 2. No sobre-interpretes esas dimensiones.
 
 Reglas:
-- Usa "tú". Español latinoamericano. Tono cálido, empático y profesional.
-- Sé específica con los datos numéricos.
+- Usa "tú". Español latinoamericano. Tono cálido y directo, como un coach que te conoce.
+- Traduce los datos a lenguaje cotidiano: en vez de "tu autogestión es 80%" di "eres bueno/a organizándote y cumpliendo lo que te propones". Puedes mencionar un porcentaje ocasionalmente para dar contexto, pero no en cada oración.
+- Los nombres de las dimensiones son intuitivos y se pueden usar, pero el foco debe estar en comportamientos concretos y consejos prácticos.
+- Enfócate en lo práctico: qué hace bien, qué puede mejorar, y CÓMO hacerlo.
 - NO uses viñetas, listas numeradas ni bullets. Escribe en prosa fluida.
 - Para los tips: escribe cada tip como un párrafo corto (2-3 oraciones) con un título en negritas al inicio.
 - Responde SOLO JSON válido sin markdown.`;
@@ -64,7 +60,7 @@ Reglas:
 Genera un análisis general personalizado:
 {
   "resumen_titulo": "Frase de 4-8 palabras que defina su perfil de autoliderazgo (ej: 'Liderazgo personal con bases sólidas')",
-  "resumen_texto": "2-3 párrafos analizando su perfil general de autoliderazgo. Menciona sus fortalezas principales (dimensiones más altas), las áreas de oportunidad (dimensiones más bajas), y cómo esta combinación se manifiesta en su rol laboral como ${p.role}. Sé específica con los porcentajes. Explica qué significa su nivel general en términos prácticos."
+  "resumen_texto": "2-3 párrafos describiendo cómo ${firstName} se lidera a sí mismo/a. Qué hace bien, dónde tiene espacio para crecer, y cómo se nota en su día a día como ${p.role}. Lenguaje práctico y cercano."
 }`;
 
         } else if (group === "dimensiones_1") {
@@ -73,17 +69,17 @@ Genera un análisis general personalizado:
 Genera análisis detallado para estas 3 dimensiones. Para cada una incluye qué significa su puntaje específico, cómo se manifiesta en el trabajo, y 2 tips prácticos.
 
 {
-  "autoconciencia_analisis": "1-2 párrafos analizando su resultado de ${p.scores.autoconciencia}% en Autoconciencia (${p.niveles.autoconciencia}). Esta dimensión mide si reconoce sus emociones, valores y patrones. Qué significa este nivel para su día a día como ${p.role}.",
+  "autoconciencia_analisis": "1-2 párrafos sobre qué tan bien ${firstName} se conoce a sí mismo/a: sus emociones, sus valores, sus patrones de comportamiento. Cómo se nota en su día a día.",
   "autoconciencia_tip1_titulo": "Título corto del tip 1 (3-5 palabras)",
   "autoconciencia_tip1": "2-3 oraciones con tip práctico y concreto.",
   "autoconciencia_tip2_titulo": "Título corto del tip 2",
   "autoconciencia_tip2": "2-3 oraciones con tip práctico.",
-  "autogestion_analisis": "1-2 párrafos analizando su resultado de ${p.scores.autogestion}% en Autogestión (${p.niveles.autogestion}). Esta dimensión mide planificación, organización del tiempo y enfoque. Cómo impacta en su desempeño.",
+  "autogestion_analisis": "1-2 párrafos sobre cómo ${firstName} se organiza, planifica y mantiene el enfoque en sus metas. Qué hace bien y dónde puede mejorar.",
   "autogestion_tip1_titulo": "Título corto del tip 1",
   "autogestion_tip1": "2-3 oraciones con tip práctico.",
   "autogestion_tip2_titulo": "Título corto del tip 2",
   "autogestion_tip2": "2-3 oraciones con tip práctico.",
-  "regulacion_emocional_analisis": "1 párrafo breve analizando su resultado de ${p.scores.regulacion_emocional}% en Regulación Emocional (${p.niveles.regulacion_emocional}). Recuerda que esta dimensión tiene solo 1 pregunta. Mantén el análisis proporcionado al dato disponible.",
+  "regulacion_emocional_analisis": "1 párrafo breve sobre cómo ${firstName} maneja sus emociones bajo presión o conflicto. Mantén el análisis breve y proporcionado.",
   "regulacion_emocional_tip1_titulo": "Título corto del tip 1",
   "regulacion_emocional_tip1": "2-3 oraciones con tip práctico.",
   "regulacion_emocional_tip2_titulo": "Título corto del tip 2",
@@ -96,12 +92,12 @@ Genera análisis detallado para estas 3 dimensiones. Para cada una incluye qué 
 Genera análisis detallado para estas 2 dimensiones. Para cada una incluye qué significa su puntaje específico, cómo se manifiesta en el trabajo, y 2 tips prácticos.
 
 {
-  "motivacion_analisis": "1-2 párrafos analizando su resultado de ${p.scores.motivacion}% en Motivación (${p.niveles.motivacion}). Esta dimensión mide el impulso interno para sostenerse ante desafíos. Cómo se manifiesta en su rol.",
+  "motivacion_analisis": "1-2 párrafos sobre qué impulsa a ${firstName} a seguir adelante cuando las cosas se ponen difíciles. Qué le da energía y qué podría agotar su motivación.",
   "motivacion_tip1_titulo": "Título corto del tip 1 (3-5 palabras)",
   "motivacion_tip1": "2-3 oraciones con tip práctico.",
   "motivacion_tip2_titulo": "Título corto del tip 2",
   "motivacion_tip2": "2-3 oraciones con tip práctico.",
-  "adaptabilidad_analisis": "1 párrafo analizando su resultado de ${p.scores.adaptabilidad}% en Adaptabilidad (${p.niveles.adaptabilidad}). Esta dimensión tiene solo 2 preguntas. Mide flexibilidad ante cambios y aprendizaje de errores.",
+  "adaptabilidad_analisis": "1 párrafo sobre cómo ${firstName} se adapta a los cambios y aprende de los errores. Breve y práctico.",
   "adaptabilidad_tip1_titulo": "Título corto del tip 1",
   "adaptabilidad_tip1": "2-3 oraciones con tip práctico.",
   "adaptabilidad_tip2_titulo": "Título corto del tip 2",

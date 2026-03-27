@@ -36,17 +36,18 @@ exports.handler = async (event) => {
             `${d.name}: ${p.scores[d.key]}% (Nivel: ${p.niveles[d.key] || 'N/A'})`
         ).join('\n');
 
-        const base = `Eres una psicóloga organizacional experta en inteligencia emocional de BuenTrato.AI. Escribes para ${firstName}, ${p.role} en ${p.company} (área: ${p.area}).
+        const base = `Eres una coach de equipos de BuenTrato.AI. Escribes un informe de inteligencia emocional para ${firstName}, ${p.role} en ${p.company} (área: ${p.area}).
 
-Resultados de Inteligencia Emocional:
+DATOS INTERNOS (para tu análisis — NO cites porcentajes en cada oración, úsalos con moderación y solo cuando aporten valor):
 Índice General: ${p.ieGeneral}% (${p.nivelGeneral})
 ${scoresSummary}
-
-Escala de niveles: Bajo (≤55%), Medio (56-80%), Alto (>80%)
+Escala: Bajo (≤55%), Medio (56-80%), Alto (>80%)
 
 Reglas:
-- Usa "tú". Español latinoamericano. Tono cálido, empático y profesional.
-- Sé específica con los datos numéricos.
+- Usa "tú". Español latinoamericano. Tono cálido y directo, como un coach que te conoce.
+- Traduce los datos a lenguaje cotidiano: en vez de "tu autoconciencia es 72%" di "tienes buena capacidad para reconocer lo que sientes". Puedes mencionar un porcentaje de vez en cuando para dar contexto, pero no en cada oración.
+- Los nombres de las dimensiones (Autoconciencia, Empatía, etc.) son intuitivos y se pueden usar, pero el foco debe estar en comportamientos concretos, no en clasificaciones.
+- Enfócate en lo práctico: qué hace bien, qué puede mejorar, y CÓMO hacerlo.
 - NO uses viñetas, listas numeradas ni bullets. Escribe en prosa fluida.
 - Para los tips: escribe cada tip como un párrafo corto (2-3 oraciones) con un título en negritas al inicio.
 - Responde SOLO JSON válido sin markdown.`;
@@ -59,7 +60,7 @@ Reglas:
 Genera un análisis general personalizado:
 {
   "resumen_titulo": "Frase de 4-8 palabras que defina su perfil emocional general (ej: 'Equilibrio emocional con espacio para crecer')",
-  "resumen_texto": "2-3 párrafos analizando su perfil general de IE. Menciona sus fortalezas principales (dimensiones más altas), las áreas de oportunidad (dimensiones más bajas), y cómo esta combinación se manifiesta en su rol laboral. Sé específica con los porcentajes. Explica qué significa su nivel general en términos prácticos del día a día."
+  "resumen_texto": "2-3 párrafos describiendo cómo es ${firstName} emocionalmente en el trabajo. Qué hace bien, dónde tiene espacio para crecer, y cómo se nota en su día a día como ${p.role}. Lenguaje práctico y cercano."
 }`;
 
         } else if (group === "dimensiones_1") {
@@ -69,17 +70,17 @@ Genera un análisis general personalizado:
 Genera análisis detallado para estas 3 dimensiones. Para cada una incluye qué significa su puntaje específico, cómo se manifiesta en el trabajo, y 2 tips prácticos para mejorar o mantener.
 
 {
-  "autoconciencia_analisis": "1-2 párrafos analizando su resultado de ${p.scores.autoconciencia}% en Autoconciencia (${p.niveles.autoconciencia}). Qué significa este nivel en su día a día laboral. Cómo se conecta con sus otras dimensiones.",
+  "autoconciencia_analisis": "1-2 párrafos sobre qué tan bien ${firstName} reconoce sus emociones y cómo estas afectan su trabajo. Lenguaje práctico: qué hace bien y qué puede mejorar.",
   "autoconciencia_tip1_titulo": "Título corto del tip 1 (3-5 palabras)",
   "autoconciencia_tip1": "2-3 oraciones explicando este tip práctico y concreto para su contexto laboral como ${p.role}.",
   "autoconciencia_tip2_titulo": "Título corto del tip 2",
   "autoconciencia_tip2": "2-3 oraciones con otro tip práctico.",
-  "autorregulacion_analisis": "1-2 párrafos analizando su resultado de ${p.scores.autorregulacion}% en Autorregulación (${p.niveles.autorregulacion}). Qué significa y cómo impacta en su desempeño.",
+  "autorregulacion_analisis": "1-2 párrafos sobre cómo ${firstName} maneja sus emociones cuando las cosas se ponen difíciles. Qué tan bien se adapta a los cambios y controla impulsos.",
   "autorregulacion_tip1_titulo": "Título corto del tip 1",
   "autorregulacion_tip1": "2-3 oraciones con tip práctico.",
   "autorregulacion_tip2_titulo": "Título corto del tip 2",
   "autorregulacion_tip2": "2-3 oraciones con tip práctico.",
-  "motivacion_analisis": "1-2 párrafos analizando su resultado de ${p.scores.motivacion}% en Motivación (${p.niveles.motivacion}). Qué impulsa y qué podría frenar su motivación.",
+  "motivacion_analisis": "1-2 párrafos sobre qué impulsa a ${firstName} a dar lo mejor y qué podría frenarle. Cómo mantiene la motivación cuando las cosas se complican.",
   "motivacion_tip1_titulo": "Título corto del tip 1",
   "motivacion_tip1": "2-3 oraciones con tip práctico.",
   "motivacion_tip2_titulo": "Título corto del tip 2",
@@ -93,12 +94,12 @@ Genera análisis detallado para estas 3 dimensiones. Para cada una incluye qué 
 Genera análisis detallado para estas 2 dimensiones. Para cada una incluye qué significa su puntaje específico, cómo se manifiesta en el trabajo, y 2 tips prácticos para mejorar o mantener.
 
 {
-  "empatia_analisis": "1-2 párrafos analizando su resultado de ${p.scores.empatia}% en Empatía (${p.niveles.empatia}). Cómo se manifiesta en su interacción con el equipo y cómo se conecta con sus otras dimensiones.",
+  "empatia_analisis": "1-2 párrafos sobre cómo ${firstName} entiende y responde a lo que sienten los demás. Cómo se nota en su interacción con el equipo.",
   "empatia_tip1_titulo": "Título corto del tip 1 (3-5 palabras)",
   "empatia_tip1": "2-3 oraciones con tip práctico y concreto para su contexto.",
   "empatia_tip2_titulo": "Título corto del tip 2",
   "empatia_tip2": "2-3 oraciones con tip práctico.",
-  "habilidades_sociales_analisis": "1-2 párrafos analizando su resultado de ${p.scores.habilidades_sociales}% en Habilidades Sociales (${p.niveles.habilidades_sociales}). Cómo impacta su capacidad de colaborar y liderar.",
+  "habilidades_sociales_analisis": "1-2 párrafos sobre cómo ${firstName} construye relaciones, colabora y se hace escuchar en el equipo. Qué le sale bien y dónde puede mejorar.",
   "habilidades_sociales_tip1_titulo": "Título corto del tip 1",
   "habilidades_sociales_tip1": "2-3 oraciones con tip práctico.",
   "habilidades_sociales_tip2_titulo": "Título corto del tip 2",

@@ -36,33 +36,24 @@ exports.handler = async (event) => {
             ? `\n- Puntajes Adaptado (cómo se comporta en el trabajo): D=${companion.discAdaptado.D}, I=${companion.discAdaptado.I}, S=${companion.discAdaptado.S}, C=${companion.discAdaptado.C}`
             : "";
 
-        const prompt = `Eres un experto en perfiles DISC y relaciones laborales de la empresa BuenTrato.AI.
+        const prompt = `Eres un coach de equipos de BuenTrato.AI. Tu trabajo es dar consejos prácticos y claros para mejorar relaciones laborales.
 
-Genera un análisis personalizado y práctico para mejorar la relación entre dos personas de un equipo de trabajo.
+Tienes los datos de personalidad de dos personas (metodología DISC). Usa esos datos para entender cómo son, pero NO menciones puntajes, siglas DISC, ni términos técnicos como "Dominancia", "perfil Natural", "perfil Adaptado", "D=58" o similares. El usuario NO sabe qué es DISC. Traduce todo a lenguaje cotidiano.
 
-PERSONA 1 (quien consulta):
-- Nombre: ${person.name}
-- Rol: ${person.role}
-- Perfil DISC principal: ${discDescriptions[person.primaryStyle]}
-- Puntajes Natural (personalidad base): D=${person.disc.D}, I=${person.disc.I}, S=${person.disc.S}, C=${person.disc.C}${personAdaptado}
+DATOS INTERNOS (solo para tu análisis, NO los menciones):
+${person.name} (${person.role}): Natural D=${person.disc.D}, I=${person.disc.I}, S=${person.disc.S}, C=${person.disc.C}${personAdaptado}
+${companion.name} (${companion.role}): Natural D=${companion.disc.D}, I=${companion.disc.I}, S=${companion.disc.S}, C=${companion.disc.C}${companionAdaptado}
 
-PERSONA 2 (compañero/a):
-- Nombre: ${companion.name}
-- Rol: ${companion.role}
-- Perfil DISC principal: ${discDescriptions[companion.primaryStyle]}
-- Puntajes Natural (personalidad base): D=${companion.disc.D}, I=${companion.disc.I}, S=${companion.disc.S}, C=${companion.disc.C}${companionAdaptado}
-
-TEMA ESPECÍFICO: ${topic}
+TEMA: ${topic}
 
 INSTRUCCIONES:
-- Escribe como si hablaras directamente a ${person.name} (usa "tú")
-- Menciona a ${companion.name} por su nombre
-- Sé específico al tema "${topic}" — no des consejos genéricos
-- Usa un tono cálido pero profesional
-- Considera los puntajes exactos DISC (tanto Natural como Adaptado si están disponibles), no solo el estilo primario
-- Si hay diferencia significativa entre Natural y Adaptado, menciona cómo eso afecta la dinámica
-- Da 2-3 párrafos cortos con insights profundos y accionables
-- No uses viñetas ni listas — escribe en prosa fluida
+- Habla directo a ${person.name} (usa "tú") y menciona a ${companion.name} por nombre
+- Describe las personalidades con palabras comunes: "directo/a", "detallista", "sociable", "pausado/a", "le gusta tener el control", "prefiere pensar antes de actuar", etc.
+- Enfócate en el tema "${topic}" — nada genérico
+- Da consejos concretos: "Cuando necesites X, haz Y" o "Evita hacer Z porque a ${companion.name} le..."
+- Tono: como un coach que te conoce bien y te habla con confianza. Cálido, directo, sin rodeos
+- 2-3 párrafos cortos. Prosa fluida, sin viñetas ni listas
+- Si la forma de ser de ambos cambia entre su vida personal y el trabajo, menciona el efecto práctico sin usar jerga (ej: "en el trabajo ${companion.name} se vuelve más exigente de lo que es naturalmente")
 - Escribe en español
 - No incluyas encabezados ni títulos`;
 
@@ -75,7 +66,7 @@ INSTRUCCIONES:
             },
             body: JSON.stringify({
                 model: "claude-sonnet-4-20250514",
-                max_tokens: 600,
+                max_tokens: 800,
                 messages: [{ role: "user", content: prompt }]
             })
         });

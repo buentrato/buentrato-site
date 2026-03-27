@@ -65,16 +65,17 @@ Seguridad Psicológica: ${cl.scores.seguridad_psi}%, Comunicación: ${cl.scores.
         const estiloAprendizaje = (p.instruments.estilos && p.instruments.estilos.available)
             ? p.instruments.estilos.dominante : "mixto";
 
-        const base = `Eres una coach ejecutiva de BuenTrato.AI creando un PLAN DE DESARROLLO para ${firstName}, ${p.role} en ${p.company || 'su empresa'} (área: ${p.area || 'no especificada'}).
+        const base = `Eres una coach de equipos de BuenTrato.AI creando un PLAN DE DESARROLLO para ${firstName}, ${p.role} en ${p.company || 'su empresa'} (área: ${p.area || 'no especificada'}).
 
-Datos de TODAS sus evaluaciones:
+DATOS INTERNOS de todas sus evaluaciones (para tu análisis — NO cites porcentajes ni siglas técnicas constantemente. Traduce todo a lenguaje cotidiano):
 ${dataContext}
 
 REGLAS CRÍTICAS DE FORMATO:
-- Usa "tú". Español latinoamericano. Tono cálido y profesional.
+- Usa "tú". Español latinoamericano. Tono cálido y directo, como un coach que te conoce.
 - SÉ CONCISA: frases cortas y directas. Máximo 3 oraciones por campo de texto.
-- CRUZA datos entre instrumentos para encontrar patrones.
-- Usa **negritas** para resaltar las 2-3 palabras clave más importantes de cada texto (conceptos, porcentajes clave, nombres de competencias).
+- CRUZA datos entre instrumentos para encontrar patrones, pero explícalos en lenguaje práctico (ej: "eres buena leyendo a las personas pero te cuesta expresar lo que necesitas" en vez de "IE Empatía 80% + DISC I bajo").
+- Usa **negritas** para resaltar las 2-3 palabras clave más importantes de cada texto (comportamientos, habilidades, acciones — NO porcentajes ni siglas).
+- Los consejos deben ser concretos: "haz esto", "evita esto", "cuando pase X, intenta Y".
 - NO uses viñetas, listas ni bullets.
 - Responde SOLO JSON válido sin markdown.`;
 
@@ -87,15 +88,15 @@ Genera el resumen ejecutivo CONCISO:
 {
   "titulo_plan": "Frase de 5-8 palabras que capture la esencia del plan (ej: 'Potenciar tu liderazgo emocional')",
   "subtitulo": "1 oración corta complementaria al título",
-  "resumen": "Máximo 3 oraciones: quién es ${firstName} según sus resultados cruzados. Resalta **keywords** en negritas.",
-  "fortaleza1_nombre": "Nombre corto de su fortaleza #1 (2-4 palabras)",
-  "fortaleza1_dato": "Dato numérico clave que sustenta esta fortaleza (ej: 'IE Empatía 80% + DISC I 30%')",
+  "resumen": "Máximo 3 oraciones: quién es ${firstName} en el trabajo, qué la hace fuerte y dónde puede crecer. Resalta **palabras clave** en negritas. Lenguaje cotidiano.",
+  "fortaleza1_nombre": "Nombre corto de su fortaleza #1 (2-4 palabras, sin siglas)",
+  "fortaleza1_dato": "Breve referencia a de dónde viene esta fortaleza (ej: 'Resultados de personalidad y emociones')",
   "fortaleza1_texto": "1 oración explicando cómo se manifiesta en su trabajo. Usa **negritas** en keywords.",
   "fortaleza2_nombre": "Nombre corto de su fortaleza #2",
-  "fortaleza2_dato": "Dato numérico clave",
+  "fortaleza2_dato": "Breve referencia a las evaluaciones que la sustentan",
   "fortaleza2_texto": "1 oración. Usa **negritas** en keywords.",
   "fortaleza3_nombre": "Nombre corto de su fortaleza #3",
-  "fortaleza3_dato": "Dato numérico clave",
+  "fortaleza3_dato": "Breve referencia",
   "fortaleza3_texto": "1 oración. Usa **negritas** en keywords.",
   "nota_aprendizaje": "1 oración corta: su estilo dominante es ${estiloAprendizaje}, por lo que las herramientas están adaptadas a esa preferencia."
 }`;
@@ -113,9 +114,9 @@ Identifica 4 ÁREAS DE DESARROLLO cruzando AL MENOS 2 instrumentos cada una.
 
 {
   "area1_nombre": "Nombre conciso (2-5 palabras)",
-  "area1_fuentes": "Instrumentos (ej: 'DISC + IE')",
+  "area1_fuentes": "Evaluaciones de origen (ej: 'Personalidad + Emociones')",
   "area1_nivel": "fortaleza|oportunidad|critica",
-  "area1_insight": "1-2 oraciones con el hallazgo principal cruzando instrumentos. Usa **negritas** en datos clave y keywords.",
+  "area1_insight": "1-2 oraciones con el hallazgo principal. Explica en lenguaje práctico qué pasa y por qué importa. Usa **negritas** en keywords.",
   "area1_herramienta1_titulo": "Nombre corto de la herramienta (2-5 palabras)",
   "area1_herramienta1_tipo": "lectura|ejercicio|practica|reflexion|curso",
   "area1_herramienta1": "1 oración concreta describiendo qué hacer. Personalizada para estilo ${estiloAprendizaje}.",
