@@ -5,6 +5,10 @@
 [functions]
   node_bundler = "esbuild"
 
+# Scheduled function: procesar registros nuevos cada 5 minutos
+[functions."process-submission"]
+  schedule = "*/5 * * * *"
+
 # Redirects para Single Page App behavior
 [[redirects]]
   from = "/disc"
