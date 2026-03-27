@@ -25,6 +25,8 @@ exports.handler = async (event) => {
         "Content-Type": "application/json"
     };
 
+    const TABLE_EMPRESAS = "tblrxyUed67FrozPf";
+
     async function airtableGet(baseId, tableId, formula, maxRecords = 100) {
         const encoded = encodeURIComponent(formula);
         const url = `https://api.airtable.com/v0/${baseId}/${tableId}?filterByFormula=${encoded}&maxRecords=${maxRecords}`;
@@ -32,6 +34,13 @@ exports.handler = async (event) => {
         if (!resp.ok) return [];
         const data = await resp.json();
         return data.records || [];
+    }
+
+    async function airtableGetRecord(baseId, tableId, recordId) {
+        const url = `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`;
+        const resp = await fetch(url, { headers });
+        if (!resp.ok) return null;
+        return await resp.json();
     }
 
     try {
@@ -54,17 +63,36 @@ exports.handler = async (event) => {
         }
 
         const persona = personRecords[0].fields;
-        const empresaIds = persona.empresa; // linked record array
+        const empresaIds = persona.empresa; // linked record IDs array
 
         if (!empresaIds || empresaIds.length === 0) {
             return { statusCode: 404, body: JSON.stringify({ error: "Persona sin empresa asignada" }) };
         }
 
-        // 2. Buscar todas las personas de la misma empresa
+        // 2. Obtener el registro de EMPRESAS para sacar nombre y personas vinculadas
+        const empresaRecord = await airtableGetRecord(
+            BASE_BUENTRATO,
+            TABLE_EMPRESAS,
+            empresaIds[0]
+        );
+
+        if (!empresaRecord) {
+            return { statusCode: 404, body: JSON.stringify({ error: "Empresa no encontrada" }) };
+        }
+
+        const empresaName = empresaRecord.fields.nombre || "Equipo";
+        const personaIds = empresaRecord.fields.PERSONAS || [];
+
+        if (personaIds.length === 0) {
+            return { statusCode: 404, body: JSON.stringify({ error: "No hay personas en esta empresa" }) };
+        }
+
+        // 3. Buscar todas las personas de la empresa por RECORD_ID
+        const idConditions = personaIds.map(id => `RECORD_ID() = '${id}'`).join(', ');
         const allPersonas = await airtableGet(
             BASE_BUENTRATO,
             TABLE_PERSONAS,
-            `AND({empresa} = '${empresaIds[0]}', {activo} = TRUE())`,
+            `AND(OR(${idConditions}), {activo} = TRUE())`,
             100
         );
 
@@ -131,22 +159,12 @@ exports.handler = async (event) => {
             };
         });
 
-        // Obtener nombre de empresa (del primer persona record)
-        const empresaName = Array.isArray(persona.empresa)
-            ? (allPersonas[0]?.fields?.empresa?.[0] || "Equipo")
-            : "Equipo";
-
-        // Buscar nombre de empresa desde el lookup si existe
-        // Usamos el nombre del primer miembro del DISC como referencia
-        const firstDisc = discRecords[0]?.fields;
-        const companyName = Array.isArray(firstDisc?.Empresa) ? firstDisc.Empresa[0] : "Equipo";
-
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                company: companyName,
-                name: companyName,
+                company: empresaName,
+                name: empresaName,
                 members,
                 personEmail: email.trim().toLowerCase()
             })
