@@ -977,14 +977,14 @@ function renderStep4() {
                         <div class="feedback-person-name">${p.name}</div>
                         <span class="feedback-person-style" style="background:${ps.color}">${ps.name} (${p.primaryStyle})</span>
                     </div>
-                    <div class="feedback-arrow"><img src="carita.png" alt="" style="width:32px; height:32px; object-fit:contain;"></div>
+                    <div class="feedback-arrow"><img src="carita.png" alt="" style="width:32px; height:32px; object-fit:contain; filter:brightness(0) invert(1);"></div>
                     <div style="text-align:center">
                         <div class="feedback-person-bubble">${getInitials(c.name)}</div>
                         <div class="feedback-person-name">${c.name}</div>
                         <span class="feedback-person-style" style="background:${cs.color}">${cs.name} (${c.primaryStyle})</span>
                     </div>
                 </div>
-                <div class="feedback-topic">${topic.icon} Tema: <strong>${topic.label}</strong></div>
+                <div class="feedback-topic"><img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain; filter:brightness(0) invert(1); vertical-align:middle;"> Tema: <strong>${topic.label}</strong></div>
             </div>
 
             <div class="charts-grid">
