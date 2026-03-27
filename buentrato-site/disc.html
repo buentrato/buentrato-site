@@ -478,6 +478,11 @@ const AIRTABLE_TEAMS = {
     ]},
     "TUALSAS-COMU": { name: "Tualotuyo SAS - Comunicaciones", company: "Tualotuyo SAS", members: [
         { id: 43, name: "Jorge Arango", role: "Contratista comunicaciones", disc: { D: 55, I: 33, S: 12, C: 29 }, discAdaptado: { D: 45, I: 29, S: 25, C: 25 }, primaryStyle: "D" }
+    ]},
+    "BUENTRATO-GEN": { name: "BuenTrato", company: "BuenTrato", members: [
+        { id: 66, name: "Jorge Arango", role: "Gerente General", disc: { D: 58, I: 38, S: 29, C: 4 }, discAdaptado: { D: 42, I: 8, S: 21, C: 50 }, primaryStyle: "D" },
+        { id: 67, name: "Andres Vaca", role: "Desarrollador de automatización", disc: { D: 53, I: 17, S: 4, C: 46 }, discAdaptado: { D: 47, I: 33, S: 29, C: 8 }, primaryStyle: "D" },
+        { id: 68, name: "Oriana Morón", role: "Coordinadora de pruebas", disc: { D: 40, I: 25, S: 21, C: 29 }, discAdaptado: { D: 60, I: 12, S: 12, C: 38 }, primaryStyle: "D" }
     ]}
 };
 
@@ -1133,6 +1138,7 @@ if (portalCode) {
             <p style="margin-top:16px;color:var(--gray);font-size:14px;">Cargando tu equipo...</p>
         </div>`;
 
+    // Paso 1: obtener perfil del portal (nombre + email)
     fetch('/.netlify/functions/get-portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1140,27 +1146,82 @@ if (portalCode) {
     })
     .then(r => r.ok ? r.json() : Promise.reject('not found'))
     .then(profile => {
-        if (profile.name) {
+        if (!profile.email) {
+            render();
+            return;
+        }
+
+        // Paso 2: cargar equipo dinámico desde Airtable
+        return fetch('/.netlify/functions/get-disc-team', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: profile.email })
+        })
+        .then(r => r.ok ? r.json() : Promise.reject('no team'))
+        .then(team => {
+            const norm = s => s.trim().replace(/\s+/g, ' ').toLowerCase();
+            const personEmail = profile.email.trim().toLowerCase();
+
+            // Encontrar al usuario en el equipo por email
+            const member = team.members.find(m => m.email === personEmail);
+
+            if (member && team.members.length > 1) {
+                state.teamCode = "DYNAMIC";
+                state.team = { name: team.name, company: team.company, members: team.members };
+                state.person = member;
+                state.portalCode = portalCode;
+                state.screen = "step2";
+                render();
+            } else if (member && team.members.length === 1) {
+                // Solo 1 persona en el equipo — mostrar mensaje
+                document.getElementById('app').innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;padding:20px;text-align:center;">
+                        <img src="carita.png" alt="" style="height:48px;margin-bottom:16px;opacity:0.5;">
+                        <h2 style="color:var(--primary-dark);margin-bottom:8px;">Aún no hay compañeros</h2>
+                        <p style="color:var(--gray);font-size:14px;max-width:360px;">
+                            Eres la única persona de ${team.company} que ha completado el DISC hasta ahora.
+                            Cuando más compañeros lo completen, podrás generar feedback aquí.
+                        </p>
+                        <a href="/?portal=${portalCode}" style="margin-top:20px;color:var(--primary);font-size:14px;">
+                            Volver al portal
+                        </a>
+                    </div>`;
+            } else {
+                // Fallback: buscar en equipos hardcodeados
+                const personName = norm(profile.name);
+                for (const [tc, t] of Object.entries(DEMO_TEAMS)) {
+                    const m = t.members.find(m => norm(m.name) === personName);
+                    if (m) {
+                        state.teamCode = tc;
+                        state.team = t;
+                        state.person = m;
+                        state.portalCode = portalCode;
+                        state.screen = "step2";
+                        render();
+                        return;
+                    }
+                }
+                render();
+            }
+        })
+        .catch(() => {
+            // Si falla get-disc-team, fallback a hardcodeados
             const norm = s => s.trim().replace(/\s+/g, ' ').toLowerCase();
             const personName = norm(profile.name);
-            // Buscar en todos los equipos por nombre
-            for (const [teamCode, team] of Object.entries(DEMO_TEAMS)) {
-                const member = team.members.find(m =>
-                    norm(m.name) === personName
-                );
-                if (member) {
-                    state.teamCode = teamCode;
-                    state.team = team;
-                    state.person = member;
+            for (const [tc, t] of Object.entries(DEMO_TEAMS)) {
+                const m = t.members.find(m => norm(m.name) === personName);
+                if (m) {
+                    state.teamCode = tc;
+                    state.team = t;
+                    state.person = m;
                     state.portalCode = portalCode;
                     state.screen = "step2";
                     render();
                     return;
                 }
             }
-        }
-        // No se encontró en ningún equipo — mostrar acceso normal
-        render();
+            render();
+        });
     })
     .catch(() => render());
 } else {
