@@ -97,7 +97,8 @@ exports.handler = async (event) => {
                     html: `
                         <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 20px;">
                             <div style="text-align: center; margin-bottom: 24px;">
-                                <img src="${SITE_URL}/logo.png" alt="BuenTrato.AI" style="height: 40px;">
+                                <img src="${SITE_URL}/carita.png" alt="BuenTrato.AI" style="height: 48px; width: 48px; object-fit: contain;">
+                                <div style="font-size: 14px; color: #026B8A; font-weight: 600; margin-top: 6px;">BuenTrato.AI</div>
                             </div>
                             <h2 style="color: #01516A; font-size: 20px; margin-bottom: 8px;">
                                 ${nombre}, aquí está tu acceso
