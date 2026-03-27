@@ -105,12 +105,12 @@
             width: 100%; height: 100%; object-fit: contain;
         }
         .header-logo-img {
-            height: 32px;
+            height: 64px;
             filter: brightness(0) invert(1);
             margin-bottom: 6px;
         }
         .footer-logo-img {
-            height: 40px;
+            height: 80px;
             opacity: 0.4;
             margin-bottom: 6px;
         }
@@ -364,6 +364,19 @@
             color: #777579; font-size: 12px;
             border-top: 1px solid #EEEDEF;
         }
+        .btn-portal {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 12px;
+            padding: 10px 20px;
+            background: #0380A6;
+            color: white;
+            border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-portal:hover { background: #026B8A; }
     </style>
 </head>
 <body>
@@ -721,23 +734,47 @@ function render() {
     }
 }
 
+function portalUrl() {
+    return state.portalCode ? `/?portal=${state.portalCode}` : '/index.html';
+}
+
 function renderHeader() {
     return `
         <div class="header">
-            <a href="/index.html" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Portal</a>
+            <a href="${portalUrl()}" class="back-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Portal</a>
             <img src="logo.png" alt="BuenTrato.AI" class="header-logo-img">
             <p>Feedback de Relacionamiento DISC</p>
         </div>`;
 }
 
+function renderFooter() {
+    const portalBtn = state.portalCode
+        ? `<a href="${portalUrl()}" class="btn-portal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>Volver al portal</a><br>`
+        : '';
+    return `<div class="footer">${portalBtn}<img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
+}
+
 function renderProgress(current) {
     const labels = ["Tú", "Compañero/a", "Tema", "Feedback"];
+    // Navegación: Tú (step1) nunca es clickable si viene del portal.
+    // Compañero (step2) clickable si estamos en step3 o step4.
+    // Tema (step3) clickable si estamos en step4.
+    // Feedback (step4) nunca clickable.
+    const isPortal = !!state.portalCode;
     return `
         <div class="progress-bar">
             ${labels.map((l, i) => {
                 const n = i + 1;
                 const cls = n === current ? "active" : n < current ? "done" : "pending";
-                return `<div class="step-pill ${cls}">
+                // Determinar si este paso es navegable
+                let clickable = false;
+                if (cls === "done") {
+                    if (n === 1 && !isPortal) clickable = true; // Tú solo si NO es portal
+                    if (n === 2) clickable = true; // Compañero siempre navegable si done
+                    if (n === 3) clickable = true; // Tema siempre navegable si done
+                }
+                const clickAttr = clickable ? `onclick="goBack('step${n}')" style="cursor:pointer;"` : '';
+                return `<div class="step-pill ${cls}" ${clickAttr}>
                     <span class="step-num ${cls}">${n < current ? '<img src="carita.png" alt="" style="width:16px; height:16px; object-fit:contain;">' : n}</span>
                     <span class="step-label ${cls}">${l}</span>
                 </div>`;
@@ -758,7 +795,7 @@ function renderAccess() {
             <div class="access-error" id="accessError">Código no encontrado. Verifica con tu facilitador/a.</div>
             <div class="demo-link" onclick="handleDemoAccess()">Probar con datos de ejemplo (DEMO2026)</div>
         </div>
-        <div class="footer"><img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
+        ${renderFooter()}`;
 }
 
 function getInitials(name) {
@@ -791,7 +828,7 @@ function renderStep1() {
                 }).join("")}
             </div>
         </div>
-        <div class="footer"><img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI</div>`;
+        ${renderFooter()}`;
 }
 
 function renderStep2() {
@@ -817,9 +854,9 @@ function renderStep2() {
                     </div>`;
                 }).join("")}
             </div>
-            <button class="btn-back" onclick="goBack('step1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Cambiar persona</button>
+            ${!state.portalCode ? '<button class="btn-back" onclick="goBack(\'step1\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Cambiar persona</button>' : ''}
         </div>
-        <div class="footer"><img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI</div>`;
+        ${renderFooter()}`;
 }
 
 function renderStep3() {
@@ -841,7 +878,7 @@ function renderStep3() {
             </div>
             <button class="btn-back" onclick="goBack('step2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Cambiar compañero/a</button>
         </div>
-        <div class="footer"><img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI</div>`;
+        ${renderFooter()}`;
 }
 
 function drawDISCChart(disc, canvasId) {
@@ -982,9 +1019,9 @@ function renderStep4() {
 
             ${aiSection}
 
-            <button class="btn-reset" onclick="resetAll()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>Nueva consulta</button>
+            ${renderProgress(4)}
         </div>
-        <div class="footer"><img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
+        ${renderFooter()}`;
 }
 
 function renderLoading() {
@@ -1058,6 +1095,20 @@ function selectTopic(topicId) {
 }
 
 function goBack(screen) {
+    // Limpiar estado según a dónde volvemos
+    if (screen === "step1") {
+        state.person = null;
+        state.companion = null;
+        state.topic = null;
+        state.aiFeedback = null;
+    } else if (screen === "step2") {
+        state.companion = null;
+        state.topic = null;
+        state.aiFeedback = null;
+    } else if (screen === "step3") {
+        state.topic = null;
+        state.aiFeedback = null;
+    }
     state.screen = screen;
     render();
 }

@@ -766,14 +766,14 @@ document.getElementById('emailInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendMagicLink();
 });
 
-// Auto-login: detectar ?token= en URL (magic link desde email)
+// Auto-login: detectar ?token=, ?code= o ?portal= en URL, o sessionStorage
 (function autoLogin() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
-    const code = params.get('code');
+    const code = params.get('code') || params.get('portal');
 
-    // Limpiar URL para que no quede el token visible
-    if (token || code) {
+    // Limpiar URL para que no quede el token/code visible
+    if (token || code || params.get('portal')) {
         window.history.replaceState({}, '', '/');
     }
 
@@ -781,6 +781,12 @@ document.getElementById('emailInput').addEventListener('keydown', (e) => {
         loginWithToken(token);
     } else if (code) {
         loginPortalWithCode(code);
+    } else {
+        // Si no hay params en URL, intentar sesión guardada
+        const saved = sessionStorage.getItem('portalCode');
+        if (saved) {
+            loginPortalWithCode(saved);
+        }
     }
 })();
 
@@ -830,6 +836,7 @@ function loginDemo() {
 
 function logout() {
     currentUser = null;
+    sessionStorage.removeItem('portalCode');
     document.getElementById('portalContainer').style.display = 'none';
     document.getElementById('entryScreen').style.display = 'flex';
     document.getElementById('emailInput').value = '';
@@ -1011,16 +1018,7 @@ document.querySelectorAll('.role-tab').forEach(tab => {
 });
 
 // ============================================
-// CHECK URL PARAMS (auto-login)
-// ============================================
-(function checkUrlCode() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code') || params.get('c');
-    if (code) {
-        document.getElementById('codeInput').value = code;
-        loginPortal();
-    }
-})();
+// (auto-login ya se maneja arriba en autoLogin())
 </script>
 </body>
 </html>
