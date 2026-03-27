@@ -303,6 +303,165 @@
             line-height: 1.5;
         }
 
+        /* === TEAM DISC MAP PANEL === */
+        .team-map-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .team-map-overlay.active { display: flex; }
+        .team-map-panel {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .team-map-header {
+            background: linear-gradient(135deg, #01516A 0%, #0380A6 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .team-map-header h2 { font-size: 20px; font-weight: 700; }
+        .team-map-header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+        .team-map-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .team-map-close:hover { background: rgba(255,255,255,0.3); }
+        .team-map-body { padding: 28px; }
+        .quadrant-container {
+            position: relative;
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto 24px;
+            aspect-ratio: 1;
+        }
+        .quadrant-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .map-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #F7F8F9;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .legend-name { font-weight: 600; color: #2D2D2D; }
+        .legend-style { color: #777579; font-size: 12px; }
+
+        /* === TEAM DYNAMICS PANEL === */
+        .dynamics-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .dynamics-overlay.active { display: flex; }
+        .dynamics-panel {
+            background: white;
+            border-radius: 20px;
+            max-width: 860px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .dynamics-header {
+            background: linear-gradient(135deg, #0380A6 0%, #04B5D6 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dynamics-header h2 { font-size: 20px; font-weight: 700; }
+        .dynamics-header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+        .dynamics-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .dynamics-close:hover { background: rgba(255,255,255,0.3); }
+        .dynamics-body { padding: 28px; }
+        .dynamics-section {
+            margin-bottom: 28px;
+            padding: 20px 24px;
+            background: #F7F8F9;
+            border-radius: 14px;
+            border-left: 4px solid #0380A6;
+        }
+        .dynamics-section.section-green { border-left-color: #38A169; background: #F0FFF4; }
+        .dynamics-section.section-amber { border-left-color: #D69E2E; background: #FFFFF0; }
+        .dynamics-section.section-red { border-left-color: #E53E3E; background: #FFF5F5; }
+        .dynamics-section.section-blue { border-left-color: #0380A6; background: #EBF8FF; }
+        .dynamics-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2D2D2D;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dynamics-section-title .section-icon {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .dynamics-section-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #4A4A4A;
+        }
+
         /* === FOOTER === */
         .footer {
             text-align: center;
@@ -550,18 +709,18 @@
                     <div class="category-line"></div>
                 </div>
                 <div class="tools-grid">
-                    <a href="#" class="tool-card disabled">
+                    <a href="javascript:void(0)" class="tool-card" id="card-team-disc" onclick="showTeamDiscMap()">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-new">Nuevo</span>
                         </div>
                         <div class="tool-card-title">Mapa DISC del equipo</div>
-                        <div class="tool-card-desc">Visualizaci&oacute;n completa de los perfiles DISC de tu equipo: composici&oacute;n, din&aacute;micas y compatibilidad.</div>
+                        <div class="tool-card-desc">Visualizaci&oacute;n de los perfiles DISC de tu equipo en un mapa de cuadrantes.</div>
                     </a>
-                    <a href="#" class="tool-card disabled">
+                    <a href="javascript:void(0)" class="tool-card" id="card-team-dynamics" onclick="showTeamDynamics()">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-new">Nuevo</span>
                         </div>
                         <div class="tool-card-title">Din&aacute;micas de relacionamiento</div>
                         <div class="tool-card-desc">Qui&eacute;n conecta bien con qui&eacute;n, d&oacute;nde hay tensiones y c&oacute;mo fortalecer los v&iacute;nculos del equipo.</div>
@@ -734,6 +893,50 @@
         <a href="mailto:hola@buentrato.ai" style="color: #0380A6; text-decoration: none;">hola@buentrato.ai</a>
     </div>
 
+</div>
+
+<!-- TEAM DISC MAP OVERLAY -->
+<div class="team-map-overlay" id="teamMapOverlay" onclick="if(event.target===this)closeTeamMap()">
+    <div class="team-map-panel">
+        <div class="team-map-header">
+            <div>
+                <h2>Mapa DISC del equipo</h2>
+                <div class="subtitle" id="teamMapSubtitle">Cargando...</div>
+            </div>
+            <button class="team-map-close" onclick="closeTeamMap()">&times;</button>
+        </div>
+        <div class="team-map-body">
+            <div id="teamMapContent">
+                <div style="text-align:center;padding:40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;color:#777;font-size:14px;">Cargando equipo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- TEAM DYNAMICS OVERLAY -->
+<!-- ===================== -->
+<div class="dynamics-overlay" id="dynamicsOverlay" onclick="if(event.target===this)closeDynamics()">
+    <div class="dynamics-panel">
+        <div class="dynamics-header">
+            <div>
+                <h2>Din&aacute;micas de relacionamiento</h2>
+                <div class="subtitle" id="dynamicsSubtitle">Cargando...</div>
+            </div>
+            <button class="dynamics-close" onclick="closeDynamics()">&times;</button>
+        </div>
+        <div class="dynamics-body">
+            <div id="dynamicsContent">
+                <div style="text-align:center;padding:40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;color:#777;font-size:14px;">Analizando din&aacute;micas del equipo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -1016,6 +1219,326 @@ document.querySelectorAll('.role-tab').forEach(tab => {
         if (target) target.classList.add('active');
     });
 });
+
+// ============================================
+// TEAM DISC MAP
+// ============================================
+const DISC_COLORS = { D: '#01516A', I: '#0380A6', S: '#04B5D6', C: '#6DCFE0' };
+const DISC_NAMES = { D: 'Dominancia', I: 'Influencia', S: 'Serenidad', C: 'Cumplimiento' };
+
+async function showTeamDiscMap() {
+    const overlay = document.getElementById('teamMapOverlay');
+    overlay.classList.add('active');
+    document.getElementById('teamMapSubtitle').textContent = 'Cargando...';
+    document.getElementById('teamMapContent').innerHTML = `
+        <div style="text-align:center;padding:40px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:#777;font-size:14px;">Cargando equipo...</p>
+        </div>`;
+
+    try {
+        const resp = await fetch('/.netlify/functions/get-disc-team', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (!resp.ok) throw new Error('No se pudo cargar el equipo');
+        const team = await resp.json();
+
+        if (!team.members || team.members.length === 0) {
+            document.getElementById('teamMapContent').innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
+                    <p style="color:#777;font-size:14px;">No hay miembros con DISC completado en tu equipo.</p>
+                </div>`;
+            return;
+        }
+
+        document.getElementById('teamMapSubtitle').textContent = team.company + ' — ' + team.members.length + ' personas';
+
+        // Build content
+        const legendHtml = team.members.map(m => {
+            const color = DISC_COLORS[m.primaryStyle];
+            return `<div class="legend-item">
+                <div class="legend-dot" style="background:${color}"></div>
+                <div>
+                    <div class="legend-name">${m.name}</div>
+                    <div class="legend-style">${DISC_NAMES[m.primaryStyle]} · ${m.role || ''}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('teamMapContent').innerHTML = `
+            <div class="quadrant-container">
+                <canvas id="discQuadrantCanvas" class="quadrant-canvas"></canvas>
+            </div>
+            <div class="map-legend">${legendHtml}</div>`;
+
+        // Draw the quadrant map
+        drawDiscQuadrant(team.members);
+
+    } catch (err) {
+        document.getElementById('teamMapContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <p style="color:#E53E3E;font-size:14px;">${err.message}</p>
+            </div>`;
+    }
+}
+
+function closeTeamMap() {
+    document.getElementById('teamMapOverlay').classList.remove('active');
+}
+
+function drawDiscQuadrant(members) {
+    const canvas = document.getElementById('discQuadrantCanvas');
+    if (!canvas) return;
+
+    const container = canvas.parentElement;
+    const size = Math.min(container.clientWidth, 560);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const pad = 48;
+    const w = size - pad * 2;
+    const h = size - pad * 2;
+    const cx = size / 2;
+    const cy = size / 2;
+
+    // Background quadrants
+    const quadrants = [
+        { x: pad, y: pad, color: '#01516A', label: 'D', sublabel: 'Dominancia', corner: 'tl' },
+        { x: cx, y: pad, color: '#0380A6', label: 'I', sublabel: 'Influencia', corner: 'tr' },
+        { x: pad, y: cy, color: '#6DCFE0', label: 'C', sublabel: 'Cumplimiento', corner: 'bl' },
+        { x: cx, y: cy, color: '#04B5D6', label: 'S', sublabel: 'Serenidad', corner: 'br' }
+    ];
+
+    quadrants.forEach(q => {
+        ctx.fillStyle = q.color + '12';
+        ctx.fillRect(q.x, q.y, w / 2, h / 2);
+
+        // Label in corner
+        ctx.font = 'bold 28px Inter, sans-serif';
+        ctx.fillStyle = q.color + '30';
+        let lx, ly;
+        if (q.corner === 'tl') { lx = pad + 14; ly = pad + 34; }
+        else if (q.corner === 'tr') { lx = size - pad - 30; ly = pad + 34; }
+        else if (q.corner === 'bl') { lx = pad + 14; ly = size - pad - 10; }
+        else { lx = size - pad - 30; ly = size - pad - 10; }
+        ctx.fillText(q.label, lx, ly);
+
+        // Sublabel
+        ctx.font = '11px Inter, sans-serif';
+        ctx.fillStyle = q.color + '50';
+        if (q.corner === 'tl') ctx.fillText(q.sublabel, pad + 14, pad + 50);
+        else if (q.corner === 'tr') { ctx.textAlign = 'right'; ctx.fillText(q.sublabel, size - pad - 14, pad + 50); ctx.textAlign = 'left'; }
+        else if (q.corner === 'bl') ctx.fillText(q.sublabel, pad + 14, size - pad - 24);
+        else { ctx.textAlign = 'right'; ctx.fillText(q.sublabel, size - pad - 14, size - pad - 24); ctx.textAlign = 'left'; }
+    });
+
+    // Grid lines
+    ctx.strokeStyle = '#E5E7EB';
+    ctx.lineWidth = 1;
+    // Center cross
+    ctx.beginPath();
+    ctx.moveTo(cx, pad); ctx.lineTo(cx, size - pad);
+    ctx.moveTo(pad, cy); ctx.lineTo(size - pad, cy);
+    ctx.stroke();
+    // Border
+    ctx.strokeRect(pad, pad, w, h);
+
+    // Axis labels
+    ctx.font = '10px Inter, sans-serif';
+    ctx.fillStyle = '#9CA3AF';
+    ctx.textAlign = 'center';
+    ctx.fillText('Orientado a tareas', cx, pad - 8);
+    ctx.fillText('Orientado a personas', cx, size - pad + 16);
+    ctx.save();
+    ctx.translate(pad - 10, cy);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Ritmo rápido', 0, 0);
+    ctx.restore();
+    ctx.save();
+    ctx.translate(size - pad + 14, cy);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillText('Ritmo pausado', 0, 0);
+    ctx.restore();
+    ctx.textAlign = 'left';
+
+    // Plot members
+    const bubbleR = Math.max(18, Math.min(28, 200 / members.length));
+
+    members.forEach((m, i) => {
+        // Position: use DISC scores to place in quadrant space
+        // X axis: I+S (people) vs D+C (tasks) → higher I+S = more right
+        // Y axis: D+I (fast) vs S+C (steady) → higher D+I = more up
+        const d = m.disc.D, iVal = m.disc.I, s = m.disc.S, c = m.disc.C;
+        const total = d + iVal + s + c || 1;
+
+        // Normalize to -1..1 range
+        const xRaw = ((iVal + s) - (d + c)) / total; // -1 (task) to 1 (people)
+        const yRaw = ((s + c) - (d + iVal)) / total; // -1 (fast/top) to 1 (steady/bottom)
+
+        // Add slight jitter to prevent overlap
+        const jitter = (i * 7 % 11 - 5) * 2;
+
+        const px = cx + xRaw * (w / 2 - bubbleR - 10) + jitter;
+        const py = cy + yRaw * (h / 2 - bubbleR - 10) + jitter * 0.7;
+
+        const color = DISC_COLORS[m.primaryStyle];
+
+        // Shadow
+        ctx.shadowColor = 'rgba(0,0,0,0.15)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+
+        // Bubble
+        ctx.beginPath();
+        ctx.arc(px, py, bubbleR, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        // Reset shadow
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Border
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Initials
+        const initials = m.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        ctx.font = `bold ${bubbleR * 0.7}px Inter, sans-serif`;
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(initials, px, py);
+    });
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+}
+
+// ============================================
+// TEAM DYNAMICS
+// ============================================
+async function showTeamDynamics() {
+    const overlay = document.getElementById('dynamicsOverlay');
+    overlay.classList.add('active');
+    document.getElementById('dynamicsSubtitle').textContent = 'Cargando...';
+    document.getElementById('dynamicsContent').innerHTML = `
+        <div style="text-align:center;padding:40px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:#777;font-size:14px;">Analizando dinámicas del equipo...</p>
+        </div>`;
+
+    try {
+        // 1. Get team data with ALL available instruments
+        const resp = await fetch('/.netlify/functions/get-team-instruments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (!resp.ok) throw new Error('No se pudo cargar el equipo');
+        const team = await resp.json();
+
+        if (!team.members || team.members.length < 2) {
+            document.getElementById('dynamicsContent').innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
+                    <p style="color:#777;font-size:14px;">Se necesitan al menos 2 miembros con evaluaciones completadas para analizar dinámicas.</p>
+                </div>`;
+            return;
+        }
+
+        // Show which instruments were found
+        const ic = team.instrumentCounts || {};
+        const instrumentLabels = [];
+        if (ic.disc) instrumentLabels.push('Personalidad');
+        if (ic.ie) instrumentLabels.push('Emociones');
+        if (ic.autoliderazgo) instrumentLabels.push('Autoliderazgo');
+        if (ic.estilos) instrumentLabels.push('Estilos');
+        if (ic.clima) instrumentLabels.push('Clima');
+        const instrumentsText = instrumentLabels.length > 0 ? ' · ' + instrumentLabels.join(', ') : '';
+
+        document.getElementById('dynamicsSubtitle').textContent = team.company + ' — ' + team.members.length + ' personas' + instrumentsText;
+        document.getElementById('dynamicsContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <div class="spinner"></div>
+                <p style="margin-top:12px;color:#777;font-size:14px;">Analizando ${team.members.length} personas con ${instrumentLabels.length} evaluaciones...</p>
+            </div>`;
+
+        // 2. Generate dynamics analysis
+        const leaderName = currentUser.name || currentUser.email.split('@')[0];
+        const dynResp = await fetch('/.netlify/functions/generate-team-dynamics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                members: team.members,
+                company: team.company,
+                leaderName: leaderName
+            })
+        });
+        if (!dynResp.ok) throw new Error('Error generando análisis');
+        const dynData = await dynResp.json();
+        const d = dynData.dynamics;
+
+        // 3. Render results
+        function renderMarkdown(text) {
+            if (!text) return '';
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+        }
+
+        const sections = [
+            { key: 'resumen_equipo', title: 'El equipo', icon: '👥', cls: 'section-blue', iconBg: '#0380A6' },
+            { key: 'conexiones_fuertes', title: 'Conexiones fuertes', icon: '✓', cls: 'section-green', iconBg: '#38A169' },
+            { key: 'tensiones_potenciales', title: 'Tensiones potenciales', icon: '⚡', cls: 'section-amber', iconBg: '#D69E2E' },
+            { key: 'puntos_criticos', title: 'Puntos críticos', icon: '!', cls: 'section-red', iconBg: '#E53E3E' },
+            { key: 'consejo_lider', title: 'Recomendaciones para ti', icon: '★', cls: 'section-blue', iconBg: '#0380A6' }
+        ];
+
+        let html = '';
+        if (d.titulo) {
+            html += `<div style="text-align:center;margin-bottom:24px;">
+                <h3 style="font-size:18px;font-weight:700;color:#01516A;margin:0;">${d.titulo}</h3>
+            </div>`;
+        }
+
+        sections.forEach(s => {
+            if (!d[s.key]) return;
+            html += `<div class="dynamics-section ${s.cls}">
+                <div class="dynamics-section-title">
+                    <span class="section-icon" style="background:${s.iconBg}">${s.icon}</span>
+                    ${s.title}
+                </div>
+                <div class="dynamics-section-text"><p>${renderMarkdown(d[s.key])}</p></div>
+            </div>`;
+        });
+
+        document.getElementById('dynamicsContent').innerHTML = html;
+
+    } catch (err) {
+        document.getElementById('dynamicsContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <p style="color:#E53E3E;font-size:14px;">${err.message}</p>
+                <button onclick="showTeamDynamics()" style="margin-top:12px;padding:8px 20px;background:#0380A6;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;">Reintentar</button>
+            </div>`;
+    }
+}
+
+function closeDynamics() {
+    document.getElementById('dynamicsOverlay').classList.remove('active');
+}
 
 // ============================================
 // (auto-login ya se maneja arriba en autoLogin())
