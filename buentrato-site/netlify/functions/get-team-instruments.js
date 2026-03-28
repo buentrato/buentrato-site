@@ -100,19 +100,14 @@ exports.handler = async (event) => {
         ).join(', ');
         const discFormula = `OR(${emailConditionsArrayJoin})`;
 
-        // Para IE, Autoliderazgo, Estilos, Clima el Email es campo directo
-        const emailConditionsDirect = companyEmails.map(e =>
-            `LOWER({Email}) = '${e.toLowerCase()}'`
-        ).join(', ');
-        const directFormula = `OR(${emailConditionsDirect})`;
-
+        // Para TODAS las tablas, Email es campo vinculado (linked) — usar ARRAYJOIN
         // 5. Consultar TODOS los instrumentos en paralelo
         const [discRecords, ieRecords, autoRecords, estilosRecords, climaRecords] = await Promise.all([
             airtableGet(BASE_PRUEBAS, TABLE_DISC, discFormula, 100),
-            airtableGet(BASE_PRUEBAS, TABLE_IE, directFormula, 100),
-            airtableGet(BASE_PRUEBAS, TABLE_AUTOLIDERAZGO, directFormula, 100),
-            airtableGet(BASE_PRUEBAS, TABLE_ESTILOS, directFormula, 100),
-            airtableGet(BASE_PRUEBAS, TABLE_CLIMA, directFormula, 100)
+            airtableGet(BASE_PRUEBAS, TABLE_IE, discFormula, 100),
+            airtableGet(BASE_PRUEBAS, TABLE_AUTOLIDERAZGO, discFormula, 100),
+            airtableGet(BASE_PRUEBAS, TABLE_ESTILOS, discFormula, 100),
+            airtableGet(BASE_PRUEBAS, TABLE_CLIMA, discFormula, 100)
         ]);
 
         // 6. Indexar resultados por email para lookup rápido
