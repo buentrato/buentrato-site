@@ -1421,8 +1421,25 @@ document.querySelectorAll('.role-tab').forEach(tab => {
 // ============================================
 // TEAM DISC MAP
 // ============================================
-const DISC_COLORS = { D: '#01516A', I: '#0380A6', S: '#04B5D6', C: '#6DCFE0' };
+const DISC_QUAD_COLORS = { D: '#01516A', I: '#0380A6', S: '#04B5D6', C: '#6DCFE0' };
 const DISC_NAMES = { D: 'Dominancia', I: 'Influencia', S: 'Serenidad', C: 'Cumplimiento' };
+
+// Person colors — variations within BuenTrato brand palette (blues, teals, cyans)
+const PERSON_PALETTE = [
+    '#01516A', '#0380A6', '#04B5D6', '#6DCFE0', '#026B8A',
+    '#037C9E', '#05A3C2', '#2BB8D0', '#4DC8DC', '#8DD9E8',
+    '#014A60', '#016D90', '#0295B8', '#03A8CC', '#15C0DE',
+    '#3DCAE2', '#5DD4E6', '#7DDEEC', '#013D50', '#025E7A',
+    '#0188AC', '#029AC0', '#03AED4', '#1CC2E0', '#45CCE4',
+    '#65D6EA', '#85E0F0', '#A0E8F4', '#024F68', '#0372A0'
+];
+
+// Preload carita image for canvas watermark
+const caritaImg = new Image();
+caritaImg.src = 'carita.png';
+
+let teamMapData = null; // cached team data
+let teamMapMode = 'natural'; // 'natural' or 'adaptado'
 
 async function showTeamDiscMap() {
     const overlay = document.getElementById('teamMapOverlay');
@@ -1441,9 +1458,9 @@ async function showTeamDiscMap() {
             body: JSON.stringify({ email: currentUser.email })
         });
         if (!resp.ok) throw new Error('No se pudo cargar el equipo');
-        const team = await resp.json();
+        teamMapData = await resp.json();
 
-        if (!team.members || team.members.length === 0) {
+        if (!teamMapData.members || teamMapData.members.length === 0) {
             document.getElementById('teamMapContent').innerHTML = `
                 <div style="text-align:center;padding:40px;">
                     <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
@@ -1452,28 +1469,8 @@ async function showTeamDiscMap() {
             return;
         }
 
-        document.getElementById('teamMapSubtitle').textContent = team.company + ' — ' + team.members.length + ' personas';
-
-        // Build content
-        const legendHtml = team.members.map(m => {
-            const color = DISC_COLORS[m.primaryStyle];
-            return `<div class="legend-item">
-                <div class="legend-dot" style="background:${color}"></div>
-                <div>
-                    <div class="legend-name">${m.name}</div>
-                    <div class="legend-style">${DISC_NAMES[m.primaryStyle]} · ${m.role || ''}</div>
-                </div>
-            </div>`;
-        }).join('');
-
-        document.getElementById('teamMapContent').innerHTML = `
-            <div class="quadrant-container">
-                <canvas id="discQuadrantCanvas" class="quadrant-canvas"></canvas>
-            </div>
-            <div class="map-legend">${legendHtml}</div>`;
-
-        // Draw the quadrant map
-        drawDiscQuadrant(team.members);
+        teamMapMode = 'natural';
+        renderTeamMap();
 
     } catch (err) {
         document.getElementById('teamMapContent').innerHTML = `
@@ -1483,11 +1480,55 @@ async function showTeamDiscMap() {
     }
 }
 
+function switchMapMode(mode) {
+    teamMapMode = mode;
+    renderTeamMap();
+}
+
+function renderTeamMap() {
+    const team = teamMapData;
+    const isNatural = teamMapMode === 'natural';
+    const label = isNatural ? 'Perfil Natural' : 'Perfil Adaptado';
+
+    document.getElementById('teamMapSubtitle').textContent = team.company + ' — ' + team.members.length + ' personas · ' + label;
+
+    // Build legend with unique person colors
+    const legendHtml = team.members.map((m, i) => {
+        const color = PERSON_PALETTE[i % PERSON_PALETTE.length];
+        return `<div class="legend-item">
+            <div class="legend-dot" style="background:${color}"></div>
+            <div>
+                <div class="legend-name">${m.name}</div>
+                <div class="legend-style">${m.role || ''}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    // Navigation arrows
+    const navHtml = `<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;">
+        <button onclick="switchMapMode('natural')" style="padding:8px 18px;border-radius:10px;border:${isNatural ? '2px solid #0380A6' : '1px solid #DDD'};background:${isNatural ? '#EBF8FF' : 'white'};color:${isNatural ? '#0380A6' : '#777'};font-weight:${isNatural ? '700' : '400'};font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">
+            Perfil Natural
+        </button>
+        <button onclick="switchMapMode('adaptado')" style="padding:8px 18px;border-radius:10px;border:${!isNatural ? '2px solid #0380A6' : '1px solid #DDD'};background:${!isNatural ? '#EBF8FF' : 'white'};color:${!isNatural ? '#0380A6' : '#777'};font-weight:${!isNatural ? '700' : '400'};font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">
+            Perfil Adaptado &nbsp;&#10148;
+        </button>
+    </div>`;
+
+    document.getElementById('teamMapContent').innerHTML = `
+        ${navHtml}
+        <div class="quadrant-container">
+            <canvas id="discQuadrantCanvas" class="quadrant-canvas"></canvas>
+        </div>
+        <div class="map-legend">${legendHtml}</div>`;
+
+    drawDiscQuadrant(team.members, teamMapMode);
+}
+
 function closeTeamMap() {
     document.getElementById('teamMapOverlay').classList.remove('active');
 }
 
-function drawDiscQuadrant(members) {
+function drawDiscQuadrant(members, mode) {
     const canvas = document.getElementById('discQuadrantCanvas');
     if (!canvas) return;
 
@@ -1508,6 +1549,14 @@ function drawDiscQuadrant(members) {
     const cx = size / 2;
     const cy = size / 2;
 
+    // Carita watermark in center
+    if (caritaImg.complete && caritaImg.naturalWidth > 0) {
+        const imgSize = w * 0.35;
+        ctx.globalAlpha = 0.06;
+        ctx.drawImage(caritaImg, cx - imgSize / 2, cy - imgSize / 2, imgSize, imgSize);
+        ctx.globalAlpha = 1;
+    }
+
     // Background quadrants
     const quadrants = [
         { x: pad, y: pad, color: '#01516A', label: 'D', sublabel: 'Dominancia', corner: 'tl' },
@@ -1520,7 +1569,6 @@ function drawDiscQuadrant(members) {
         ctx.fillStyle = q.color + '12';
         ctx.fillRect(q.x, q.y, w / 2, h / 2);
 
-        // Label in corner
         ctx.font = 'bold 28px Inter, sans-serif';
         ctx.fillStyle = q.color + '30';
         let lx, ly;
@@ -1530,7 +1578,6 @@ function drawDiscQuadrant(members) {
         else { lx = size - pad - 30; ly = size - pad - 10; }
         ctx.fillText(q.label, lx, ly);
 
-        // Sublabel
         ctx.font = '11px Inter, sans-serif';
         ctx.fillStyle = q.color + '50';
         if (q.corner === 'tl') ctx.fillText(q.sublabel, pad + 14, pad + 50);
@@ -1539,15 +1586,13 @@ function drawDiscQuadrant(members) {
         else { ctx.textAlign = 'right'; ctx.fillText(q.sublabel, size - pad - 14, size - pad - 24); ctx.textAlign = 'left'; }
     });
 
-    // Grid lines
+    // Grid
     ctx.strokeStyle = '#E5E7EB';
     ctx.lineWidth = 1;
-    // Center cross
     ctx.beginPath();
     ctx.moveTo(cx, pad); ctx.lineTo(cx, size - pad);
     ctx.moveTo(pad, cy); ctx.lineTo(size - pad, cy);
     ctx.stroke();
-    // Border
     ctx.strokeRect(pad, pad, w, h);
 
     // Axis labels
@@ -1556,43 +1601,40 @@ function drawDiscQuadrant(members) {
     ctx.textAlign = 'center';
     ctx.fillText('Orientado a tareas', cx, pad - 8);
     ctx.fillText('Orientado a personas', cx, size - pad + 16);
-    ctx.save();
-    ctx.translate(pad - 10, cy);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Ritmo rápido', 0, 0);
-    ctx.restore();
-    ctx.save();
-    ctx.translate(size - pad + 14, cy);
-    ctx.rotate(Math.PI / 2);
-    ctx.fillText('Ritmo pausado', 0, 0);
-    ctx.restore();
+    ctx.save(); ctx.translate(pad - 10, cy); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Ritmo rápido', 0, 0); ctx.restore();
+    ctx.save(); ctx.translate(size - pad + 14, cy); ctx.rotate(Math.PI / 2);
+    ctx.fillText('Ritmo pausado', 0, 0); ctx.restore();
     ctx.textAlign = 'left';
 
-    // Plot members
-    const bubbleR = Math.max(18, Math.min(28, 200 / members.length));
+    // Dynamic bubble size based on team size
+    const n = members.length;
+    const bubbleR = n <= 5 ? 22 : n <= 10 ? 18 : n <= 20 ? 14 : n <= 30 ? 11 : 9;
+    const fontSize = Math.max(8, bubbleR * 0.65);
 
     members.forEach((m, i) => {
-        // Position: use DISC scores to place in quadrant space
-        // X axis: I+S (people) vs D+C (tasks) → higher I+S = more right
-        // Y axis: D+I (fast) vs S+C (steady) → higher D+I = more up
-        const d = m.disc.D, iVal = m.disc.I, s = m.disc.S, c = m.disc.C;
+        // Use natural or adaptado scores based on mode
+        const scores = (mode === 'adaptado' && m.discAdaptado) ? m.discAdaptado : m.disc;
+        const d = scores.D, iVal = scores.I, s = scores.S, c = scores.C;
         const total = d + iVal + s + c || 1;
 
-        // Normalize to -1..1 range
-        const xRaw = ((iVal + s) - (d + c)) / total; // -1 (task) to 1 (people)
-        const yRaw = ((s + c) - (d + iVal)) / total; // -1 (fast/top) to 1 (steady/bottom)
+        const xRaw = ((iVal + s) - (d + c)) / total;
+        const yRaw = ((s + c) - (d + iVal)) / total;
 
-        // Add slight jitter to prevent overlap
-        const jitter = (i * 7 % 11 - 5) * 2;
+        // Smarter jitter: spiral-based to spread overlapping bubbles
+        const jx = ((i * 7 + 3) % 11 - 5) * (bubbleR * 0.3);
+        const jy = ((i * 5 + 2) % 9 - 4) * (bubbleR * 0.25);
 
-        const px = cx + xRaw * (w / 2 - bubbleR - 10) + jitter;
-        const py = cy + yRaw * (h / 2 - bubbleR - 10) + jitter * 0.7;
+        const px = Math.max(pad + bubbleR + 4, Math.min(size - pad - bubbleR - 4,
+            cx + xRaw * (w / 2 - bubbleR - 10) + jx));
+        const py = Math.max(pad + bubbleR + 4, Math.min(size - pad - bubbleR - 4,
+            cy + yRaw * (h / 2 - bubbleR - 10) + jy));
 
-        const color = DISC_COLORS[m.primaryStyle];
+        const color = PERSON_PALETTE[i % PERSON_PALETTE.length];
 
         // Shadow
         ctx.shadowColor = 'rgba(0,0,0,0.15)';
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.shadowOffsetY = 2;
 
         // Bubble
@@ -1601,19 +1643,18 @@ function drawDiscQuadrant(members) {
         ctx.fillStyle = color;
         ctx.fill();
 
-        // Reset shadow
         ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
         ctx.shadowOffsetY = 0;
 
         // Border
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         // Initials
-        const initials = m.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        ctx.font = `bold ${bubbleR * 0.7}px Inter, sans-serif`;
+        const initials = m.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
