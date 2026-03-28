@@ -14,16 +14,18 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { ieData, company, leaderName, memberCount, members } = JSON.parse(event.body);
+        const { ieData, company, leaderName, memberCount, members, leaderEmail } = JSON.parse(event.body);
 
         if (!ieData) {
             return { statusCode: 400, body: JSON.stringify({ error: "Datos de IE requeridos" }) };
         }
 
-        // Build per-person detail for personalized recommendations
+        // Build per-person detail — separate leader (tú) from team members
         let memberDetails = '';
+        let leaderDetail = '';
         if (members && members.length > 0) {
-            memberDetails = '\nPERFIL INDIVIDUAL DE CADA PERSONA (usa estos datos para personalizar las recomendaciones mencionando nombres cuando sea relevante):\n';
+            const teamMembers = [];
+
             members.forEach(m => {
                 const ie = m.ie;
                 const dims = [
@@ -33,11 +35,21 @@ exports.handler = async (event) => {
                     { key: 'empatia', label: 'Empatía' },
                     { key: 'habilidadesSociales', label: 'Hab.Sociales' }
                 ];
-                const sorted = dims.sort((a, b) => (ie[b.key] || 0) - (ie[a.key] || 0));
+                const sorted = [...dims].sort((a, b) => (ie[b.key] || 0) - (ie[a.key] || 0));
                 const strongest = sorted[0];
                 const weakest = sorted[sorted.length - 1];
-                memberDetails += `- ${m.name}: Fortaleza=${strongest.label}(${ie[strongest.key]}), Área de crecimiento=${weakest.label}(${ie[weakest.key]}), General=${ie.general}\n`;
+                const line = `Fortaleza=${strongest.label}(${ie[strongest.key]}), Área de crecimiento=${weakest.label}(${ie[weakest.key]}), General=${ie.general}`;
+
+                if (leaderEmail && m.email && m.email.toLowerCase() === leaderEmail.toLowerCase()) {
+                    leaderDetail = `\nTU PERFIL (${leaderName}): ${line} — Recuerda: a esta persona le hablas de "tú", NO la menciones en tercera persona.\n`;
+                } else {
+                    teamMembers.push(`- ${m.name}: ${line}`);
+                }
             });
+
+            if (teamMembers.length > 0) {
+                memberDetails = '\nPERFIL DE CADA MIEMBRO DEL EQUIPO (menciona por nombre en las recomendaciones):\n' + teamMembers.join('\n') + '\n';
+            }
         }
 
         const prompt = `Eres una coach de equipos de BuenTrato.AI. Estás analizando los resultados de INTELIGENCIA EMOCIONAL del equipo de ${leaderName || 'el líder'} en ${company || 'la empresa'} (${memberCount || '?'} personas evaluadas).
@@ -49,7 +61,7 @@ DATOS INTERNOS (promedios del equipo, escala 1-5 donde 5 es el máximo. Para tu 
 - Empatía: ${ieData.empatia} de 5
 - Habilidades Sociales: ${ieData.habilidadesSociales} de 5
 - IE General: ${ieData.general} de 5
-${memberDetails}
+${leaderDetail}${memberDetails}
 REFERENCIA INTERNA (NO mencionar):
 - 4.0+ = Alto (verde) — capacidad bien desarrollada
 - 3.0-3.9 = Medio (amarillo) — funcional pero con espacio de mejora
@@ -59,7 +71,8 @@ REGLAS:
 - Habla directo a ${leaderName || 'el líder'} (usa "tú").
 - Español latinoamericano. Tono cálido y directo.
 - NUNCA cites puntajes numéricos exactos. Traduce a: "tu equipo tiene muy buena empatía", "la autorregulación es un área que necesita trabajo".
-- En las recomendaciones, MENCIONA A LAS PERSONAS POR NOMBRE cuando sea relevante. Ejemplo: "Con María podrías trabajar la autorregulación — ayúdala a identificar sus disparadores emocionales. Pedro en cambio tiene una empatía muy desarrollada, apóyate en él para mediar conversaciones difíciles."
+- En las recomendaciones, MENCIONA A LOS MIEMBROS DEL EQUIPO POR NOMBRE cuando sea relevante. Ejemplo: "Con María podrías trabajar la autorregulación — ayúdala a identificar sus disparadores emocionales. Pedro en cambio tiene una empatía muy desarrollada, apóyate en él para mediar conversaciones difíciles."
+- IMPORTANTE: Al líder (${leaderName}) siempre háblale de "tú". NUNCA lo menciones en tercera persona. Los demás miembros sí puedes mencionarlos por nombre.
 - Explica cada dimensión en términos prácticos del día a día.
 - Usa **negritas** para ideas clave.
 - NO uses viñetas ni listas. Prosa fluida.

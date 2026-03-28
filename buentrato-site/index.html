@@ -1459,7 +1459,9 @@ const DEMO_PROFILE = {
         clima:          { available: true, path: "/experiencia?code=demo2026" },
         feedback:       { available: true, path: "/disc" },
         plan:           { available: true, path: "/plan" }
-    }
+    },
+    esLider: true,
+    rolPortal: 'CEO'
 };
 
 let currentUser = null;
@@ -1711,17 +1713,35 @@ function showPortal() {
         }
     });
 
+    // Show/hide tabs based on roles
+    const isLeader = u.esLider === true;
+    const isRRHH = u.rolPortal === 'RRHH' || u.rolPortal === 'CEO';
+
+    // Mi Equipo: visible si es líder O si es RRHH/CEO
+    const tabLider = document.querySelector('.role-tab[data-tab="lider"]');
+    if (tabLider) {
+        tabLider.style.display = (isLeader || isRRHH) ? '' : 'none';
+    }
+
+    // Mi Empresa: visible solo si es RRHH o CEO
+    const tabRRHH = document.querySelector('.role-tab[data-tab="rrhh"]');
+    if (tabRRHH) {
+        tabRRHH.style.display = isRRHH ? '' : 'none';
+    }
+
     // Hide loading, show portal
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('portalContainer').style.display = 'block';
 
-    // Show chat FAB
+    // Show chat FAB for everyone (mode changes with tab)
     showChatFab();
 }
 
 // ============================================
 // TAB SWITCHING
 // ============================================
+const TAB_TO_CHAT_MODE = { persona: 'personal', lider: 'liderazgo', rrhh: 'estrategico' };
+
 document.querySelectorAll('.role-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
@@ -1729,6 +1749,14 @@ document.querySelectorAll('.role-tab').forEach(tab => {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         const target = document.getElementById('tab-' + tab.dataset.tab);
         if (target) target.classList.add('active');
+
+        // Switch chat mode when tab changes
+        const newMode = TAB_TO_CHAT_MODE[tab.dataset.tab] || 'personal';
+        if (newMode !== currentChatMode) {
+            currentChatMode = newMode;
+            chatHistory = []; // reset conversation for new mode
+            updateChatUI();
+        }
     });
 });
 
@@ -2362,7 +2390,8 @@ async function showTeamIE() {
                 company: team.company,
                 leaderName,
                 memberCount: withIE.length,
-                members: withIE.map(m => ({ name: m.name, ie: m.ie }))
+                members: withIE.map(m => ({ name: m.name, email: m.email, ie: m.ie })),
+                leaderEmail: currentUser.email
             })
         });
 
@@ -2526,7 +2555,8 @@ async function showTeamEstilos() {
                 company: team.company,
                 leaderName,
                 memberCount: withEstilos.length,
-                members: withEstilos.map(m => ({ name: m.name, estilos: m.estilos }))
+                members: withEstilos.map(m => ({ name: m.name, email: m.email, estilos: m.estilos })),
+                leaderEmail: currentUser.email
             })
         });
 
@@ -2572,12 +2602,40 @@ function closeEstilos() {
 }
 
 // ============================================
-// CHAT COACH
+// CHAT COACH (3 modos: personal, liderazgo, estrategico)
 // ============================================
 let chatData = null; // { personData, teamData } — loaded once
 let chatHistory = []; // conversation history
 let chatLoading = false;
 let chatOpen = false;
+let currentChatMode = 'personal'; // changes with active tab
+
+const CHAT_MODES = {
+    personal: {
+        title: 'Coach de Crecimiento',
+        placeholder: 'Pregunta sobre ti, tus fortalezas, cómo mejorar...',
+        welcome: (name) => `<strong>Hola ${name}</strong>, soy tu coach de crecimiento personal. Puedo ayudarte a entenderte mejor y desarrollar tus fortalezas basándome en tus evaluaciones. Pregúntame lo que quieras, por ejemplo:<br><br>
+            <em>"¿Cuál es mi mayor fortaleza?"</em><br>
+            <em>"¿Cómo puedo mejorar bajo presión?"</em><br>
+            <em>"¿Qué debería trabajar primero?"</em>`
+    },
+    liderazgo: {
+        title: 'Coach de Liderazgo',
+        placeholder: 'Pregunta cómo liderar a tu equipo...',
+        welcome: (name) => `<strong>Hola ${name}</strong>, soy tu coach de liderazgo. Conozco a tu equipo y puedo ayudarte a liderar mejor según las características de cada persona. Pregúntame, por ejemplo:<br><br>
+            <em>"¿Cómo le doy retroalimentación a [nombre]?"</em><br>
+            <em>"¿A quién le delego este proyecto?"</em><br>
+            <em>"¿Dónde hay tensiones en mi equipo?"</em>`
+    },
+    estrategico: {
+        title: 'Coach Estratégico',
+        placeholder: 'Pregunta sobre talento, cultura, decisiones...',
+        welcome: (name) => `<strong>Hola ${name}</strong>, soy tu coach estratégico. Puedo ayudarte a tomar decisiones organizacionales basadas en los datos de talento de tu equipo. Pregúntame, por ejemplo:<br><br>
+            <em>"¿Qué competencias le faltan a mi equipo?"</em><br>
+            <em>"¿El clima es sostenible a largo plazo?"</em><br>
+            <em>"¿Quién tiene potencial de liderazgo?"</em>`
+    }
+};
 
 // Show FAB when user is logged in
 function showChatFab() {
@@ -2587,11 +2645,24 @@ function hideChatFab() {
     document.getElementById('chatFab').style.display = 'none';
 }
 
+function updateChatUI() {
+    const cfg = CHAT_MODES[currentChatMode] || CHAT_MODES.personal;
+    document.querySelector('.chat-win-header h3').textContent = cfg.title;
+    document.getElementById('chatInput').placeholder = cfg.placeholder;
+
+    // If chat is open and data loaded, show new welcome
+    if (chatData) {
+        const firstName = (chatData.personData.name || 'ahí').split(' ')[0];
+        document.getElementById('chatMessages').innerHTML = `<div class="chat-msg welcome">${cfg.welcome(firstName)}</div>`;
+    }
+}
+
 function toggleChat() {
     chatOpen = !chatOpen;
     const win = document.getElementById('chatWindow');
     if (chatOpen) {
         win.classList.add('active');
+        updateChatUI();
         if (!chatData) loadChatData();
         else document.getElementById('chatInput').focus();
     } else {
@@ -2634,14 +2705,12 @@ async function loadChatData() {
         const teammates = teamData.members.filter(m => m.email !== me.email);
         document.getElementById('chatStatus').textContent = instruments.join(', ') + (teammates.length > 0 ? ` · ${teammates.length} compañeros` : '');
 
-        // Welcome message
+        // Welcome message based on current mode
         const firstName = (me.name || 'ahí').split(' ')[0];
-        msgs.innerHTML = `<div class="chat-msg welcome">
-            <strong>Hola ${firstName}</strong>, soy tu coach personal de BuenTrato. Puedo responder preguntas sobre ti y tu equipo basándome en tus evaluaciones. Pregúntame lo que quieras, por ejemplo:<br><br>
-            <em>"¿Cómo me llevo con [nombre]?"</em><br>
-            <em>"¿Cuál es mi mayor fortaleza?"</em><br>
-            <em>"¿Cómo puedo mejorar bajo presión?"</em>
-        </div>`;
+        const cfg = CHAT_MODES[currentChatMode] || CHAT_MODES.personal;
+        msgs.innerHTML = `<div class="chat-msg welcome">${cfg.welcome(firstName)}</div>`;
+        document.querySelector('.chat-win-header h3').textContent = cfg.title;
+        document.getElementById('chatInput').placeholder = cfg.placeholder;
 
         document.getElementById('chatInput').focus();
 
@@ -2685,7 +2754,8 @@ async function sendChatMessage() {
                 question,
                 history: chatHistory,
                 personData: chatData.personData,
-                teamData: chatData.teamData
+                teamData: chatData.teamData,
+                mode: currentChatMode
             })
         });
 

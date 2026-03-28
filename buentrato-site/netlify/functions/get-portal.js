@@ -199,6 +199,8 @@ exports.handler = async (event) => {
             email: persona.email,
             role: persona.cargo_actual || "",
             area: persona.area_actual || "",
+            esLider: persona.es_lider === true,
+            rolPortal: persona.rol_portal || null,
             instruments: available
         };
 

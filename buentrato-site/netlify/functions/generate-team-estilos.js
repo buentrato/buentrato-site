@@ -14,23 +14,35 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { estilosData, company, leaderName, memberCount, members } = JSON.parse(event.body);
+        const { estilosData, company, leaderName, memberCount, members, leaderEmail } = JSON.parse(event.body);
 
         if (!estilosData) {
             return { statusCode: 400, body: JSON.stringify({ error: "Datos requeridos" }) };
         }
 
-        // Build per-person detail for personalized recommendations
+        // Build per-person detail — separate leader (tú) from team members
         let memberDetails = '';
+        let leaderDetail = '';
         if (members && members.length > 0) {
-            memberDetails = '\nPERFIL INDIVIDUAL DE CADA PERSONA (usa estos datos para personalizar las recomendaciones mencionando nombres):\n';
+            const labels = { visual: 'Visual', auditivo: 'Auditivo', verbal: 'Verbal', kinestesico: 'Kinestésico' };
+            const teamMembers = [];
+
             members.forEach(m => {
                 const scores = m.estilos;
                 const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
                 const dominant = sorted[0][0];
-                const labels = { visual: 'Visual', auditivo: 'Auditivo', verbal: 'Verbal', kinestesico: 'Kinestésico' };
-                memberDetails += `- ${m.name}: ${labels[dominant]} dominante (Visual:${scores.visual}, Auditivo:${scores.auditivo}, Verbal:${scores.verbal}, Kinestésico:${scores.kinestesico})\n`;
+                const line = `${labels[dominant]} dominante (Visual:${scores.visual}, Auditivo:${scores.auditivo}, Verbal:${scores.verbal}, Kinestésico:${scores.kinestesico})`;
+
+                if (leaderEmail && m.email && m.email.toLowerCase() === leaderEmail.toLowerCase()) {
+                    leaderDetail = `\nTU PERFIL (${leaderName}): ${line} — Recuerda: a esta persona le hablas de "tú", NO la menciones en tercera persona.\n`;
+                } else {
+                    teamMembers.push(`- ${m.name}: ${line}`);
+                }
             });
+
+            if (teamMembers.length > 0) {
+                memberDetails = '\nPERFIL DE CADA MIEMBRO DEL EQUIPO (menciona por nombre en las recomendaciones):\n' + teamMembers.join('\n') + '\n';
+            }
         }
 
         const prompt = `Eres una coach de equipos de BuenTrato.AI. Estás analizando los ESTILOS DE APRENDIZAJE del equipo de ${leaderName || 'el líder'} en ${company || 'la empresa'} (${memberCount || '?'} personas evaluadas).
@@ -40,7 +52,7 @@ DATOS INTERNOS (distribución del equipo — para tu análisis, NO cites porcent
 - Auditivo: ${estilosData.auditivoPct}% del equipo (${estilosData.auditivoCount} personas). Promedio: ${estilosData.auditivoAvg}
 - Verbal: ${estilosData.verbalPct}% del equipo (${estilosData.verbalCount} personas). Promedio: ${estilosData.verbalAvg}
 - Kinestésico: ${estilosData.kinestesicoPct}% del equipo (${estilosData.kinestesicoCount} personas). Promedio: ${estilosData.kinestesicoAvg}
-${memberDetails}
+${leaderDetail}${memberDetails}
 REFERENCIA INTERNA (NO mencionar estas definiciones textualmente):
 - Visual: aprende viendo — diagramas, gráficos, videos, mapas mentales
 - Auditivo: aprende escuchando — charlas, podcasts, discusiones, explicaciones verbales
@@ -51,7 +63,8 @@ REGLAS:
 - Habla directo a ${leaderName || 'el líder'} (usa "tú").
 - Español latinoamericano. Tono cálido y directo.
 - NO cites porcentajes exactos ni puntajes. Traduce a: "la mayoría de tu equipo aprende mejor viendo", "hay un grupo importante que necesita practicar para entender".
-- En las recomendaciones MENCIONA A LAS PERSONAS POR NOMBRE cuando sea útil. Ejemplo: "Cuando capacites a María, acompáñalo de diagramas porque ella necesita ver para entender. En cambio con Pedro, dale espacio para practicar."
+- En las recomendaciones MENCIONA A LOS MIEMBROS DEL EQUIPO POR NOMBRE cuando sea útil. Ejemplo: "Cuando capacites a María, acompáñalo de diagramas porque ella necesita ver para entender. En cambio con Pedro, dale espacio para practicar."
+- IMPORTANTE: Al líder (${leaderName}) siempre háblale de "tú". NUNCA lo menciones en tercera persona. Los demás miembros sí puedes mencionarlos por nombre.
 - Da consejos MUY prácticos sobre cómo adaptar reuniones, capacitaciones, comunicaciones.
 - Usa **negritas** para ideas clave.
 - NO uses viñetas ni listas. Prosa fluida.
