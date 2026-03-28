@@ -14,10 +14,23 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { estilosData, company, leaderName, memberCount } = JSON.parse(event.body);
+        const { estilosData, company, leaderName, memberCount, members } = JSON.parse(event.body);
 
         if (!estilosData) {
             return { statusCode: 400, body: JSON.stringify({ error: "Datos requeridos" }) };
+        }
+
+        // Build per-person detail for personalized recommendations
+        let memberDetails = '';
+        if (members && members.length > 0) {
+            memberDetails = '\nPERFIL INDIVIDUAL DE CADA PERSONA (usa estos datos para personalizar las recomendaciones mencionando nombres):\n';
+            members.forEach(m => {
+                const scores = m.estilos;
+                const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+                const dominant = sorted[0][0];
+                const labels = { visual: 'Visual', auditivo: 'Auditivo', verbal: 'Verbal', kinestesico: 'Kinestésico' };
+                memberDetails += `- ${m.name}: ${labels[dominant]} dominante (Visual:${scores.visual}, Auditivo:${scores.auditivo}, Verbal:${scores.verbal}, Kinestésico:${scores.kinestesico})\n`;
+            });
         }
 
         const prompt = `Eres una coach de equipos de BuenTrato.AI. Estás analizando los ESTILOS DE APRENDIZAJE del equipo de ${leaderName || 'el líder'} en ${company || 'la empresa'} (${memberCount || '?'} personas evaluadas).
@@ -27,8 +40,8 @@ DATOS INTERNOS (distribución del equipo — para tu análisis, NO cites porcent
 - Auditivo: ${estilosData.auditivoPct}% del equipo (${estilosData.auditivoCount} personas). Promedio: ${estilosData.auditivoAvg}
 - Verbal: ${estilosData.verbalPct}% del equipo (${estilosData.verbalCount} personas). Promedio: ${estilosData.verbalAvg}
 - Kinestésico: ${estilosData.kinestesicoPct}% del equipo (${estilosData.kinestesicoCount} personas). Promedio: ${estilosData.kinestesicoAvg}
-
-REFERENCIA INTERNA (NO mencionar):
+${memberDetails}
+REFERENCIA INTERNA (NO mencionar estas definiciones textualmente):
 - Visual: aprende viendo — diagramas, gráficos, videos, mapas mentales
 - Auditivo: aprende escuchando — charlas, podcasts, discusiones, explicaciones verbales
 - Verbal: aprende leyendo/escribiendo — documentos, emails, resúmenes escritos
@@ -37,7 +50,8 @@ REFERENCIA INTERNA (NO mencionar):
 REGLAS:
 - Habla directo a ${leaderName || 'el líder'} (usa "tú").
 - Español latinoamericano. Tono cálido y directo.
-- NO cites porcentajes exactos. Traduce a: "la mayoría de tu equipo aprende mejor viendo", "hay un grupo importante que necesita practicar para entender".
+- NO cites porcentajes exactos ni puntajes. Traduce a: "la mayoría de tu equipo aprende mejor viendo", "hay un grupo importante que necesita practicar para entender".
+- En las recomendaciones MENCIONA A LAS PERSONAS POR NOMBRE cuando sea útil. Ejemplo: "Cuando capacites a María, acompáñalo de diagramas porque ella necesita ver para entender. En cambio con Pedro, dale espacio para practicar."
 - Da consejos MUY prácticos sobre cómo adaptar reuniones, capacitaciones, comunicaciones.
 - Usa **negritas** para ideas clave.
 - NO uses viñetas ni listas. Prosa fluida.
@@ -47,7 +61,7 @@ REGLAS:
   "resumen": "2-3 oraciones: cómo aprende tu equipo en general. Cuál es el estilo dominante y qué significa para el día a día.",
   "fortaleza": "1-2 oraciones: qué tipo de comunicación y formación le funciona naturalmente al equipo.",
   "alerta": "1-2 oraciones: qué estilo está subrepresentado o descuidado, y qué consecuencias tiene (gente que se pierde en reuniones, que no retiene info, etc).",
-  "recomendaciones": "3-4 oraciones con consejos concretos: cómo hacer reuniones, cómo enviar información, cómo capacitar, adaptando a la mezcla de estilos del equipo."
+  "recomendaciones": "4-5 oraciones con consejos concretos MENCIONANDO PERSONAS POR NOMBRE: cómo adaptar la comunicación y formación según el estilo de cada persona."
 }`;
 
         const response = await fetch("https://api.anthropic.com/v1/messages", {

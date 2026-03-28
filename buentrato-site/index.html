@@ -1180,18 +1180,10 @@
             <div class="category">
                 <div class="category-header">
                     <img src="carita.png" alt="" class="category-icon">
-                    <span class="category-title">Gu&iacute;as de liderazgo</span>
+                    <span class="category-title">Tendencias</span>
                     <div class="category-line"></div>
                 </div>
                 <div class="tools-grid">
-                    <a href="#" class="tool-card disabled">
-                        <div class="tool-card-top">
-                            <div class="tool-card-icon" style="background: #E2EEF3;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
-                        </div>
-                        <div class="tool-card-title">Gu&iacute;as de liderazgo con IA</div>
-                        <div class="tool-card-desc">Recomendaciones personalizadas para liderar tu equipo seg&uacute;n su composici&oacute;n DISC real.</div>
-                    </a>
                     <a href="#" class="tool-card disabled">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
@@ -2369,7 +2361,8 @@ async function showTeamIE() {
                 },
                 company: team.company,
                 leaderName,
-                memberCount: withIE.length
+                memberCount: withIE.length,
+                members: withIE.map(m => ({ name: m.name, ie: m.ie }))
             })
         });
 
@@ -2532,7 +2525,8 @@ async function showTeamEstilos() {
                 },
                 company: team.company,
                 leaderName,
-                memberCount: withEstilos.length
+                memberCount: withEstilos.length,
+                members: withEstilos.map(m => ({ name: m.name, estilos: m.estilos }))
             })
         });
 
