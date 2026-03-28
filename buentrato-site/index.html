@@ -462,6 +462,259 @@
             color: #4A4A4A;
         }
 
+        /* === TEAM CLIMA PANEL === */
+        .clima-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .clima-overlay.active { display: flex; }
+        .clima-panel {
+            background: white;
+            border-radius: 20px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .clima-header {
+            background: linear-gradient(135deg, #04B5D6 0%, #6DCFE0 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .clima-header h2 { font-size: 20px; font-weight: 700; }
+        .clima-header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+        .clima-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .clima-close:hover { background: rgba(255,255,255,0.3); }
+        .clima-body { padding: 28px; }
+
+        .clima-bar-group { margin-bottom: 20px; }
+        .clima-bar-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+        .clima-bar-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2D2D2D;
+        }
+        .clima-bar-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .clima-bar-track {
+            height: 28px;
+            background: #F2F3F5;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+        .clima-bar-fill {
+            height: 100%;
+            border-radius: 14px;
+            transition: width 0.8s ease;
+            min-width: 4px;
+        }
+        .clima-bar-members {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .clima-general-score {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #E0F5FA, #EBF8FB);
+            border-radius: 16px;
+        }
+        .clima-general-number {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .clima-general-label {
+            font-size: 14px;
+            color: #555;
+            margin-top: 6px;
+        }
+        .clima-general-bar {
+            width: 80%;
+            max-width: 300px;
+            height: 8px;
+            background: #DDD;
+            border-radius: 4px;
+            margin: 12px auto 0;
+            overflow: hidden;
+        }
+        .clima-general-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .clima-ai-section {
+            margin-top: 28px;
+            padding: 20px 24px;
+            background: #F7F8F9;
+            border-radius: 14px;
+            border-left: 4px solid #04B5D6;
+        }
+        .clima-ai-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #01516A;
+            margin-bottom: 10px;
+        }
+        .clima-ai-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #4A4A4A;
+        }
+
+        /* === TEAM IE PANEL (reuses clima-bar-* classes, adds ie-specific overlay) === */
+        .ie-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .ie-overlay.active { display: flex; }
+        .ie-panel {
+            background: white;
+            border-radius: 20px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .ie-header {
+            background: linear-gradient(135deg, #0380A6 0%, #04B5D6 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .ie-header h2 { font-size: 20px; font-weight: 700; }
+        .ie-header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+        .ie-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ie-close:hover { background: rgba(255,255,255,0.3); }
+        .ie-body { padding: 28px; }
+
+        /* === TEAM ESTILOS PANEL === */
+        .estilos-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .estilos-overlay.active { display: flex; }
+        .estilos-panel {
+            background: white;
+            border-radius: 20px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .estilos-header {
+            background: linear-gradient(135deg, #026B8A 0%, #0380A6 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .estilos-header h2 { font-size: 20px; font-weight: 700; }
+        .estilos-header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+        .estilos-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .estilos-close:hover { background: rgba(255,255,255,0.3); }
+        .estilos-body { padding: 28px; }
+
+        .estilos-distribution {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .estilo-card {
+            padding: 20px;
+            border-radius: 14px;
+            text-align: center;
+        }
+        .estilo-card-pct {
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .estilo-card-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .estilo-card-count {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        @media (max-width: 500px) {
+            .estilos-distribution { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .estilo-card { padding: 14px; }
+            .estilo-card-pct { font-size: 28px; }
+        }
+
         /* === CHAT COACH FLOTANTE === */
         .chat-fab {
             position: fixed;
@@ -898,26 +1151,26 @@
                     <div class="category-line"></div>
                 </div>
                 <div class="tools-grid">
-                    <a href="#" class="tool-card disabled">
+                    <a href="javascript:void(0)" class="tool-card" id="card-team-clima" onclick="showTeamClima()">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E0F5FA;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-new">Nuevo</span>
                         </div>
                         <div class="tool-card-title">Clima de mi equipo</div>
                         <div class="tool-card-desc">Resultados de clima laboral agregados por equipo. Identifica fortalezas y alertas.</div>
                     </a>
-                    <a href="#" class="tool-card disabled">
+                    <a href="javascript:void(0)" class="tool-card" id="card-team-ie" onclick="showTeamIE()">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #EBF8FB;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-new">Nuevo</span>
                         </div>
                         <div class="tool-card-title">Inteligencia Emocional del equipo</div>
                         <div class="tool-card-desc">Perfil emocional colectivo: d&oacute;nde brilla tu equipo y d&oacute;nde puede crecer.</div>
                     </a>
-                    <a href="#" class="tool-card disabled">
+                    <a href="javascript:void(0)" class="tool-card" id="card-team-estilos" onclick="showTeamEstilos()">
                         <div class="tool-card-top">
                             <div class="tool-card-icon" style="background: #E6F4F9;"><img src="carita.png" alt=""></div>
-                            <span class="tool-card-badge badge-soon">Pr&oacute;ximamente</span>
+                            <span class="tool-card-badge badge-new">Nuevo</span>
                         </div>
                         <div class="tool-card-title">Estilos de aprendizaje del equipo</div>
                         <div class="tool-card-desc">C&oacute;mo aprende tu equipo y c&oacute;mo adaptar capacitaciones y comunicaciones.</div>
@@ -1097,6 +1350,75 @@
                 <div style="text-align:center;padding:40px;">
                     <div class="spinner"></div>
                     <p style="margin-top:12px;color:#777;font-size:14px;">Analizando din&aacute;micas del equipo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- TEAM CLIMA OVERLAY    -->
+<!-- ===================== -->
+<div class="clima-overlay" id="climaOverlay" onclick="if(event.target===this)closeClima()">
+    <div class="clima-panel">
+        <div class="clima-header">
+            <div>
+                <h2>Clima de mi equipo</h2>
+                <div class="subtitle" id="climaSubtitle">Cargando...</div>
+            </div>
+            <button class="clima-close" onclick="closeClima()">&times;</button>
+        </div>
+        <div class="clima-body">
+            <div id="climaContent">
+                <div style="text-align:center;padding:40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;color:#777;font-size:14px;">Cargando clima del equipo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- TEAM IE OVERLAY       -->
+<!-- ===================== -->
+<div class="ie-overlay" id="ieOverlay" onclick="if(event.target===this)closeIE()">
+    <div class="ie-panel">
+        <div class="ie-header">
+            <div>
+                <h2>Inteligencia Emocional del equipo</h2>
+                <div class="subtitle" id="ieSubtitle">Cargando...</div>
+            </div>
+            <button class="ie-close" onclick="closeIE()">&times;</button>
+        </div>
+        <div class="ie-body">
+            <div id="ieContent">
+                <div style="text-align:center;padding:40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;color:#777;font-size:14px;">Cargando inteligencia emocional del equipo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- TEAM ESTILOS OVERLAY  -->
+<!-- ===================== -->
+<div class="estilos-overlay" id="estilosOverlay" onclick="if(event.target===this)closeEstilos()">
+    <div class="estilos-panel">
+        <div class="estilos-header">
+            <div>
+                <h2>Estilos de aprendizaje del equipo</h2>
+                <div class="subtitle" id="estilosSubtitle">Cargando...</div>
+            </div>
+            <button class="estilos-close" onclick="closeEstilos()">&times;</button>
+        </div>
+        <div class="estilos-body">
+            <div id="estilosContent">
+                <div style="text-align:center;padding:40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;color:#777;font-size:14px;">Cargando estilos del equipo...</p>
                 </div>
             </div>
         </div>
@@ -1777,6 +2099,482 @@ async function showTeamDynamics() {
 
 function closeDynamics() {
     document.getElementById('dynamicsOverlay').classList.remove('active');
+}
+
+// ============================================
+// TEAM CLIMA
+// ============================================
+async function showTeamClima() {
+    const overlay = document.getElementById('climaOverlay');
+    overlay.classList.add('active');
+    document.getElementById('climaSubtitle').textContent = 'Cargando...';
+    document.getElementById('climaContent').innerHTML = `
+        <div style="text-align:center;padding:40px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:#777;font-size:14px;">Cargando clima del equipo...</p>
+        </div>`;
+
+    try {
+        const resp = await fetch('/.netlify/functions/get-team-instruments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (!resp.ok) throw new Error('No se pudo cargar el equipo');
+        const team = await resp.json();
+
+        // Filter members with clima data
+        const withClima = team.members.filter(m => m.clima);
+        if (withClima.length === 0) {
+            document.getElementById('climaContent').innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
+                    <p style="color:#777;font-size:14px;">Ningún miembro del equipo ha completado la encuesta de clima.</p>
+                </div>`;
+            return;
+        }
+
+        document.getElementById('climaSubtitle').textContent = team.company + ' — ' + withClima.length + ' respuestas';
+
+        // Calculate averages
+        function avg(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+        const dims = [
+            { key: 'seguridadPsi', name: 'Seguridad Psicológica', icon: '🛡' },
+            { key: 'comunicacion', name: 'Comunicación', icon: '💬' },
+            { key: 'valoracion', name: 'Valoración y Reconocimiento', icon: '⭐' },
+            { key: 'colaboracion', name: 'Colaboración y Apoyo', icon: '🤝' },
+            { key: 'liderazgo', name: 'Liderazgo', icon: '🧭' }
+        ];
+
+        const avgs = {};
+        dims.forEach(d => {
+            const vals = withClima.map(m => m.clima[d.key]).filter(v => v != null && v > 0);
+            avgs[d.key] = vals.length > 0 ? avg(vals) : 0;
+        });
+
+        const generalVals = withClima.map(m => m.clima.general).filter(v => v != null && v > 0);
+        const generalAvg = generalVals.length > 0 ? avg(generalVals) : 0;
+
+        function climaColor(val) {
+            if (val >= 4.0) return '#38A169'; // green
+            if (val >= 3.0) return '#D69E2E'; // amber
+            return '#E53E3E'; // red
+        }
+
+        // Build bars HTML
+        let barsHtml = '';
+        dims.forEach(d => {
+            const val = avgs[d.key];
+            const pct = (val / 5) * 100;
+            const color = climaColor(val);
+            barsHtml += `<div class="clima-bar-group">
+                <div class="clima-bar-label">
+                    <span class="clima-bar-name">${d.name}</span>
+                    <span class="clima-bar-value" style="color:${color}">${val.toFixed(1)} / 5</span>
+                </div>
+                <div class="clima-bar-track">
+                    <div class="clima-bar-fill" style="width:${pct}%;background:${color}"></div>
+                </div>
+            </div>`;
+        });
+
+        const generalColor = climaColor(generalAvg);
+        const generalPct = (generalAvg / 5) * 100;
+
+        document.getElementById('climaContent').innerHTML = `
+            <div class="clima-general-score">
+                <div class="clima-general-number" style="color:${generalColor}">${generalAvg.toFixed(1)}</div>
+                <div class="clima-general-label">Clima General del equipo (de 5.0)</div>
+                <div class="clima-general-bar">
+                    <div class="clima-general-bar-fill" style="width:${generalPct}%;background:${generalColor}"></div>
+                </div>
+            </div>
+            ${barsHtml}
+            <div id="climaAiSection">
+                <div style="text-align:center;padding:20px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:8px;color:#777;font-size:13px;">Generando análisis...</p>
+                </div>
+            </div>`;
+
+        // Generate AI analysis
+        const leaderName = currentUser.name || currentUser.email.split('@')[0];
+        const aiResp = await fetch('/.netlify/functions/generate-team-clima', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                climaData: {
+                    seguridadPsi: avgs.seguridadPsi.toFixed(2),
+                    comunicacion: avgs.comunicacion.toFixed(2),
+                    valoracion: avgs.valoracion.toFixed(2),
+                    colaboracion: avgs.colaboracion.toFixed(2),
+                    liderazgo: avgs.liderazgo.toFixed(2),
+                    general: generalAvg.toFixed(2)
+                },
+                company: team.company,
+                leaderName,
+                memberCount: withClima.length
+            })
+        });
+
+        if (aiResp.ok) {
+            const aiData = await aiResp.json();
+            const a = aiData.analysis;
+            function md(t) { return (t || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
+
+            let aiHtml = '';
+            if (a.resumen) aiHtml += `<div class="clima-ai-section">
+                <div class="clima-ai-title">Panorama general</div>
+                <div class="clima-ai-text">${md(a.resumen)}</div>
+            </div>`;
+            if (a.fortaleza) aiHtml += `<div class="clima-ai-section" style="border-left-color:#38A169;">
+                <div class="clima-ai-title" style="color:#38A169;">Fortaleza del equipo</div>
+                <div class="clima-ai-text">${md(a.fortaleza)}</div>
+            </div>`;
+            if (a.alerta) aiHtml += `<div class="clima-ai-section" style="border-left-color:#D69E2E;">
+                <div class="clima-ai-title" style="color:#D69E2E;">Punto de atención</div>
+                <div class="clima-ai-text">${md(a.alerta)}</div>
+            </div>`;
+            if (a.recomendaciones) aiHtml += `<div class="clima-ai-section" style="border-left-color:#0380A6;">
+                <div class="clima-ai-title" style="color:#0380A6;">Recomendaciones</div>
+                <div class="clima-ai-text">${md(a.recomendaciones)}</div>
+            </div>`;
+
+            document.getElementById('climaAiSection').innerHTML = aiHtml;
+        } else {
+            document.getElementById('climaAiSection').innerHTML = '';
+        }
+
+    } catch (err) {
+        document.getElementById('climaContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <p style="color:#E53E3E;font-size:14px;">${err.message}</p>
+                <button onclick="showTeamClima()" style="margin-top:12px;padding:8px 20px;background:#04B5D6;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;">Reintentar</button>
+            </div>`;
+    }
+}
+
+function closeClima() {
+    document.getElementById('climaOverlay').classList.remove('active');
+}
+
+// ============================================
+// TEAM IE
+// ============================================
+async function showTeamIE() {
+    const overlay = document.getElementById('ieOverlay');
+    overlay.classList.add('active');
+    document.getElementById('ieSubtitle').textContent = 'Cargando...';
+    document.getElementById('ieContent').innerHTML = `
+        <div style="text-align:center;padding:40px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:#777;font-size:14px;">Cargando inteligencia emocional del equipo...</p>
+        </div>`;
+
+    try {
+        const resp = await fetch('/.netlify/functions/get-team-instruments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (!resp.ok) throw new Error('No se pudo cargar el equipo');
+        const team = await resp.json();
+
+        const withIE = team.members.filter(m => m.ie);
+        if (withIE.length === 0) {
+            document.getElementById('ieContent').innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
+                    <p style="color:#777;font-size:14px;">Ningún miembro del equipo ha completado la evaluación de Inteligencia Emocional.</p>
+                </div>`;
+            return;
+        }
+
+        document.getElementById('ieSubtitle').textContent = team.company + ' — ' + withIE.length + ' evaluaciones';
+
+        function avg(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+
+        const dims = [
+            { key: 'autoconciencia', name: 'Autoconciencia', desc: 'Reconocer las propias emociones' },
+            { key: 'autorregulacion', name: 'Autorregulación', desc: 'Manejar impulsos y reacciones' },
+            { key: 'motivacion', name: 'Motivación', desc: 'Impulso y compromiso internos' },
+            { key: 'empatia', name: 'Empatía', desc: 'Comprender emociones de los demás' },
+            { key: 'habilidadesSociales', name: 'Habilidades Sociales', desc: 'Comunicación y trabajo en equipo' }
+        ];
+
+        const avgs = {};
+        dims.forEach(d => {
+            const vals = withIE.map(m => m.ie[d.key]).filter(v => v != null && v > 0);
+            avgs[d.key] = vals.length > 0 ? avg(vals) : 0;
+        });
+
+        const generalVals = withIE.map(m => m.ie.general).filter(v => v != null && v > 0);
+        const generalAvg = generalVals.length > 0 ? avg(generalVals) : 0;
+
+        function ieColor(val) {
+            if (val >= 4.0) return '#38A169';
+            if (val >= 3.0) return '#D69E2E';
+            return '#E53E3E';
+        }
+
+        let barsHtml = '';
+        dims.forEach(d => {
+            const val = avgs[d.key];
+            const pct = (val / 5) * 100;
+            const color = ieColor(val);
+            barsHtml += `<div class="clima-bar-group">
+                <div class="clima-bar-label">
+                    <span class="clima-bar-name">${d.name}</span>
+                    <span class="clima-bar-value" style="color:${color}">${val.toFixed(1)} / 5</span>
+                </div>
+                <div class="clima-bar-track">
+                    <div class="clima-bar-fill" style="width:${pct}%;background:${color}"></div>
+                </div>
+                <div class="clima-bar-members" style="color:#999;font-size:11px;margin-top:2px;">${d.desc}</div>
+            </div>`;
+        });
+
+        const generalColor = ieColor(generalAvg);
+        const generalPct = (generalAvg / 5) * 100;
+
+        document.getElementById('ieContent').innerHTML = `
+            <div class="clima-general-score" style="background:linear-gradient(135deg, #E6F4F9, #EBF8FB);">
+                <div class="clima-general-number" style="color:${generalColor}">${generalAvg.toFixed(1)}</div>
+                <div class="clima-general-label">IE General del equipo (de 5.0)</div>
+                <div class="clima-general-bar">
+                    <div class="clima-general-bar-fill" style="width:${generalPct}%;background:${generalColor}"></div>
+                </div>
+            </div>
+            ${barsHtml}
+            <div id="ieAiSection">
+                <div style="text-align:center;padding:20px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:8px;color:#777;font-size:13px;">Generando análisis...</p>
+                </div>
+            </div>`;
+
+        // Generate AI analysis
+        const leaderName = currentUser.name || currentUser.email.split('@')[0];
+        const aiResp = await fetch('/.netlify/functions/generate-team-ie', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ieData: {
+                    autoconciencia: avgs.autoconciencia.toFixed(2),
+                    autorregulacion: avgs.autorregulacion.toFixed(2),
+                    motivacion: avgs.motivacion.toFixed(2),
+                    empatia: avgs.empatia.toFixed(2),
+                    habilidadesSociales: avgs.habilidadesSociales.toFixed(2),
+                    general: generalAvg.toFixed(2)
+                },
+                company: team.company,
+                leaderName,
+                memberCount: withIE.length
+            })
+        });
+
+        if (aiResp.ok) {
+            const aiData = await aiResp.json();
+            const a = aiData.analysis;
+            function md(t) { return (t || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
+
+            let aiHtml = '';
+            if (a.resumen) aiHtml += `<div class="clima-ai-section" style="border-left-color:#0380A6;">
+                <div class="clima-ai-title" style="color:#0380A6;">Panorama emocional</div>
+                <div class="clima-ai-text">${md(a.resumen)}</div>
+            </div>`;
+            if (a.fortaleza) aiHtml += `<div class="clima-ai-section" style="border-left-color:#38A169;">
+                <div class="clima-ai-title" style="color:#38A169;">Fortaleza emocional</div>
+                <div class="clima-ai-text">${md(a.fortaleza)}</div>
+            </div>`;
+            if (a.alerta) aiHtml += `<div class="clima-ai-section" style="border-left-color:#D69E2E;">
+                <div class="clima-ai-title" style="color:#D69E2E;">Área de crecimiento</div>
+                <div class="clima-ai-text">${md(a.alerta)}</div>
+            </div>`;
+            if (a.recomendaciones) aiHtml += `<div class="clima-ai-section" style="border-left-color:#04B5D6;">
+                <div class="clima-ai-title" style="color:#04B5D6;">Recomendaciones</div>
+                <div class="clima-ai-text">${md(a.recomendaciones)}</div>
+            </div>`;
+
+            document.getElementById('ieAiSection').innerHTML = aiHtml;
+        } else {
+            document.getElementById('ieAiSection').innerHTML = '';
+        }
+
+    } catch (err) {
+        document.getElementById('ieContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <p style="color:#E53E3E;font-size:14px;">${err.message}</p>
+                <button onclick="showTeamIE()" style="margin-top:12px;padding:8px 20px;background:#0380A6;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;">Reintentar</button>
+            </div>`;
+    }
+}
+
+function closeIE() {
+    document.getElementById('ieOverlay').classList.remove('active');
+}
+
+// ============================================
+// ESTILOS DE APRENDIZAJE DEL EQUIPO
+// ============================================
+async function showTeamEstilos() {
+    const overlay = document.getElementById('estilosOverlay');
+    overlay.classList.add('active');
+    document.getElementById('estilosSubtitle').textContent = 'Cargando...';
+    document.getElementById('estilosContent').innerHTML = `
+        <div style="text-align:center;padding:40px;">
+            <div class="spinner"></div>
+            <p style="margin-top:12px;color:#777;font-size:14px;">Cargando estilos de aprendizaje del equipo...</p>
+        </div>`;
+
+    try {
+        const resp = await fetch('/.netlify/functions/get-team-instruments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (!resp.ok) throw new Error('No se pudo cargar el equipo');
+        const team = await resp.json();
+
+        const withEstilos = team.members.filter(m => m.estilos);
+        if (withEstilos.length === 0) {
+            document.getElementById('estilosContent').innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <img src="carita.png" alt="" style="height:48px;opacity:0.4;margin-bottom:12px;">
+                    <p style="color:#777;font-size:14px;">Ningún miembro del equipo ha completado la evaluación de Estilos de Aprendizaje.</p>
+                </div>`;
+            return;
+        }
+
+        document.getElementById('estilosSubtitle').textContent = team.company + ' — ' + withEstilos.length + ' evaluaciones';
+
+        // Calculate averages and dominant style distribution
+        function avg(arr) { return arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
+
+        const styles = [
+            { key: 'visual', name: 'Visual', color: '#01516A', lightColor: '#E2EEF3', icon: '👁' },
+            { key: 'auditivo', name: 'Auditivo', color: '#0380A6', lightColor: '#E6F4F9', icon: '👂' },
+            { key: 'verbal', name: 'Verbal', color: '#04B5D6', lightColor: '#E0F5FA', icon: '📖' },
+            { key: 'kinestesico', name: 'Kinestésico', color: '#6DCFE0', lightColor: '#EBF8FB', icon: '✋' }
+        ];
+
+        // Compute per-member dominant style and averages
+        const styleCounts = { visual: 0, auditivo: 0, verbal: 0, kinestesico: 0 };
+        const styleVals = { visual: [], auditivo: [], verbal: [], kinestesico: [] };
+
+        withEstilos.forEach(m => {
+            const e = m.estilos;
+            const scores = {
+                visual: e.visual || 0,
+                auditivo: e.auditivo || 0,
+                verbal: e.verbal || 0,
+                kinestesico: e.kinestesico || 0
+            };
+
+            // Find dominant style
+            let maxKey = 'visual', maxVal = 0;
+            Object.entries(scores).forEach(([k, v]) => {
+                if (v > maxVal) { maxVal = v; maxKey = k; }
+            });
+            styleCounts[maxKey]++;
+
+            // Collect all values for averaging
+            Object.entries(scores).forEach(([k, v]) => {
+                if (v > 0) styleVals[k].push(v);
+            });
+        });
+
+        const total = withEstilos.length;
+
+        // Build 2x2 cards HTML
+        let cardsHtml = '<div class="estilos-distribution">';
+        styles.forEach(s => {
+            const count = styleCounts[s.key];
+            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+            const avgVal = avg(styleVals[s.key]);
+            cardsHtml += `<div class="estilo-card" style="border-top:3px solid ${s.color};background:${s.lightColor};">
+                <div class="estilo-pct" style="color:${s.color};">${pct}%</div>
+                <div class="estilo-name">${s.name}</div>
+                <div class="estilo-count">${count} de ${total} personas</div>
+                <div class="estilo-avg" style="color:#666;font-size:11px;margin-top:4px;">Promedio: ${avgVal.toFixed(1)}</div>
+            </div>`;
+        });
+        cardsHtml += '</div>';
+
+        document.getElementById('estilosContent').innerHTML = `
+            ${cardsHtml}
+            <div id="estilosAiSection">
+                <div style="text-align:center;padding:20px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:8px;color:#777;font-size:13px;">Generando análisis...</p>
+                </div>
+            </div>`;
+
+        // Generate AI analysis
+        const leaderName = currentUser.name || currentUser.email.split('@')[0];
+        const aiResp = await fetch('/.netlify/functions/generate-team-estilos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                estilosData: {
+                    visualPct: total > 0 ? Math.round((styleCounts.visual / total) * 100) : 0,
+                    visualCount: styleCounts.visual,
+                    visualAvg: avg(styleVals.visual).toFixed(2),
+                    auditivoPct: total > 0 ? Math.round((styleCounts.auditivo / total) * 100) : 0,
+                    auditivoCount: styleCounts.auditivo,
+                    auditivoAvg: avg(styleVals.auditivo).toFixed(2),
+                    verbalPct: total > 0 ? Math.round((styleCounts.verbal / total) * 100) : 0,
+                    verbalCount: styleCounts.verbal,
+                    verbalAvg: avg(styleVals.verbal).toFixed(2),
+                    kinestesicoPct: total > 0 ? Math.round((styleCounts.kinestesico / total) * 100) : 0,
+                    kinestesicoCount: styleCounts.kinestesico,
+                    kinestesicoAvg: avg(styleVals.kinestesico).toFixed(2)
+                },
+                company: team.company,
+                leaderName,
+                memberCount: withEstilos.length
+            })
+        });
+
+        if (aiResp.ok) {
+            const aiData = await aiResp.json();
+            const a = aiData.analysis;
+            function md(t) { return (t || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
+
+            let aiHtml = '';
+            if (a.resumen) aiHtml += `<div class="clima-ai-section" style="border-left-color:#01516A;">
+                <div class="clima-ai-title" style="color:#01516A;">Cómo aprende tu equipo</div>
+                <div class="clima-ai-text">${md(a.resumen)}</div>
+            </div>`;
+            if (a.fortaleza) aiHtml += `<div class="clima-ai-section" style="border-left-color:#38A169;">
+                <div class="clima-ai-title" style="color:#38A169;">Fortaleza de aprendizaje</div>
+                <div class="clima-ai-text">${md(a.fortaleza)}</div>
+            </div>`;
+            if (a.alerta) aiHtml += `<div class="clima-ai-section" style="border-left-color:#D69E2E;">
+                <div class="clima-ai-title" style="color:#D69E2E;">Estilo desatendido</div>
+                <div class="clima-ai-text">${md(a.alerta)}</div>
+            </div>`;
+            if (a.recomendaciones) aiHtml += `<div class="clima-ai-section" style="border-left-color:#04B5D6;">
+                <div class="clima-ai-title" style="color:#04B5D6;">Recomendaciones</div>
+                <div class="clima-ai-text">${md(a.recomendaciones)}</div>
+            </div>`;
+
+            document.getElementById('estilosAiSection').innerHTML = aiHtml;
+        } else {
+            document.getElementById('estilosAiSection').innerHTML = '';
+        }
+
+    } catch (err) {
+        document.getElementById('estilosContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <p style="color:#E53E3E;font-size:14px;">${err.message}</p>
+                <button onclick="showTeamEstilos()" style="margin-top:12px;padding:8px 20px;background:#04B5D6;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;">Reintentar</button>
+            </div>`;
+    }
+}
+
+function closeEstilos() {
+    document.getElementById('estilosOverlay').classList.remove('active');
 }
 
 // ============================================
