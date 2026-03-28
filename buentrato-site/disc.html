@@ -749,7 +749,7 @@ function renderHeader() {
 
 function renderFooter() {
     const portalBtn = state.portalCode
-        ? `<a href="${portalUrl()}" class="btn-portal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>Volver al portal</a><br>`
+        ? `<a href="${portalUrl()}" class="btn-portal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Portal</a><br>`
         : '';
     return `<div class="footer">${portalBtn}<img src="logo.png" alt="BuenTrato.AI" class="footer-logo-img"><br>&copy; 2026 BuenTrato.AI — Mejores relaciones, mejores equipos</div>`;
 }
@@ -1234,7 +1234,7 @@ if (portalCode) {
                             Cuando más compañeros lo completen, podrás generar feedback aquí.
                         </p>
                         <a href="/?portal=${portalCode}" style="margin-top:20px;color:var(--primary);font-size:14px;">
-                            Volver al portal
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Portal
                         </a>
                     </div>`;
             } else {
