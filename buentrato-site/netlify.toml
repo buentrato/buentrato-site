@@ -9,6 +9,19 @@
 [functions."process-submission"]
   schedule = "*/5 * * * *"
 
+# PWA: Service Worker no debe cachearse
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript"
+
+# PWA: Manifest
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
 # Redirects para Single Page App behavior
 [[redirects]]
   from = "/disc"
