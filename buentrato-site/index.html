@@ -786,6 +786,85 @@
             flex-shrink: 0;
         }
         .pwa-install-close:hover { color: white; }
+        .pwa-install-banner { cursor: pointer; }
+
+        /* === PWA iOS INSTALL MODAL === */
+        .pwa-ios-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: pwaFadeIn 0.2s ease-out;
+        }
+        @keyframes pwaFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .pwa-ios-modal-content {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px 24px 32px;
+            animation: pwaSlideUp 0.3s ease-out;
+        }
+        @keyframes pwaSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .pwa-ios-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-size: 18px;
+            color: #01516A;
+        }
+        .pwa-ios-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .pwa-ios-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .pwa-ios-step-num {
+            width: 30px;
+            height: 30px;
+            background: #0380A6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .pwa-ios-step-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.5;
+            padding-top: 3px;
+        }
+        .pwa-ios-step-icon {
+            font-size: 28px;
+            margin-top: 6px;
+        }
+        .pwa-ios-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e8f0f4;
+            text-align: center;
+            color: #04B5D6;
+            font-weight: 600;
+            font-size: 14px;
+        }
 
         /* === CHAT COACH FLOTANTE === */
         .chat-fab {
@@ -1090,7 +1169,7 @@
     </div>
 
     <!-- PWA Install Banner -->
-    <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none;">
+    <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none;" onclick="pwaInstallAction()">
         <div class="pwa-install-icon">
             <img src="carita.png" alt="">
         </div>
@@ -1099,7 +1178,43 @@
             <span id="pwaInstallHint">Accede más rápido, sin abrir el navegador</span>
         </div>
         <button class="pwa-install-btn" id="pwaInstallBtn" onclick="pwaInstallAction()">Instalar</button>
-        <button class="pwa-install-close" onclick="pwaInstallDismiss()" aria-label="Cerrar">&times;</button>
+        <button class="pwa-install-close" onclick="event.stopPropagation(); pwaInstallDismiss()" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <!-- PWA iOS Install Guide Modal -->
+    <div class="pwa-ios-modal" id="pwaIosModal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+        <div class="pwa-ios-modal-content">
+            <div class="pwa-ios-modal-header">
+                <img src="carita.png" alt="" style="height:32px;">
+                <strong>Instalar BuenTrato</strong>
+                <button onclick="document.getElementById('pwaIosModal').style.display='none'" style="background:none;border:none;font-size:22px;color:#999;cursor:pointer;margin-left:auto;">&times;</button>
+            </div>
+            <div class="pwa-ios-steps">
+                <div class="pwa-ios-step">
+                    <div class="pwa-ios-step-num">1</div>
+                    <div class="pwa-ios-step-text">
+                        Toca el botón <strong>Compartir</strong> en la barra de Safari
+                        <div class="pwa-ios-step-icon">&#x2934;&#xFE0F;</div>
+                    </div>
+                </div>
+                <div class="pwa-ios-step">
+                    <div class="pwa-ios-step-num">2</div>
+                    <div class="pwa-ios-step-text">
+                        Baja en el menú y toca <strong>"Agregar a pantalla de inicio"</strong>
+                        <div class="pwa-ios-step-icon">&#x2795;</div>
+                    </div>
+                </div>
+                <div class="pwa-ios-step">
+                    <div class="pwa-ios-step-num">3</div>
+                    <div class="pwa-ios-step-text">
+                        Toca <strong>"Agregar"</strong> arriba a la derecha
+                    </div>
+                </div>
+            </div>
+            <div class="pwa-ios-footer">
+                ¡Listo! BuenTrato aparecerá como app en tu pantalla de inicio
+            </div>
+        </div>
     </div>
 
     <div class="main">
@@ -3368,9 +3483,10 @@ function maybeShowPwaInstallBanner() {
     const btn = document.getElementById('pwaInstallBtn');
 
     if (isIOS()) {
-        // iOS: no hay prompt automático, mostrar instrucciones
-        hint.innerHTML = 'Toca <strong style="font-size:16px;">&#xFEFF;&#x2934;&#xFE0F;</strong> y luego <strong>"Agregar a inicio"</strong>';
-        btn.style.display = 'none'; // No hay botón de instalar en iOS
+        // iOS: no hay prompt automático, tocando el banner abre la guía
+        hint.textContent = 'Toca aquí para ver cómo';
+        btn.textContent = 'Ver pasos';
+        btn.style.display = '';
     } else if (deferredInstallPrompt) {
         // Android con prompt disponible
         hint.textContent = 'Accede más rápido, sin abrir el navegador';
@@ -3387,6 +3503,7 @@ function maybeShowPwaInstallBanner() {
 
 function pwaInstallAction() {
     if (deferredInstallPrompt) {
+        // Android: disparar el prompt nativo
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then(result => {
             if (result.outcome === 'accepted') {
@@ -3394,6 +3511,9 @@ function pwaInstallAction() {
             }
             deferredInstallPrompt = null;
         });
+    } else if (isIOS()) {
+        // iOS: mostrar modal con pasos visuales
+        document.getElementById('pwaIosModal').style.display = 'flex';
     }
 }
 
