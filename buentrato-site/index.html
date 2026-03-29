@@ -3066,18 +3066,50 @@ async function loadChatData() {
     document.getElementById('chatStatus').textContent = 'Conectando...';
 
     try {
-        const resp = await fetch('/.netlify/functions/get-team-instruments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: currentUser.email })
-        });
+        let teamData, me;
 
-        if (!resp.ok) throw new Error('No se pudieron cargar los datos');
-        const teamData = await resp.json();
+        // Demo mode: hardcoded data
+        if (!currentUser.email) {
+            const demoMembers = [
+                { name: "Camila Torres", email: "camila.demo@buentrato.ai", role: "Coordinadora de Proyectos",
+                  disc: { D: 22, I: 30, S: 18, C: 30 },
+                  discAdaptado: { D: 28, I: 25, S: 20, C: 27 },
+                  ie: { autoconciencia: 80, autorregulacion: 64, motivacion: 72, empatia: 68, habilidadesSociales: 76, general: 72, nivelGeneral: "Medio" },
+                  autoliderazgo: { autoconciencia: 75, autogestion: 73, regulacionEmocional: 100, motivacion: 100, adaptabilidad: 50, general: 78, nivelGeneral: "Alto" },
+                  estilos: { visual: 67, auditivo: 17, verbal: 50, kinestesico: 33 },
+                  clima: { seguridadPsi: 82, comunicacion: 68, valoracion: 90, colaboracion: 76, liderazgo: 72, general: 78 }
+                },
+                { name: "Ana García", email: "ana.demo@buentrato.ai", role: "Directora de Proyectos",
+                  disc: { D: 85, I: 45, S: 30, C: 60 },
+                  discAdaptado: { D: 78, I: 50, S: 35, C: 55 },
+                  ie: { autoconciencia: 70, autorregulacion: 75, motivacion: 85, empatia: 60, habilidadesSociales: 72, general: 72, nivelGeneral: "Medio" },
+                  estilos: { visual: 50, auditivo: 33, verbal: 67, kinestesico: 17 },
+                  clima: { seguridadPsi: 75, comunicacion: 72, valoracion: 80, colaboracion: 70, liderazgo: 85, general: 76 }
+                },
+                { name: "Carlos Méndez", email: "carlos.demo@buentrato.ai", role: "Diseñador UX",
+                  disc: { D: 30, I: 80, S: 55, C: 40 },
+                  discAdaptado: { D: 35, I: 75, S: 50, C: 45 },
+                  ie: { autoconciencia: 85, autorregulacion: 60, motivacion: 78, empatia: 82, habilidadesSociales: 88, general: 79, nivelGeneral: "Medio" },
+                  estilos: { visual: 83, auditivo: 50, verbal: 33, kinestesico: 67 },
+                  clima: { seguridadPsi: 88, comunicacion: 80, valoracion: 85, colaboracion: 82, liderazgo: 70, general: 81 }
+                }
+            ];
+            teamData = { team: "Equipo Demo", company: "BuenTrato.AI", members: demoMembers };
+            me = demoMembers[0];
+        } else {
+            // Real mode: call API
+            const resp = await fetch('/.netlify/functions/get-team-instruments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentUser.email })
+            });
 
-        // Find current user in members
-        const me = teamData.members.find(m => m.email === currentUser.email.toLowerCase());
-        if (!me) throw new Error('No se encontraron tus evaluaciones');
+            if (!resp.ok) throw new Error('No se pudieron cargar los datos');
+            teamData = await resp.json();
+
+            me = teamData.members.find(m => m.email === currentUser.email.toLowerCase());
+            if (!me) throw new Error('No se encontraron tus evaluaciones');
+        }
 
         // Enrich person data with name/role from portal
         me.name = currentUser.name || me.name;
