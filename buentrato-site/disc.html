@@ -105,12 +105,12 @@
             width: 100%; height: 100%; object-fit: contain;
         }
         .header-logo-img {
-            height: 64px;
+            height: 96px;
             filter: brightness(0) invert(1);
             margin-bottom: 6px;
         }
         .footer-logo-img {
-            height: 80px;
+            height: 120px;
             opacity: 0.4;
             margin-bottom: 6px;
         }
@@ -400,7 +400,8 @@ const DEMO_TEAMS = {
             { id: 9002, name: "Carlos Méndez", role: "Diseñador UX", disc: { D: 30, I: 80, S: 55, C: 40 }, primaryStyle: "I" },
             { id: 9003, name: "María López", role: "Desarrolladora Senior", disc: { D: 40, I: 35, S: 75, C: 85 }, primaryStyle: "C" },
             { id: 9004, name: "Roberto Sánchez", role: "Gerente de Ventas", disc: { D: 70, I: 90, S: 25, C: 35 }, primaryStyle: "I" },
-            { id: 9005, name: "Laura Jiménez", role: "Coordinadora de RRHH", disc: { D: 25, I: 60, S: 90, C: 50 }, primaryStyle: "S" }
+            { id: 9005, name: "Laura Jiménez", role: "Coordinadora de RRHH", disc: { D: 25, I: 60, S: 90, C: 50 }, primaryStyle: "S" },
+            { id: 9006, name: "Camila Torres", role: "Coordinadora de Proyectos", disc: { D: 35, I: 55, S: 45, C: 65 }, primaryStyle: "C", email: "camila.demo@buentrato.ai" }
         ]
     }
 };
@@ -1189,6 +1190,22 @@ if (portalCode) {
             <p style="margin-top:16px;color:var(--gray);font-size:14px;">Cargando tu equipo...</p>
         </div>`;
 
+    // Demo mode: bypass API and load demo team directly
+    if (portalCode.toLowerCase() === 'demo2026') {
+        const demoTeam = DEMO_TEAMS["DEMO2026"];
+        const demoPerson = demoTeam.members.find(m => m.name === "Camila Torres");
+        if (demoTeam && demoPerson) {
+            state.teamCode = "DEMO2026";
+            state.team = demoTeam;
+            state.person = demoPerson;
+            state.portalCode = portalCode;
+            state.screen = "step2";
+            setTimeout(() => render(), 400);
+        } else {
+            render();
+        }
+    } else {
+
     // Paso 1: obtener perfil del portal (nombre + email)
     fetch('/.netlify/functions/get-portal', {
         method: 'POST',
@@ -1275,6 +1292,8 @@ if (portalCode) {
         });
     })
     .catch(() => render());
+
+    } // end else (non-demo portal)
 } else {
     render();
 }

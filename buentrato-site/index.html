@@ -35,7 +35,7 @@
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
         }
-        .entry-card .logo { height: 90px; margin-bottom: 24px; }
+        .entry-card .logo { height: 135px; margin-bottom: 24px; }
         .entry-card h1 {
             font-size: 22px;
             font-weight: 700;
@@ -133,7 +133,7 @@
             padding-bottom: 20px;
         }
         .header-logo img {
-            height: 96px;
+            height: 144px;
             object-fit: contain;
             filter: brightness(0) invert(1);
         }
@@ -173,28 +173,25 @@
             margin: 0 auto;
         }
         .role-tab {
-            padding: 12px 28px;
+            padding: 10px 24px;
             font-size: 14px;
             font-weight: 600;
             color: rgba(255,255,255,0.6);
             cursor: pointer;
-            border-bottom: 3px solid transparent;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            border-radius: 10px 10px 0 0;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-bottom: none;
+            margin: 0 2px;
         }
-        .role-tab:hover { color: rgba(255,255,255,0.85); }
+        .role-tab:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.12); }
         .role-tab.active {
-            color: white;
-            border-bottom-color: white;
+            color: #01516A;
+            background: #F8FAFB;
+            border-color: rgba(255,255,255,0.3);
+            font-weight: 700;
         }
-        .role-tab .tab-icon {
-            width: 18px; height: 18px;
-            object-fit: contain;
-            opacity: 0.7;
-        }
-        .role-tab.active .tab-icon { opacity: 1; }
 
         /* === MAIN === */
         .main {
@@ -219,20 +216,24 @@
         .category-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0;
             margin-bottom: 16px;
+            border-bottom: 2px solid #E2EEF3;
+            padding-bottom: 10px;
         }
-        .category-icon { width: 24px; height: 24px; object-fit: contain; }
+        .category-icon { display: none; }
         .category-title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
             color: #01516A;
+            background: #E2EEF3;
+            padding: 6px 16px;
+            border-radius: 8px;
         }
         .category-line {
             flex: 1;
-            height: 1px;
-            background: #E5E7EB;
-            margin-left: 8px;
+            height: 0;
+            margin-left: 0;
         }
 
         /* === TOOL CARDS === */
@@ -888,7 +889,7 @@
             border-top: 1px solid #EEEDEF;
         }
         .footer-logo {
-            height: 80px;
+            height: 120px;
             opacity: 0.4;
             margin-bottom: 8px;
         }
@@ -968,24 +969,13 @@
                     <div class="header-user-name" id="headerName">Hola!</div>
                     <div class="header-logout" onclick="logout()">Cambiar usuario</div>
                 </div>
-                <div class="header-avatar">
-                    <img src="carita.png" alt="" style="width:20px; height:20px; object-fit:contain; filter: brightness(0) invert(1);">
-                </div>
+                <div class="header-avatar" id="headerAvatar"></div>
             </div>
         </div>
         <div class="role-tabs">
-            <div class="role-tab active" data-tab="persona">
-                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
-                Mi perfil
-            </div>
-            <div class="role-tab" data-tab="lider">
-                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
-                Mi equipo
-            </div>
-            <div class="role-tab" data-tab="rrhh">
-                <img src="carita.png" alt="" class="tab-icon" style="filter: brightness(0) invert(1);">
-                Mi empresa
-            </div>
+            <div class="role-tab active" data-tab="persona">Mi perfil</div>
+            <div class="role-tab" data-tab="lider">Mi equipo</div>
+            <div class="role-tab" data-tab="rrhh">Mi empresa</div>
         </div>
     </div>
 
@@ -1749,9 +1739,11 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function showPortal() {
     const u = currentUser;
 
-    // Set header name
-    document.getElementById('headerName').textContent =
-        'Hola, ' + (u.firstName || u.name.split(' ')[0]) + '!';
+    // Set header name and avatar initials
+    const displayName = u.firstName || u.name.split(' ')[0];
+    document.getElementById('headerName').textContent = 'Hola, ' + displayName + '!';
+    const initials = u.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('headerAvatar').textContent = initials;
 
     // Update instrument cards
     const instruments = u.instruments || {};
