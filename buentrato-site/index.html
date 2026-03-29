@@ -739,6 +739,44 @@
         .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(3,128,166,0.5); }
         .chat-fab img { height: 32px; filter: brightness(0) invert(1); }
 
+        /* Burbuja de invitación al chat */
+        .chat-bubble {
+            position: fixed;
+            bottom: 90px;
+            right: 28px;
+            background: white;
+            color: #01516A;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 16px 16px 4px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            z-index: 998;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(8px) scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+        .chat-bubble.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: 18px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.06);
+        }
+
         .chat-window {
             display: none;
             position: fixed;
@@ -878,6 +916,7 @@
                 border-radius: 20px 20px 0 0;
             }
             .chat-fab { bottom: 16px; right: 16px; width: 54px; height: 54px; }
+            .chat-bubble { bottom: 76px; right: 20px; font-size: 12px; padding: 8px 14px; }
         }
 
         /* === FOOTER === */
@@ -1491,6 +1530,7 @@
 <button class="chat-fab" id="chatFab" onclick="toggleChat()">
     <img src="carita.png" alt="Coach">
 </button>
+<div class="chat-bubble" id="chatBubble" onclick="toggleChat()">¿Quieres conversar?</div>
 
 <div class="chat-window" id="chatWindow">
     <div class="chat-win-header">
@@ -2945,9 +2985,48 @@ const CHAT_MODES = {
 // Show FAB when user is logged in
 function showChatFab() {
     document.getElementById('chatFab').style.display = 'flex';
+    startChatBubble();
 }
 function hideChatFab() {
     document.getElementById('chatFab').style.display = 'none';
+    stopChatBubble();
+}
+
+// --- Chat Bubble (invitación periódica) ---
+let chatBubbleTimer = null;
+let chatBubbleCount = 0;
+const CHAT_BUBBLE_MAX = 5; // Máximo de veces que aparece en una sesión
+
+function showChatBubble() {
+    if (chatOpen || chatBubbleCount >= CHAT_BUBBLE_MAX) return;
+    const bubble = document.getElementById('chatBubble');
+    if (!bubble) return;
+    bubble.classList.add('visible');
+    chatBubbleCount++;
+    // Ocultar después de 4 segundos
+    setTimeout(() => {
+        bubble.classList.remove('visible');
+    }, 4000);
+}
+
+function startChatBubble() {
+    // Primera aparición: 5 segundos después de entrar al portal
+    setTimeout(() => {
+        if (!chatOpen) showChatBubble();
+    }, 5000);
+    // Repetir cada 60 segundos
+    chatBubbleTimer = setInterval(() => {
+        if (!chatOpen) showChatBubble();
+    }, 60000);
+}
+
+function stopChatBubble() {
+    if (chatBubbleTimer) {
+        clearInterval(chatBubbleTimer);
+        chatBubbleTimer = null;
+    }
+    const bubble = document.getElementById('chatBubble');
+    if (bubble) bubble.classList.remove('visible');
 }
 
 function updateChatUI() {
@@ -2966,6 +3045,10 @@ function toggleChat() {
     chatOpen = !chatOpen;
     const win = document.getElementById('chatWindow');
     if (chatOpen) {
+        // Ocultar burbuja y dejar de mostrarla
+        const bubble = document.getElementById('chatBubble');
+        if (bubble) bubble.classList.remove('visible');
+        chatBubbleCount = CHAT_BUBBLE_MAX; // Ya interactuó, no mostrar más
         win.classList.add('active');
         updateChatUI();
         if (!chatData) loadChatData();
