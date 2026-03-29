@@ -207,6 +207,8 @@ exports.handler = async (event) => {
             role: fields.cargo_actual || "",
             area: fields.area_actual || "",
             portalCode: portalCode || null,
+            esLider: fields.es_lider === true,
+            rolPortal: fields.rol_portal || null,
             instruments: available
         };
 
