@@ -723,6 +723,70 @@
             .estilo-card-pct { font-size: 28px; }
         }
 
+        /* === PWA INSTALL BANNER === */
+        .pwa-install-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #01516A, #026B8A);
+            color: white;
+            padding: 14px 16px;
+            margin: 0;
+            animation: pwaSlideDown 0.4s ease-out;
+        }
+        @keyframes pwaSlideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .pwa-install-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pwa-install-icon img { height: 26px; filter: brightness(0) invert(1); }
+        .pwa-install-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .pwa-install-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .pwa-install-text span {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .pwa-install-btn {
+            background: white;
+            color: #01516A;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+        .pwa-install-btn:hover { background: #e6f4f9; }
+        .pwa-install-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .pwa-install-close:hover { color: white; }
+
         /* === CHAT COACH FLOTANTE === */
         .chat-fab {
             position: fixed;
@@ -1023,6 +1087,19 @@
             <div class="role-tab" data-tab="lider">Mi equipo</div>
             <div class="role-tab" data-tab="rrhh">Mi empresa</div>
         </div>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none;">
+        <div class="pwa-install-icon">
+            <img src="carita.png" alt="">
+        </div>
+        <div class="pwa-install-text">
+            <strong>Instala BuenTrato en tu celular</strong>
+            <span id="pwaInstallHint">Accede más rápido, sin abrir el navegador</span>
+        </div>
+        <button class="pwa-install-btn" id="pwaInstallBtn" onclick="pwaInstallAction()">Instalar</button>
+        <button class="pwa-install-close" onclick="pwaInstallDismiss()" aria-label="Cerrar">&times;</button>
     </div>
 
     <div class="main">
@@ -1852,6 +1929,9 @@ function showPortal() {
 
     // Show chat FAB for everyone (mode changes with tab)
     showChatFab();
+
+    // Show PWA install banner if applicable
+    maybeShowPwaInstallBanner();
 }
 
 // ============================================
@@ -3227,7 +3307,11 @@ async function sendChatMessage() {
 // (auto-login ya se maneja arriba en autoLogin())
 </script>
 <script>
-// Registrar Service Worker para PWA
+// ============================================
+// PWA: Service Worker + Install Banner
+// ============================================
+
+// Registrar Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
@@ -3235,6 +3319,96 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('SW error:', err));
     });
 }
+
+// Capturar el evento beforeinstallprompt (Android/Chrome)
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    // Si el banner ya está visible, asegurar que muestre el botón "Instalar"
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) {
+        btn.style.display = '';
+        btn.textContent = 'Instalar';
+    }
+});
+
+// Detectar plataforma
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isAndroid() {
+    return /Android/.test(navigator.userAgent);
+}
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true;
+}
+
+function maybeShowPwaInstallBanner() {
+    const banner = document.getElementById('pwaInstallBanner');
+    if (!banner) return;
+
+    // No mostrar si ya está instalada (running as standalone)
+    if (isStandalone()) return;
+
+    // No mostrar si el usuario la descartó en las últimas 7 días
+    const dismissed = localStorage.getItem('pwa_banner_dismissed');
+    if (dismissed) {
+        const daysAgo = (Date.now() - parseInt(dismissed)) / (1000 * 60 * 60 * 24);
+        if (daysAgo < 7) return;
+    }
+
+    // No mostrar en desktop (solo mobile)
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
+    const hint = document.getElementById('pwaInstallHint');
+    const btn = document.getElementById('pwaInstallBtn');
+
+    if (isIOS()) {
+        // iOS: no hay prompt automático, mostrar instrucciones
+        hint.innerHTML = 'Toca <strong style="font-size:16px;">&#xFEFF;&#x2934;&#xFE0F;</strong> y luego <strong>"Agregar a inicio"</strong>';
+        btn.style.display = 'none'; // No hay botón de instalar en iOS
+    } else if (deferredInstallPrompt) {
+        // Android con prompt disponible
+        hint.textContent = 'Accede más rápido, sin abrir el navegador';
+        btn.textContent = 'Instalar';
+        btn.style.display = '';
+    } else {
+        // Android pero el prompt no ha llegado aún — mostrar hint manual
+        hint.innerHTML = 'Toca <strong>⋮</strong> y luego <strong>"Instalar app"</strong>';
+        btn.style.display = 'none';
+    }
+
+    banner.style.display = 'flex';
+}
+
+function pwaInstallAction() {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(result => {
+            if (result.outcome === 'accepted') {
+                document.getElementById('pwaInstallBanner').style.display = 'none';
+            }
+            deferredInstallPrompt = null;
+        });
+    }
+}
+
+function pwaInstallDismiss() {
+    const banner = document.getElementById('pwaInstallBanner');
+    banner.style.display = 'none';
+    localStorage.setItem('pwa_banner_dismissed', Date.now().toString());
+}
+
+// Si la app fue instalada, ocultar el banner
+window.addEventListener('appinstalled', () => {
+    const banner = document.getElementById('pwaInstallBanner');
+    if (banner) banner.style.display = 'none';
+    deferredInstallPrompt = null;
+});
 </script>
 </body>
 </html>
